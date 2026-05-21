@@ -57,7 +57,7 @@ export function VerificationEmailTemplate({
                       fontSize: '16px',
                       opacity: 0.95
                     }}>
-                      Courtesyfy
+                      Achei no Jardim Botânico
                     </p>
                   </td>
                 </tr>
@@ -81,7 +81,7 @@ export function VerificationEmailTemplate({
                       color: '#4b5563',
                       lineHeight: '1.6'
                     }}>
-                      Obrigado por se cadastrar no Courtesyfy! Para continuar, precisamos verificar seu email.
+                      Obrigado por se cadastrar no Achei no Jardim Botânico! Para continuar, precisamos verificar seu email.
                     </p>
 
                     {/* Card com Código */}
@@ -206,7 +206,7 @@ export function VerificationEmailTemplate({
                       lineHeight: '1.6',
                       textAlign: 'center'
                     }}>
-                      Bem-vindo ao Courtesyfy!<br />
+                      Bem-vindo ao Achei no Jardim Botânico!<br />
                       Estamos felizes em tê-lo conosco.
                     </p>
                   </td>
@@ -225,7 +225,7 @@ export function VerificationEmailTemplate({
                       fontSize: '14px',
                       color: '#6b7280'
                     }}>
-                      <strong style={{ color: '#10b981' }}>Courtesyfy</strong>
+                      <strong style={{ color: '#10b981' }}>Achei no Jardim Botânico</strong>
                     </p>
                     <p style={{
                       margin: '0 0 10px 0',
@@ -239,7 +239,7 @@ export function VerificationEmailTemplate({
                       fontSize: '12px',
                       color: '#9ca3af'
                     }}>
-                      © {new Date().getFullYear()} Courtesyfy. Todos os direitos reservados.
+                      © {new Date().getFullYear()} Achei no Jardim Botânico. Todos os direitos reservados.
                     </p>
                   </td>
                 </tr>

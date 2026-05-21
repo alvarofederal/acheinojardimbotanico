@@ -29,17 +29,17 @@ export const VerificationEmailTemplate = ({
   return (
     <Html>
       <Head />
-      <Preview>Seu código de verificação Courtesyfy: {code}</Preview>
+      <Preview>Seu código de verificação Achei JBT: {code}</Preview>
       <Body style={main}>
         <Container style={container}>
           {/* Header com gradiente */}
           <Section style={header}>
-            <Heading style={headerTitle}>🎫 Courtesyfy</Heading>
+            <Heading style={headerTitle}>🎫 Achei JBT</Heading>
           </Section>
 
           {/* Conteúdo */}
           <Section style={content}>
-            <Heading style={title}>Bem-vindo ao Courtesyfy!</Heading>
+            <Heading style={title}>Bem-vindo ao Achei JBT!</Heading>
             
             <Text style={paragraph}>
               Obrigado por se cadastrar. Para ativar sua conta, use o código de verificação abaixo:
@@ -66,7 +66,7 @@ export const VerificationEmailTemplate = ({
           {/* Footer */}
           <Section style={footer}>
             <Text style={footerText}>
-              © {new Date().getFullYear()} Courtesyfy. Todos os direitos reservados.
+              © {new Date().getFullYear()} Achei JBT. Todos os direitos reservados.
             </Text>
           </Section>
         </Container>

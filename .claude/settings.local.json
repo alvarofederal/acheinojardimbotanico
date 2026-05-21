@@ -20,7 +20,8 @@
       "Bash(git push *)",
       "mcp__Claude_in_Chrome__tabs_context_mcp",
       "Bash(git add *)",
-      "Bash(npm run *)"
+      "Bash(npm run *)",
+      "Bash(git commit -m ' *)"
     ]
   }
 }

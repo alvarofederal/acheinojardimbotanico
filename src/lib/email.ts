@@ -1,10 +1,9 @@
 import { Resend } from "resend"
 import { render } from "@react-email/render"
 import { VerificationEmailTemplate } from "@/components/emails/verification-email-template"
-import { ChaveAtivadaEmail } from "@/components/emails/chave-ativada-email"
 
 const EMAIL_FROM =
-  process.env.EMAIL_FROM ?? "Courtesyfy <noreply@karollynemorais.com.br>"
+  process.env.EMAIL_FROM ?? "Achei JBT <noreply@acheinojardimbotanico.com.br>"
 
 const isDev = process.env.NODE_ENV === "development"
 
@@ -20,19 +19,12 @@ export async function sendVerificationEmail(
   expiresInMinutes: number = 0.75
 ) {
   if (isDev) {
-    console.log("\n✉️  ========================================")
-    console.log("✉️  [DEV] Código de Verificação de Email")
-    console.log("✉️  ========================================")
-    console.log(`✉️  Para: ${email}`)
-    console.log(`✉️  Código: ${code}`)
-    console.log(`✉️  Expira em: ${expiresInMinutes * 60}s`)
-    console.log("✉️  ========================================\n")
+    console.log("\n✉️  [DEV] Código de Verificação:", code, "→", email)
     return
   }
 
-  const resendApiKey = process.env.RESEND_API_KEY
-  if (!resendApiKey) {
-    console.warn("⚠️ RESEND_API_KEY não configurada. Email não será enviado.")
+  if (!process.env.RESEND_API_KEY) {
+    console.warn("⚠️ RESEND_API_KEY não configurada.")
     return
   }
 
@@ -43,7 +35,7 @@ export async function sendVerificationEmail(
   const { error } = await getResend().emails.send({
     from: EMAIL_FROM,
     to: email,
-    subject: "🔐 Código de Verificação - Courtesyfy",
+    subject: "🔐 Código de Verificação — Achei no Jardim Botânico",
     html: emailHtml,
   })
 
@@ -53,66 +45,14 @@ export async function sendVerificationEmail(
   }
 }
 
-export interface ChaveAtivadaEmailData {
-  nomeLoja:       string
-  nomeCampanha:   string
-  beneficioLabel: string
-  destaque:       string
-  codigo:         string
-  expiraEm:       string
-  regrasUso?:     string | null
-  corPrimaria:    string
-}
-
-export async function sendChaveAtivadaEmail(email: string, data: ChaveAtivadaEmailData) {
+export async function sendPasswordResetEmail(email: string, resetUrl: string) {
   if (isDev) {
-    console.log("\n🎫 ========================================")
-    console.log("🎫 [DEV] Email de Chave Ativada")
-    console.log("🎫 ========================================")
-    console.log(`🎫 Para: ${email}`)
-    console.log(`🎫 Loja: ${data.nomeLoja}`)
-    console.log(`🎫 Campanha: ${data.nomeCampanha}`)
-    console.log(`🎫 Benefício: ${data.destaque}`)
-    console.log(`🎫 Código: ${data.codigo}`)
-    console.log(`🎫 Expira: ${data.expiraEm}`)
-    console.log("🎫 ========================================\n")
+    console.log("\n🔑 [DEV] Recuperação de Senha →", email, "\nLink:", resetUrl)
     return
   }
 
   if (!process.env.RESEND_API_KEY) {
-    console.warn("⚠️ RESEND_API_KEY não configurada. Email não será enviado.")
-    return
-  }
-
-  const html = await render(ChaveAtivadaEmail(data))
-
-  const { error } = await getResend().emails.send({
-    from: EMAIL_FROM,
-    to: email,
-    subject: `🎫 Sua chave foi ativada — ${data.nomeLoja}`,
-    html,
-  })
-
-  if (error) {
-    // Não bloqueia o fluxo — loga e segue
-    console.error("Erro ao enviar email de ativação de chave:", error)
-  }
-}
-
-export async function sendPasswordResetEmail(email: string, resetUrl: string) {
-  if (isDev) {
-    console.log("\n🔑 ========================================")
-    console.log("🔑 [DEV] Email de Recuperação de Senha")
-    console.log("🔑 ========================================")
-    console.log(`🔑 Para: ${email}`)
-    console.log(`🔑 Link: ${resetUrl}`)
-    console.log("🔑 ========================================\n")
-    return
-  }
-
-  const resendApiKey = process.env.RESEND_API_KEY
-  if (!resendApiKey) {
-    console.warn("⚠️ RESEND_API_KEY não configurada. Email não será enviado.")
+    console.warn("⚠️ RESEND_API_KEY não configurada.")
     return
   }
 
@@ -125,7 +65,7 @@ export async function sendPasswordResetEmail(email: string, resetUrl: string) {
         <h1 style="color:#fff;margin:0;font-size:28px">🔑 Recuperação de Senha</h1>
       </div>
       <div style="padding:40px 30px">
-        <p style="color:#4b5563;font-size:16px">Recebemos uma solicitação para redefinir a senha da sua conta.</p>
+        <p style="color:#4b5563;font-size:16px">Recebemos uma solicitação para redefinir a senha da sua conta no Achei no Jardim Botânico.</p>
         <div style="text-align:center;margin:30px 0">
           <a href="${resetUrl}" style="display:inline-block;background:linear-gradient(135deg,#10b981,#14b8a6);color:#fff;padding:16px 32px;text-decoration:none;border-radius:8px;font-weight:600;font-size:16px">Redefinir Senha</a>
         </div>
@@ -133,7 +73,7 @@ export async function sendPasswordResetEmail(email: string, resetUrl: string) {
         <p style="color:#6b7280;font-size:14px">Se não solicitou a recuperação, ignore este email.</p>
       </div>
       <div style="background:#f9fafb;padding:30px;text-align:center">
-        <p style="color:#6b7280;font-size:14px;margin:0">© ${new Date().getFullYear()} Courtesyfy. Todos os direitos reservados.</p>
+        <p style="color:#6b7280;font-size:14px;margin:0">© ${new Date().getFullYear()} Achei no Jardim Botânico. Todos os direitos reservados.</p>
       </div>
     </div>
   </body>
@@ -142,7 +82,7 @@ export async function sendPasswordResetEmail(email: string, resetUrl: string) {
   const { error } = await getResend().emails.send({
     from: EMAIL_FROM,
     to: email,
-    subject: "🔑 Recuperação de Senha - Courtesyfy",
+    subject: "🔑 Recuperação de Senha — Achei no Jardim Botânico",
     html: emailHtml,
   })
 

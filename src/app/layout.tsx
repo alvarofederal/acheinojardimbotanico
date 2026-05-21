@@ -23,26 +23,26 @@ const openSans = Open_Sans({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://courtesyfy.com.br"),
+  metadataBase: new URL("https://acheinojardimbotanico.com.br"),
   title: {
-    default: "Courtesyfy",
-    template: "%s | Courtesyfy",
+    default: "Achei no Jardim Botânico",
+    template: "%s | Achei no Jardim Botânico",
   },
-  description: "Gestão de campanhas promocionais com chaves únicas. Crie campanhas, gere QR Codes e valide resgates com facilidade.",
-  keywords: ["cortesias", "campanhas promocionais", "QR Code", "chaves únicas", "gestão de promoções"],
-  authors: [{ name: "Courtesyfy", url: "https://courtesyfy.com.br" }],
+  description: "Guia comercial digital hiperlocal do Jardim Botânico (DF). Encontre negócios, serviços e estabelecimentos próximos com informações confiáveis e atualizadas.",
+  keywords: ["jardim botânico", "brasília", "comércio local", "guia comercial", "negócios jardim botânico df"],
+  authors: [{ name: "Achei no Jardim Botânico", url: "https://acheinojardimbotanico.com.br" }],
   openGraph: {
     type: "website",
     locale: "pt_BR",
-    url: "https://courtesyfy.com.br",
-    siteName: "Courtesyfy",
-    title: "Courtesyfy — Campanhas com chaves únicas",
-    description: "Crie campanhas, gere QR Codes e valide resgates com facilidade.",
+    url: "https://acheinojardimbotanico.com.br",
+    siteName: "Achei no Jardim Botânico",
+    title: "Achei no Jardim Botânico — Guia comercial local",
+    description: "Encontre negócios, serviços e estabelecimentos na região do Jardim Botânico (DF).",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Courtesyfy",
-    description: "Gestão de campanhas promocionais com chaves únicas.",
+    title: "Achei no Jardim Botânico",
+    description: "Guia comercial digital hiperlocal do Jardim Botânico (DF).",
   },
   robots: {
     index: true,

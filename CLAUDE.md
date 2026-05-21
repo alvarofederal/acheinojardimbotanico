@@ -1,52 +1,41 @@
-# Courtesyfy — Guia para Claude Code
+# Achei no Jardim Botânico — Guia para Claude Code
 
 > Este arquivo é carregado automaticamente pelo Claude Code em toda sessão.
-> Leia-o completamente antes de fazer qualquer alteração no projeto.
+> Leia completamente antes de fazer qualquer alteração.
 
 ---
 
 ## O que é este projeto?
 
-**Courtesyfy** é um SaaS B2B para gestão de campanhas promocionais com chaves únicas (cortesias).
-Lojistas criam campanhas, geram chaves com QR Code, distribuem para clientes e validam resgates.
-Stack: Next.js 15 (App Router) + TypeScript + MySQL (Prisma) + Stripe + Vercel.
-**Versão atual:** 1.0.2 | **Branch ativo:** main | **Status:** MVP em produção — **[courtesyfy.com.br](https://courtesyfy.com.br)**
+**Achei no Jardim Botânico** é um guia comercial digital hiperlocal para a região do Jardim Botânico (DF).
+Moradores encontram negócios locais. Comerciantes pagam mensalidade para ter destaque.
+Stack: Next.js 15 (App Router) + TypeScript + MySQL (Prisma) + Asaas + Vercel.
+**Domínio:** acheinojardimbotanico.com.br | **Branch ativo:** main | **Status:** Release 0 — base limpa, schema a aplicar
 
 ---
 
-## Arquivos de Contexto - LEIA ANTES DE CODAR
-
-Consulte estes arquivos para entender o projeto em profundidade:
+## Arquivos de Contexto — LEIA ANTES DE CODAR
 
 | Arquivo | Quando ler |
 |---------|-----------|
-| `context/system.md` | Visão geral, atores, stack, planos, integrações |
-| `context/architecture.md` | Estrutura de pastas, padrões de código |
-| `context/rules.md` | Convenções, checklist, o que nunca fazer |
-| `planning/roadmap.md` | MVP, P0, P1, P2 — o que foi feito e o que está planejado |
-| `planning/backlog.md` | Funcionalidades priorizadas |
-| `planning/releases.md` | Histórico de versões |
-| `development/features.md` | Features em andamento agora |
-| `development/bugs.md` | Bugs conhecidos |
-| `development/improvements.md` | Melhorias técnicas planejadas |
-| `knowledge/database.md` | Schema Prisma completo, enums, queries comuns |
-| `knowledge/api.md` | Endpoints, padrões de Server Actions |
-| `knowledge/domain.md` | Vocabulário, regras de negócio, fluxos, estados da chave |
+| `.specify/memory/constitution.md` | Princípios invioláveis — leia em TODA sessão |
+| `docs/discovery/lean-inception.md` | Visão, personas, MVP, releases |
+| `docs/discovery/jobs-to-be-done.md` | Jobs to Be Done das personas |
+| `docs/adr/` | Decisões arquiteturais |
+| `spec.md` | Documento mestre completo |
 
 ---
 
-## Regras Críticas - NUNCA ignore
+## Regras Críticas — NUNCA ignore
 
-1. **Não alterar schema Prisma** sem confirmar com o usuário — `db push --accept-data-loss` pode apagar dados
+1. **Não alterar schema Prisma** sem confirmar com o usuário
 2. **Não mudar sistema de autenticação** (NextAuth) sem discussão
-3. **Não mexer em lógica de cobrança/Stripe** sem entender o impacto
+3. **Não mexer em lógica de cobrança/Asaas** sem entender o impacto
 4. **Sempre usar** `import { db } from "@/lib/prisma"` para Prisma
 5. **Sempre usar** `import { auth } from "@/lib/auth"` para sessão
 6. **Sempre validar** inputs com Zod nas Server Actions e API Routes
-7. **Sempre verificar permissões** por plano da loja antes de criar recursos
-8. **Chave resgatada é imutável** — nunca alterar status de RESGATADA para outro
-9. **Código da chave é único global** — sempre verificar duplicata antes de persistir
-10. **Role de super admin é `SUPER_ADMIN`** — nunca usar `"ADMIN"` para verificar permissão de super admin
+7. **Mobile-first** — quebrou em 375px, não está pronto
+8. **Role de admin é `ADMIN`** — nunca usar outra string para verificar permissão de admin
 
 ---
 
@@ -57,157 +46,84 @@ Consulte estes arquivos para entender o projeto em profundidade:
 "use server"
 const session = await auth()
 if (!session?.user) return { error: "Não autorizado" }
-// valida com Zod → verifica permissão de plano → executa → revalidatePath
-```
-
-### Componente com dados
-```typescript
-// Server Component (padrão) → busca dados direto
-// Client Component → usa React Query ou Server Action
-"use client" // só quando necessário (hooks, eventos, formulários)
+// valida com Zod → verifica permissão → executa → revalidatePath
 ```
 
 ### Importações
 ```typescript
-import { db } from "@/lib/prisma"       // sempre assim
-import { auth } from "@/lib/auth"       // sempre assim
-import { cn } from "@/lib/utils"        // para classnames
-import { stripe } from "@/lib/stripe"   // para Stripe
+import { db } from "@/lib/prisma"   // sempre assim
+import { auth } from "@/lib/auth"   // sempre assim
+import { cn } from "@/lib/utils"    // para classnames
 ```
 
-### Verificação de permissão admin (Super Admin)
+### Verificação de permissão admin
 ```typescript
 const session = await auth()
-if (session?.user?.role !== "SUPER_ADMIN") redirect("/dashboard")
+if (session?.user?.role !== "ADMIN") redirect("/dashboard")
 ```
 
 ---
 
-## Stripe — Conta Courtesyfy
+## Personas (lembre sempre)
 
-**Conta:** `acct_1TWPs2ADOPgqdFsc` | **Modo atual:** Test (`pk_test_` / `sk_test_`)
+- **Marina** — moradora, encontra negócios via SEO. É o tráfego que valida o produto.
+- **Roberto** — comerciante local, paga R$79/mês por destaque. É a receita do MVP.
+- **Álvaro** — operador/admin, usa o painel admin todo dia. É a eficiência operacional.
 
-### Price IDs configurados no `.env`
-| Variável de ambiente | Produto |
-|---------------------|---------|
-| `STRIPE_PLAN_PROFESSIONAL` | Plano Profissional — R$ 99/mês (recorrente) |
-| `STRIPE_PLAN_EMPRESARIAL` | Plano Empresarial — R$ 199/mês (recorrente) |
-| `STRIPE_PRICE_IMPRESSAO_KIT50` | Papel Offset 240g — Kit 50 cards (único) |
-| `STRIPE_PRICE_IMPRESSAO_KIT100` | Papel Offset 240g — Kit 100 cards (único) |
-| `STRIPE_PRICE_CHAVEIRO_KIT10` | MDF Chaveiro 7×3,5cm — Kit 10 peças (único) |
-| `STRIPE_PRICE_CHAVEIRO_KIT100` | MDF Chaveiro 7×3,5cm — Kit 100 peças (único) |
-| `STRIPE_PRICE_MDF_QUADRADO_KIT10` | MDF Quadrado 9×9cm — Kit 10 peças (único) |
-| `STRIPE_PRICE_MDF_QUADRADO_KIT50` | MDF Quadrado 9×9cm — Kit 50 peças (único) |
-
-### Webhook
-- **Produção:** `https://courtesyfy.com.br/api/webhook`
-- **Local (desenvolvimento):**
-```bash
-stripe listen --api-key sk_test_51TWPs2... --forward-to localhost:3000/api/webhook
-# ou: npm run stripe:listen:local
-```
+**Teste de toda feature:** "isso resolve a dor do Roberto hoje?" — se não, sai.
 
 ---
 
-## Mapa de Telas (Rotas)
+## Schema Prisma (a aplicar)
+
+O schema atual (`prisma/schema.prisma`) ainda é do Courtesyfy e será substituído.
+O schema correto está na **Parte 6.2 do spec.md**.
+**NÃO FAÇA `db push`** sem confirmar com o usuário — o banco atual pode ter dados.
+
+---
+
+## Asaas — Provedor de Pagamento
+
+- PIX, cartão, boleto — foco no Brasil
+- Plano Visibilidade: R$79/mês | Plano Premium: R$197/mês
+- Webhook: `/api/asaas/webhook`
+- Variáveis: `ASAAS_API_KEY`, `ASAAS_WEBHOOK_SECRET`
+
+---
+
+## Mapa de Rotas (planejado)
 
 ### Públicas
 | Rota | Descrição |
 |------|-----------|
-| `/` | Landing page com planos de assinatura e kits de impressão (CTAs conectados ao Stripe) |
-| `/c/[codigo]` | Página pública da chave — cliente consulta benefício |
-| `/c/[codigo]/ativar` | Ativação da chave — coleta tel/email do cliente |
-| `/resgatar` | Scanner / digitação de código pelo cliente |
-| `/register` | Cadastro de novo lojista (aceita `?plano=PROFISSIONAL` / `?plano=EMPRESARIAL`) |
-| `/login` | Login |
+| `/` | Landing page |
+| `/[bairro]/[categoria]` | Listagem pública (ex: `/jardim-botanico/cafeterias`) |
+| `/[bairro]/[categoria]/[slug]` | Detalhe do negócio |
 
-### Dashboard — Lojista (`/dashboard/*`)
+### Dashboard — Anunciante (`/dashboard/*`)
 | Rota | Descrição |
 |------|-----------|
-| `/dashboard` | Home com métricas da loja |
-| `/dashboard/campanhas` | Listagem de campanhas |
-| `/dashboard/campanhas/[id]` | Detalhe + lote de chaves da campanha |
-| `/dashboard/chaves` | Listagem de chaves com filtros |
-| `/dashboard/resgates` | Histórico de resgates |
-| `/dashboard/clientes` | Lista de clientes com busca |
-| `/dashboard/clientes/[id]` | Detalhe do cliente com histórico de chaves |
-| `/dashboard/validar` | Validação rápida de chaves (operador no balcão) |
-| `/dashboard/totem` | Modo totem para auto-atendimento |
-| `/dashboard/impressao` | Exportação de chaves para impressão |
-| `/dashboard/planos` | Gerenciar assinatura (upgrade/downgrade) |
+| `/dashboard` | Home com métricas do negócio |
+| `/dashboard/negocio` | Editar perfil do negócio |
+| `/dashboard/plano` | Gerenciar assinatura |
 
-### Dashboard — Super Admin (`/dashboard/admin/*`)
+### Dashboard — Admin (`/dashboard/admin/*`)
 | Rota | Descrição |
 |------|-----------|
-| `/dashboard/admin` | Painel geral admin |
-| `/dashboard/admin/stripe` | Métricas Stripe: MRR, assinantes, renovações, lojas suspensas, eventos |
-| `/dashboard/admin/stripe/produtos` | Gerenciar produtos e preços no Stripe (edição inline) |
+| `/dashboard/admin` | Painel geral |
+| `/dashboard/admin/negocios` | CRUD de negócios |
+| `/dashboard/admin/claims` | Reivindicações pendentes |
+| `/dashboard/admin/import` | Importação via Places API |
 
 ---
 
-## API Routes Principais
+## Regras de Trabalho
 
-| Rota | Método | Autenticação | Descrição |
-|------|--------|-------------|-----------|
-| `/api/checkout-produto` | POST | Nenhuma (allowlist de priceIds) | Checkout público de kits físicos |
-| `/api/webhook` | POST | Stripe signature | Sincroniza assinaturas após pagamento |
-| `/api/upload` | POST | Sessão | Upload de imagem para Cloudinary |
-| `/api/auth/[...nextauth]` | GET/POST | — | Handlers NextAuth |
-| `/api/chaves/validar` | POST | API Key | Validação externa via QR — **a implementar** |
-| `/api/cron/expirar-chaves` | GET | CRON_SECRET | Expiração automática de chaves — **a implementar** |
+1. Spec antes de código: toda feature passa por spec → plan → tasks → implement
+2. Se uma tarefa tomar mais de 1h, pausa e mostra o estado atual
+3. Nunca rode comando destrutivo sem confirmação explícita
+4. Honestidade técnica acima de agradar — se algo está mal pensado, fala
 
 ---
 
-## Branch e Workflow
-
-```bash
-# Branch principal (deploy automático no Vercel)
-main
-
-# Nova feature
-git checkout -b feature/nome-da-feature
-git commit -m "descrição clara do que foi feito"
-git push origin feature/nome-da-feature
-
-# Verificar build antes de merge
-npm run build
-```
-
----
-
-## O que está sendo desenvolvido AGORA
-
-Ver `development/features.md` para o status atual.
-
-**Resumo rápido (atualizado 2026-05-13):**
-- MVP completo e em produção no Vercel
-- Stripe integrado: planos + produtos físicos (kits de impressão) com checkout público
-- Tela de Clientes implementada (lista + detalhe)
-- Admin Stripe expandido com MRR, renovações, eventos e gerenciamento de produtos
-- **Próximas prioridades:** API pública `/api/chaves/validar` + cron de expiração automática
-
----
-
-## ⚡ Comando rápido para iniciar contexto
-
-Em uma nova sessão, para carregar todo o contexto do projeto, rode:
-
-```
-/iniciar-contexto
-```
-
----
-
-## Como atualizar os arquivos de contexto
-
-Quando houver mudanças significativas, atualize os arquivos relevantes:
-- Nova feature concluída → `planning/releases.md` + `development/features.md`
-- Bug encontrado → `development/bugs.md`
-- Decisão arquitetural → `context/architecture.md`
-- Nova regra de negócio → `knowledge/domain.md`
-- Novo endpoint → `knowledge/api.md`
-- Mudança no banco → `knowledge/database.md`
-
----
-
-*Criado em: 2026-05-02 | Atualizado em: 2026-05-13*
+*Criado em: 2026-05-21 | Projeto iniciado a partir da base do Courtesyfy*

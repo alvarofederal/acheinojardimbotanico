@@ -6,61 +6,27 @@ import { usePathname } from "next/navigation"
 import { signOut } from "next-auth/react"
 import {
   LayoutDashboard,
-  Megaphone,
-  Key,
-  ShoppingBag,
-  BarChart3,
-  Settings,
-  Users,
   Building2,
+  Users,
   X,
   LogOut,
-  Layers,
-  Printer,
-  MonitorSmartphone,
-  ScanLine,
-  CreditCard,
-  Zap,
+  Store,
+  ShieldCheck,
 } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
 import { TopNavbar } from "./top-navbar"
 
-/* ─── Navegação na ordem do onboarding ──────────────────────────
-   LojistaNav: espelha os passos do onboarding para facilitar a UX
-   1 → Dashboard (visão geral)
-   2 → Configurações (Identidade visual — passo 2)
-   3 → Layout (criar tema visual — passo 3)
-   4 → Campanhas (passo 4)
-   5 → Chaves (passo 5)
-   6 → Resgates (passo 6)
-   7 → Relatórios
-   ──────────────────────────────────────────────────────────────── */
-
-const lojistaNav: { href: string; label: string; icon: LucideIcon }[] = [
-  { href: "/dashboard",               label: "Visão Geral",   icon: LayoutDashboard },
-  { href: "/dashboard/configuracoes", label: "Configurações", icon: Settings        },
-  { href: "/dashboard/layout",        label: "Layout",        icon: Layers          },
-  { href: "/dashboard/campanhas",     label: "Campanhas",     icon: Megaphone       },
-  { href: "/dashboard/chaves",        label: "Chaves",        icon: Key             },
-  { href: "/dashboard/resgates",      label: "Resgates",      icon: ShoppingBag        },
-  { href: "/dashboard/clientes",      label: "Clientes",      icon: Users              },
-  { href: "/dashboard/validar",       label: "Validar",       icon: ScanLine           },
-  { href: "/dashboard/totem",         label: "Totem",         icon: MonitorSmartphone  },
-  { href: "/dashboard/impressao",     label: "Impressão",     icon: Printer            },
-  { href: "/dashboard/relatorios",    label: "Relatórios",    icon: BarChart3       },
-  { href: "/dashboard/planos",        label: "Meu Plano",     icon: Zap             },
+const anuncianteNav: { href: string; label: string; icon: LucideIcon }[] = [
+  { href: "/dashboard",           label: "Visão Geral",  icon: LayoutDashboard },
+  { href: "/dashboard/negocio",   label: "Meu Negócio",  icon: Store           },
+  { href: "/dashboard/plano",     label: "Meu Plano",    icon: ShieldCheck     },
 ]
 
 const adminNav: { href: string; label: string; icon: LucideIcon }[] = [
-  { href: "/dashboard",               label: "Visão Geral",   icon: LayoutDashboard },
-  { href: "/dashboard/lojas",         label: "Lojas",         icon: Building2       },
-  { href: "/dashboard/usuarios",      label: "Usuários",      icon: Users           },
-  { href: "/dashboard/campanhas",            label: "Campanhas",  icon: Megaphone },
-  { href: "/dashboard/chaves",               label: "Chaves",     icon: Key       },
-  { href: "/dashboard/admin/impressoes",     label: "Impressões",    icon: Printer  },
-  { href: "/dashboard/relatorios",           label: "Relatórios",    icon: BarChart3 },
-  { href: "/dashboard/admin/stripe",        label: "Stripe",        icon: CreditCard },
-  { href: "/dashboard/admin/configuracoes", label: "Configurações", icon: Settings   },
+  { href: "/dashboard",              label: "Visão Geral",  icon: LayoutDashboard },
+  { href: "/dashboard/admin/negocios", label: "Negócios",   icon: Building2       },
+  { href: "/dashboard/admin/claims",   label: "Reivind.",   icon: ShieldCheck     },
+  { href: "/dashboard/admin/usuarios", label: "Usuários",   icon: Users           },
 ]
 
 /* ─── Sidebar — sempre dark (identidade de marca) ──────────────── */
@@ -82,7 +48,7 @@ function SidebarContent({ navItems, initial, displayName, isAdmin, isActive, onC
         <Link href="/dashboard" onClick={onClose} className="logo-shine flex items-center">
           <span className="text-gray-900 dark:text-white font-extrabold text-lg tracking-tight select-none"
             style={{ fontFamily: "var(--font-open-sans), 'Open Sans', sans-serif", letterSpacing: "-0.02em" }}>
-            Courtesy<span className="logo-fy-pulse" style={{ color: "#10b981" }}>fy</span>
+            Achei<span className="logo-fy-pulse" style={{ color: "#10b981" }}> JBT</span>
           </span>
         </Link>
         {onClose && (
@@ -173,8 +139,8 @@ export function AppShell({ role, userName, userEmail, children }: AppShellProps)
     return () => { document.body.style.overflow = "" }
   }, [open])
 
-  const isAdmin     = role === "SUPER_ADMIN"
-  const navItems    = isAdmin ? adminNav : lojistaNav
+  const isAdmin     = role === "ADMIN"
+  const navItems    = isAdmin ? adminNav : anuncianteNav
   const initial     = (userName ?? userEmail ?? "?")[0].toUpperCase()
   const displayName = userName ?? userEmail ?? "Usuário"
 

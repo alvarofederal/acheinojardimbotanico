@@ -15,7 +15,6 @@ declare module "next-auth" {
     user: {
       id: string
       role: string
-      lojaId: string | null
     } & DefaultSession["user"]
   }
 }
@@ -23,7 +22,6 @@ declare module "next-auth" {
 declare module "next-auth/jwt" {
   interface JWT {
     role?: string
-    lojaId?: string | null
   }
 }
 
@@ -184,11 +182,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         const dbUser = await prisma.user.findUnique({
           where: { id: user.id },
-          select: { role: true, lojaId: true },
+          select: { role: true },
         })
 
-        session.user.role = dbUser?.role ?? "LOJISTA"
-        session.user.lojaId = dbUser?.lojaId ?? null
+        session.user.role = dbUser?.role ?? "VISITOR"
       }
 
       return session
