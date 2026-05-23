@@ -10,7 +10,7 @@
 **Achei no Jardim Botânico** é um guia comercial digital hiperlocal para a região do Jardim Botânico (DF).
 Moradores encontram negócios locais. Comerciantes pagam mensalidade para ter destaque.
 Stack: Next.js 15 (App Router) + TypeScript + MySQL (Prisma) + Asaas + Vercel.
-**Domínio:** acheinojardimbotanico.com.br | **Branch ativo:** main | **Status:** Release 0 — base limpa, schema a aplicar
+**Domínio:** acheinojardimbotanico.com.br | **Branch ativo:** main | **Status:** MVP — Specs 001–008 implementadas (importação Places, listagem/detalhe público, claim, painel anunciante, admin, Asaas)
 
 ---
 
@@ -74,11 +74,16 @@ if (session?.user?.role !== "ADMIN") redirect("/dashboard")
 
 ---
 
-## Schema Prisma (a aplicar)
+## Schema Prisma (aplicado)
 
-O schema atual (`prisma/schema.prisma`) ainda é do Courtesyfy e será substituído.
-O schema correto está na **Parte 6.2 do spec.md**.
-**NÃO FAÇA `db push`** sem confirmar com o usuário — o banco atual pode ter dados.
+O schema do Achei já está em `prisma/schema.prisma` e aplicado no banco de dev:
+`User`, `Account`, `Session`, `AuthToken`, `Business`, `Category`, `Photo`,
+`ClaimRequest`, `BusinessView`, `WhatsappClick`, `Subscription`, `AuditLog`
+(enums: `UserRole`, `BusinessStatus`, `Plan`, `ClaimStatus`, `PhotoSource`, `SubStatus`, `TokenType`).
+- Role admin = `ADMIN`. Role do anunciante após claim aprovado = `ADVERTISER`.
+- Senha no campo `passwordHash` (não `password`).
+- **NÃO FAÇA `db push`** com mudança de schema sem confirmar — o banco tem dados.
+- Prisma 5.17.0: use `node_modules/.bin/prisma` (o `npx prisma` puxa a v7, incompatível).
 
 ---
 
@@ -91,29 +96,39 @@ O schema correto está na **Parte 6.2 do spec.md**.
 
 ---
 
-## Mapa de Rotas (planejado)
+## Mapa de Rotas (implementado)
 
 ### Públicas
 | Rota | Descrição |
 |------|-----------|
-| `/` | Landing page |
-| `/[bairro]/[categoria]` | Listagem pública (ex: `/jardim-botanico/cafeterias`) |
-| `/[bairro]/[categoria]/[slug]` | Detalhe do negócio |
+| `/` | Homepage com browse por categoria |
+| `/[bairro]/[categoria]` | Listagem pública + busca + filtro "aberto agora" (ISR 1h) |
+| `/[bairro]/[categoria]/[slug]` | Detalhe do negócio (tracking de view/whatsapp, JSON-LD) |
+| `/reivindicar/[businessId]` | Fluxo de reivindicação |
+| `/sitemap.xml`, `/robots.txt` | SEO |
 
 ### Dashboard — Anunciante (`/dashboard/*`)
 | Rota | Descrição |
 |------|-----------|
-| `/dashboard` | Home com métricas do negócio |
-| `/dashboard/negocio` | Editar perfil do negócio |
-| `/dashboard/plano` | Gerenciar assinatura |
+| `/dashboard` | Home com métricas (views/cliques 7d) |
+| `/dashboard/negocio` | Editar perfil + upload de fotos (limite por plano) |
+| `/dashboard/plano` | Assinatura + checkout Asaas |
+| `/dashboard/conta` | Dados + exclusão LGPD |
 
 ### Dashboard — Admin (`/dashboard/admin/*`)
 | Rota | Descrição |
 |------|-----------|
-| `/dashboard/admin` | Painel geral |
-| `/dashboard/admin/negocios` | CRUD de negócios |
-| `/dashboard/admin/claims` | Reivindicações pendentes |
+| `/dashboard/admin` | Painel geral (KPIs) |
+| `/dashboard/admin/negocios` | Lista de negócios (filtro + paginação) |
+| `/dashboard/admin/claims` | Aprovar/rejeitar reivindicações |
+| `/dashboard/admin/usuarios` | Lista de usuários |
 | `/dashboard/admin/import` | Importação via Places API |
+| `/dashboard/admin/audit` | Log de auditoria pesquisável |
+
+### APIs principais
+`/api/admin/import`, `/api/claims`, `/api/admin/claims/[id]`, `/api/track/{view,whatsapp}`,
+`/api/dashboard/negocio` (+`/fotos`), `/api/asaas/{checkout,webhook}`,
+`/api/forgot-password`, `/api/reset-password`, `/api/lgpd/delete-my-data`
 
 ---
 
