@@ -1076,7 +1076,7 @@ select:focus {
 
 /*
  * Ciclo de 10s:
- *   0-3s   → pass 1: luz desliza pelo nome todo (Courtesy + fy)
+ *   0-3s   → pass 1: luz desliza pelo nome todo (Achei no + JBT)
  *   5-8s   → pass 2: glow verde pulsa apenas no "fy" (via .logo-fy-pulse)
  */
 

@@ -61,8 +61,8 @@ export function VerifyEmailClient({ email, code }: VerifyEmailClientProps) {
                 fontSize: "28px",
               }}
             >
-              <span style={{ color: "#ffffff" }}>Courtesy</span>
-              <span className="logo-fy-pulse" style={{ color: "#10b981" }}>fy</span>
+              <span style={{ color: "#ffffff" }}>Achei no</span>
+              <span className="logo-fy-pulse" style={{ color: "#10b981" }}> JBT</span>
             </span>
           </Link>
 

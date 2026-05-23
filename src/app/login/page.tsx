@@ -57,8 +57,8 @@ export default async function LoginPage() {
                 fontSize: "28px",
               }}
             >
-              <span style={{ color: "#ffffff" }}>Courtesy</span>
-              <span className="logo-fy-pulse" style={{ color: "#10b981" }}>fy</span>
+              <span style={{ color: "#ffffff" }}>Achei no</span>
+              <span className="logo-fy-pulse" style={{ color: "#10b981" }}> JBT</span>
             </span>
           </Link>
           <p className="text-sm mt-3" style={{ color: "rgba(255,255,255,0.40)" }}>
