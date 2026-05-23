@@ -1,7 +1,14 @@
 import Link from "next/link"
-import { ForgotForm } from "./_components/forgot-form"
+import { Suspense } from "react"
+import { ResetForm } from "./_components/reset-form"
 
-export default function ForgotPasswordPage() {
+interface PageProps {
+  searchParams: Promise<{ token?: string }>
+}
+
+export default async function ResetPasswordPage({ searchParams }: PageProps) {
+  const { token } = await searchParams
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4" style={{ background: "#050505" }}>
       <div
@@ -30,11 +37,11 @@ export default function ForgotPasswordPage() {
               <span className="logo-fy-pulse" style={{ color: "#10b981" }}> JBT</span>
             </span>
           </Link>
-          <p className="text-sm mt-3" style={{ color: "rgba(255,255,255,0.40)" }}>
-            Recuperar senha
-          </p>
+          <p className="text-sm mt-3" style={{ color: "rgba(255,255,255,0.40)" }}>Defina uma nova senha</p>
         </div>
-        <ForgotForm />
+        <Suspense>
+          <ResetForm token={token ?? ""} />
+        </Suspense>
       </div>
     </div>
   )

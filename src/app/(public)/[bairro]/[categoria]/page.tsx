@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 import { db } from "@/lib/prisma"
-import { BusinessCard } from "./_components/business-card"
+import { CategoryList } from "./_components/category-list"
 import { MapPin } from "lucide-react"
 import Link from "next/link"
 
@@ -105,16 +105,7 @@ export default async function CategoryPage({ params }: PageProps) {
             </Link>
           </div>
         ) : (
-          <div className="space-y-3">
-            {businesses.map(business => (
-              <BusinessCard
-                key={business.id}
-                business={business}
-                bairro={bairro}
-                categoria={categoria}
-              />
-            ))}
-          </div>
+          <CategoryList businesses={businesses} bairro={bairro} categoria={categoria} />
         )}
       </main>
     </>
