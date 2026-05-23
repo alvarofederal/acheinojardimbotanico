@@ -2,6 +2,8 @@ import { redirect } from "next/navigation"
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/prisma"
 import { BusinessEditor } from "./_components/business-editor"
+import { PhotoManager } from "./_components/photo-manager"
+import { PHOTO_LIMITS } from "@/app/api/dashboard/negocio/fotos/route"
 import Link from "next/link"
 import { Store, ShieldCheck } from "lucide-react"
 
@@ -47,6 +49,13 @@ export default async function NegocioPage() {
         <p className="dash-subtitle mt-0.5 text-sm">Informações de <strong className="dash-title">{business.name}</strong></p>
       </div>
       <BusinessEditor business={business} />
+      <div className="pt-6 border-t border-gray-100 dark:border-white/[0.06]">
+        <PhotoManager
+          photos={business.photos}
+          plan={business.plan}
+          limit={PHOTO_LIMITS[business.plan] ?? 3}
+        />
+      </div>
     </div>
   )
 }
