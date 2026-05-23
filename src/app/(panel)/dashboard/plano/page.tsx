@@ -2,6 +2,7 @@ import { redirect } from "next/navigation"
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/prisma"
 import { ShieldCheck, Zap, Crown } from "lucide-react"
+import { CheckoutButton } from "./_components/checkout-button"
 
 export default async function PlanoPage() {
   const session = await auth()
@@ -84,14 +85,16 @@ export default async function PlanoPage() {
                   </li>
                 ))}
               </ul>
-              {p.cta && !isActive && (
-                <button className={`w-full py-2.5 rounded-xl text-sm font-semibold transition-colors ${
-                  p.id === "PREMIUM"
-                    ? "bg-amber-500 hover:bg-amber-600 text-white"
-                    : "bg-emerald-600 hover:bg-emerald-700 text-white"
-                }`}>
-                  {p.cta}
-                </button>
+              {p.cta && !isActive && (p.id === "VISIBILITY" || p.id === "PREMIUM") && (
+                <CheckoutButton
+                  plan={p.id}
+                  label={p.cta}
+                  className={`w-full py-2.5 rounded-xl text-sm font-semibold transition-colors ${
+                    p.id === "PREMIUM"
+                      ? "bg-amber-500 hover:bg-amber-600 text-white"
+                      : "bg-emerald-600 hover:bg-emerald-700 text-white"
+                  }`}
+                />
               )}
             </div>
           )
