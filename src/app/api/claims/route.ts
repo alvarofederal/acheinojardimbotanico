@@ -2,6 +2,7 @@ export const runtime = "nodejs"
 import { NextRequest, NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/prisma"
+import { sendClaimReceivedEmail } from "@/lib/email"
 import { z } from "zod"
 
 const schema = z.object({
@@ -48,6 +49,28 @@ export async function POST(req: NextRequest) {
       metadata: { businessName: business.name },
     },
   })
+
+  // Notifica admins (não bloqueia a resposta em caso de falha)
+  try {
+    const admins = await db.user.findMany({
+      where: { role: "ADMIN" },
+      select: { email: true },
+    })
+    await Promise.all(
+      admins
+        .filter(a => a.email)
+        .map(a =>
+          sendClaimReceivedEmail(
+            a.email!,
+            business.name,
+            session.user.name ?? "Usuário",
+            session.user.email ?? ""
+          )
+        )
+    )
+  } catch (e) {
+    console.error("Falha ao notificar admins:", e)
+  }
 
   return NextResponse.json({ ok: true })
 }

@@ -1,11 +1,14 @@
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 
-const CANONICAL_HOST = "courtesyfy.com.br"
+const CANONICAL_HOST = "acheinojardimbotanico.com.br"
+
+// Apenas estas rotas exigem autenticação. Todo o resto é público
+// (homepage, listagens, detalhe de negócio, reivindicação, auth).
+const PROTECTED_PREFIXES = ["/dashboard"]
 
 export function middleware(request: NextRequest) {
-  // ✅ Redireciona o domínio Vercel para o domínio canônico em produção
-  // Evita que o usuário fique preso em courtesyfy.vercel.app
+  // Redireciona domínio Vercel → domínio canônico em produção
   const host = request.headers.get("host") ?? ""
   if (host.includes("vercel.app") && process.env.NODE_ENV === "production") {
     const url = request.nextUrl.clone()
@@ -15,32 +18,22 @@ export function middleware(request: NextRequest) {
   }
 
   const { pathname } = request.nextUrl
+  const isProtected = PROTECTED_PREFIXES.some(p => pathname.startsWith(p))
 
-  const publicRoutes = [
-    "/login",
-    "/register",
-    "/verify-email",
-    "/forgot-password",
-    "/reset-password",
-    "/auth",
-    "/c/",          // landing page pública das chaves
-  ]
-
-  const isPublicRoute =
-    pathname === "/" ||
-    publicRoutes.some(route => pathname.startsWith(route))
-
-  if (isPublicRoute) {
+  if (!isProtected) {
     return NextResponse.next()
   }
 
-  // Verifica apenas cookie — sem Prisma no middleware
+  // Verifica apenas o cookie de sessão — sem Prisma no middleware (edge).
+  // A verificação de role (ADMIN) é feita nas próprias páginas via auth().
   const sessionToken =
     request.cookies.get("authjs.session-token")?.value ||
     request.cookies.get("__Secure-authjs.session-token")?.value
 
   if (!sessionToken) {
-    return NextResponse.redirect(new URL("/login", request.url))
+    const url = new URL("/login", request.url)
+    url.searchParams.set("callbackUrl", pathname)
+    return NextResponse.redirect(url)
   }
 
   return NextResponse.next()
