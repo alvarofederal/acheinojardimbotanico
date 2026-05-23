@@ -28,6 +28,14 @@ const labelStyle: React.CSSProperties = {
   letterSpacing: "0.06em",
 }
 
+/** Só aceita caminhos internos (evita open redirect). */
+function safeCallbackUrl(): string {
+  if (typeof window === "undefined") return "/dashboard"
+  const cb = new URLSearchParams(window.location.search).get("callbackUrl")
+  if (cb && cb.startsWith("/") && !cb.startsWith("//")) return cb
+  return "/dashboard"
+}
+
 export function LoginForm() {
   const [loading, setLoading]           = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)
@@ -60,7 +68,7 @@ export function LoginForm() {
         return
       }
       toast.success("Login realizado!")
-      window.location.href = data.redirectTo
+      window.location.href = safeCallbackUrl()
     } catch {
       toast.error("Erro ao fazer login")
       setLoading(false)
@@ -70,7 +78,7 @@ export function LoginForm() {
   const handleGoogle = async () => {
     setGoogleLoading(true)
     try {
-      await signIn("google", { callbackUrl: "/dashboard", redirect: true })
+      await signIn("google", { callbackUrl: safeCallbackUrl(), redirect: true })
     } catch {
       toast.error("Erro ao fazer login com Google")
       setGoogleLoading(false)

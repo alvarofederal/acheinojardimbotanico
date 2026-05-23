@@ -208,6 +208,13 @@ export default async function BusinessPage({ params }: PageProps) {
 
         {/* Claim banner */}
         {!business.ownerId && <ClaimBanner businessId={business.id} businessName={business.name} />}
+
+        {/* Atribuição obrigatória — Google Places TOS */}
+        {(business.googleRating || business.photos.some(p => p.source === "GOOGLE_PLACES")) && (
+          <p className="mt-8 text-xs text-gray-300 dark:text-white/20 text-center">
+            Algumas informações e fotos fornecidas por Google
+          </p>
+        )}
       </main>
     </>
   )
