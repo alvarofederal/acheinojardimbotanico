@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
     const user = await prisma.user.create({
       data: {
         email,
-        password: hashedPassword,
+        passwordHash: hashedPassword,
         // Em dev, pula verificação de email automaticamente
         emailVerified: isDev ? new Date() : null,
       },

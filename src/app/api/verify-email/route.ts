@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
         userId: user.id,
         token: code,
         type: "EMAIL_VERIFICATION",
-        used: false,
+        usedAt: null,
         expiresAt: { gte: new Date() }
       }
     })
@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
 
     await prisma.authToken.update({
       where: { id: token.id },
-      data: { used: true }
+      data: { usedAt: new Date() }
     })
 
     await prisma.user.update({

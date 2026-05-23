@@ -152,7 +152,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           where: { email: credentials.username as string },
         })
 
-        if (!user || !user.password) return null
+        if (!user || !user.passwordHash) return null
 
         if (!user.emailVerified) {
           throw new Error("EMAIL_NOT_VERIFIED")
@@ -160,7 +160,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         const isPasswordValid = await bcrypt.compare(
           credentials.password as string,
-          user.password
+          user.passwordHash
         )
 
         if (!isPasswordValid) return null

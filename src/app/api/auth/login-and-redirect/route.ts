@@ -27,10 +27,10 @@ export async function POST(request: NextRequest) {
 
     const user = await prisma.user.findUnique({
       where: { email },
-      select: { id: true, password: true, emailVerified: true },
+      select: { id: true, passwordHash: true, emailVerified: true },
     })
 
-    if (!user || !user.password) {
+    if (!user || !user.passwordHash) {
       return NextResponse.json(
         { error: "Email ou senha incorretos" },
         { status: 401 }
@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const isValid = await bcrypt.compare(password, user.password)
+    const isValid = await bcrypt.compare(password, user.passwordHash)
     if (!isValid) {
       return NextResponse.json(
         { error: "Email ou senha incorretos" },

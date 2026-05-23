@@ -32,7 +32,7 @@ const adminNav: { href: string; label: string; icon: LucideIcon }[] = [
 /* ─── Sidebar — sempre dark (identidade de marca) ──────────────── */
 
 interface SidebarContentProps {
-  navItems: typeof lojistaNav
+  navItems: typeof anuncianteNav
   initial: string
   displayName: string
   isAdmin: boolean
@@ -70,7 +70,7 @@ function SidebarContent({ navItems, initial, displayName, isAdmin, isActive, onC
           <div className="min-w-0">
             <p className="text-gray-800 dark:text-white text-xs font-medium truncate">{displayName}</p>
             <p className="text-xs text-gray-500 dark:text-white/35">
-              {isAdmin ? "Super Admin" : "Lojista"}
+              {isAdmin ? "Super Admin" : "Anunciante"}
             </p>
           </div>
         </div>
