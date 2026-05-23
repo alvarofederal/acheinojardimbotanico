@@ -12,6 +12,7 @@ import {
   LogOut,
   Store,
   ShieldCheck,
+  Download,
 } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
 import { TopNavbar } from "./top-navbar"
@@ -25,6 +26,7 @@ const anuncianteNav: { href: string; label: string; icon: LucideIcon }[] = [
 const adminNav: { href: string; label: string; icon: LucideIcon }[] = [
   { href: "/dashboard",              label: "Visão Geral",  icon: LayoutDashboard },
   { href: "/dashboard/admin/negocios", label: "Negócios",   icon: Building2       },
+  { href: "/dashboard/admin/import",   label: "Importar",   icon: Download        },
   { href: "/dashboard/admin/claims",   label: "Reivind.",   icon: ShieldCheck     },
   { href: "/dashboard/admin/usuarios", label: "Usuários",   icon: Users           },
 ]
