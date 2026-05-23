@@ -1,9 +1,9 @@
 import { notFound } from "next/navigation"
-import { headers } from "next/headers"
 import type { Metadata } from "next"
 import { db } from "@/lib/prisma"
+import { slugify, SITE_URL } from "@/lib/utils"
 import Link from "next/link"
-import { MapPin, Phone, Globe, Instagram, Star, Clock, MessageCircle, Navigation } from "lucide-react"
+import { MapPin, Phone, Globe, Instagram, Star, Clock, Navigation } from "lucide-react"
 import { TrackView } from "./_components/track-view"
 import { WhatsAppButton } from "./_components/whatsapp-button"
 import { ClaimBanner } from "./_components/claim-banner"
@@ -22,13 +22,17 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   })
   if (!business) return {}
 
+  const canonical = `${SITE_URL}/${slugify(business.neighborhood)}/${business.category.slug}/${business.slug}`
+
   return {
     title: `${business.name} — ${business.category.name} em ${business.neighborhood}`,
     description: business.description ?? `${business.name} — ${business.category.name} no ${business.neighborhood}, ${business.city}. Endereço, telefone e horários de funcionamento.`,
+    alternates: { canonical },
     openGraph: {
       title: business.name,
       description: business.description ?? undefined,
       type: "website",
+      url: canonical,
     },
   }
 }

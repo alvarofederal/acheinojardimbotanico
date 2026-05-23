@@ -148,11 +148,12 @@ export async function searchNearby(params: {
 }
 
 /**
- * Gera URL de foto do Google Places para exibição direta (sem download)
- * Limite de uso: só para exibição — não armazenar permanentemente (TOS)
+ * Gera URL de foto do Google Places para exibição direta em <img src>.
+ * O endpoint /media redireciona (302) para a imagem real do CDN do Google.
+ * Limite de uso: só para exibição — não armazenar permanentemente (TOS).
  */
 export function getPhotoUrl(photoName: string, maxWidth = 800): string {
-  return `${BASE_URL}/${photoName}/media?maxWidthPx=${maxWidth}&key=${API_KEY}&skipHttpRedirect=true`
+  return `${BASE_URL}/${photoName}/media?maxWidthPx=${maxWidth}&key=${API_KEY}`
 }
 
 /**

@@ -10,11 +10,11 @@ import { auth } from "@/lib/auth"
 import { db, Prisma } from "@/lib/prisma"
 import {
   searchNearby,
+  getPhotoUrl,
   extractNeighborhood,
   generateSlug,
   CATEGORY_MAP,
   PLACE_TYPES_TO_IMPORT,
-  type PlaceType,
 } from "@/lib/places"
 import { z } from "zod"
 
@@ -122,7 +122,7 @@ export async function POST(request: NextRequest) {
           // Cria novo negócio
           const slug = generateSlug(name, place.id)
 
-          await db.business.create({
+          const created = await db.business.create({
             data: {
               placeId: place.id,
               slug,
@@ -147,6 +147,20 @@ export async function POST(request: NextRequest) {
               lastSyncedAt: new Date(),
             },
           })
+
+          // Persiste até 5 fotos (URL direta do Google Places — exibição apenas)
+          if (place.photos?.length) {
+            const photos = place.photos.slice(0, 5).map((p, i) => ({
+              businessId: created.id,
+              url: getPhotoUrl(p.name, 800),
+              width: p.widthPx ?? null,
+              height: p.heightPx ?? null,
+              source: "GOOGLE_PLACES" as const,
+              order: i,
+            }))
+            await db.photo.createMany({ data: photos })
+          }
+
           results.imported++
           results.details.push({ name, status: "imported" })
         }
