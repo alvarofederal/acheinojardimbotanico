@@ -13,6 +13,8 @@ import {
   Store,
   ShieldCheck,
   Download,
+  ScrollText,
+  UserCog,
 } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
 import { TopNavbar } from "./top-navbar"
@@ -21,6 +23,7 @@ const anuncianteNav: { href: string; label: string; icon: LucideIcon }[] = [
   { href: "/dashboard",           label: "Visão Geral",  icon: LayoutDashboard },
   { href: "/dashboard/negocio",   label: "Meu Negócio",  icon: Store           },
   { href: "/dashboard/plano",     label: "Meu Plano",    icon: ShieldCheck     },
+  { href: "/dashboard/conta",     label: "Minha Conta",  icon: UserCog         },
 ]
 
 const adminNav: { href: string; label: string; icon: LucideIcon }[] = [
@@ -29,6 +32,7 @@ const adminNav: { href: string; label: string; icon: LucideIcon }[] = [
   { href: "/dashboard/admin/import",   label: "Importar",   icon: Download        },
   { href: "/dashboard/admin/claims",   label: "Reivind.",   icon: ShieldCheck     },
   { href: "/dashboard/admin/usuarios", label: "Usuários",   icon: Users           },
+  { href: "/dashboard/admin/audit",    label: "Auditoria",  icon: ScrollText      },
 ]
 
 /* ─── Sidebar — sempre dark (identidade de marca) ──────────────── */
