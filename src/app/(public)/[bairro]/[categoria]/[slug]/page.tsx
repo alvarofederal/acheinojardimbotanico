@@ -81,7 +81,12 @@ export default async function BusinessPage({ params }: PageProps) {
     } : undefined,
   }
 
-  const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${business.latitude},${business.longitude}`
+  // "Como chegar" → rota até o local exato. Usa o Place ID do Google quando
+  // disponível (precisão máxima); senão cai em nome+endereço; por fim lat/lng.
+  const destinationText = encodeURIComponent(`${business.name}, ${business.address}`)
+  const mapsUrl = business.placeId
+    ? `https://www.google.com/maps/dir/?api=1&destination=${destinationText}&destination_place_id=${business.placeId}`
+    : `https://www.google.com/maps/dir/?api=1&destination=${business.latitude},${business.longitude}`
 
   return (
     <>
