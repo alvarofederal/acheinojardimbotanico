@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { toast } from "sonner"
 import { Loader2, Copy, Check, QrCode, CreditCard, CheckCircle } from "lucide-react"
-import { PLAN_PRICE, PLAN_LABEL, PLAN_MONTHS, formatBRL, type PlanId } from "@/lib/plans"
+import { PLAN_LABEL, PLAN_MONTHS, formatBRL, type PlanId } from "@/lib/plans"
 
 interface Props {
   pixKey: string | null
@@ -11,16 +11,18 @@ interface Props {
   qrDataUrl: string | null
   mercadoPagoLink: string | null
   instructions: string | null
+  priceCents: { VISIBILITY: number; PREMIUM: number }
 }
 
-export function CheckoutManual({ pixKey, pixHolderName, qrDataUrl, mercadoPagoLink, instructions }: Props) {
+export function CheckoutManual({ pixKey, pixHolderName, qrDataUrl, mercadoPagoLink, instructions, priceCents }: Props) {
   const [plan, setPlan] = useState<PlanId>("VISIBILITY")
   const [months, setMonths] = useState(1)
   const [copied, setCopied] = useState(false)
   const [loading, setLoading] = useState<string | null>(null)
   const [done, setDone] = useState(false)
 
-  const total = PLAN_PRICE[plan] * months
+  const unitCents = plan === "PREMIUM" ? priceCents.PREMIUM : priceCents.VISIBILITY
+  const totalCents = unitCents * months
   const hasPix = !!qrDataUrl || !!pixKey
   const hasCard = !!mercadoPagoLink
 
@@ -72,7 +74,7 @@ export function CheckoutManual({ pixKey, pixHolderName, qrDataUrl, mercadoPagoLi
           <button key={p} onClick={() => setPlan(p)}
             className={`p-4 rounded-xl border-2 text-left transition-all ${plan === p ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-500/10" : "border-gray-200 dark:border-white/10 hover:border-gray-300"}`}>
             <p className="font-semibold dash-title">{PLAN_LABEL[p]}</p>
-            <p className="text-sm dash-muted">{formatBRL(PLAN_PRICE[p] * 100)}/mês</p>
+            <p className="text-sm dash-muted">{formatBRL(p === "PREMIUM" ? priceCents.PREMIUM : priceCents.VISIBILITY)}/mês</p>
           </button>
         ))}
       </div>
@@ -93,7 +95,7 @@ export function CheckoutManual({ pixKey, pixHolderName, qrDataUrl, mercadoPagoLi
       {/* Total */}
       <div className="flex items-center justify-between py-3 px-4 rounded-xl bg-gray-50 dark:bg-white/[0.03]">
         <span className="text-sm dash-subtitle">Total</span>
-        <span className="font-serif text-2xl font-bold dash-title">{formatBRL(total * 100)}</span>
+        <span className="font-serif text-2xl font-bold dash-title">{formatBRL(totalCents)}</span>
       </div>
 
       {/* PIX */}

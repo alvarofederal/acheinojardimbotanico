@@ -38,6 +38,18 @@ export function planPriceCents(plan: PlanId, months = 1): number {
   return PLAN_PRICE[plan] * 100 * months
 }
 
+export interface ConfigPrices {
+  visibilityCents: number
+  premiumCents: number
+}
+
+/** Preço de 1 mês (em centavos) considerando a config do admin (com fallback). */
+export function priceCentsFor(plan: PlanId, cfg?: ConfigPrices | null): number {
+  if (plan === "VISIBILITY") return cfg?.visibilityCents ?? PLAN_PRICE.VISIBILITY * 100
+  if (plan === "PREMIUM") return cfg?.premiumCents ?? PLAN_PRICE.PREMIUM * 100
+  return 0
+}
+
 export function formatBRL(cents: number): string {
   return (cents / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })
 }

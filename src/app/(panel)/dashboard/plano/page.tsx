@@ -5,6 +5,7 @@ import { auth } from "@/lib/auth"
 import { db } from "@/lib/prisma"
 import { ShieldCheck, Zap, Crown, Store } from "lucide-react"
 import { CheckoutManual } from "./_components/checkout-manual"
+import { priceCentsFor, formatBRL } from "@/lib/plans"
 
 export default async function PlanoPage() {
   const session = await auth()
@@ -38,12 +39,15 @@ export default async function PlanoPage() {
     } catch { qrDataUrl = null }
   }
 
+  const visCents = priceCentsFor("VISIBILITY", config)
+  const premCents = priceCentsFor("PREMIUM", config)
+
   const plans = [
     { id: "FREE", name: "Free", price: "Grátis", icon: ShieldCheck, color: "text-gray-500 dark:text-white/40",
       features: ["Perfil no guia", "Endereço e telefone", "Até 2 produtos na vitrine"] },
-    { id: "VISIBILITY", name: "Visibilidade", price: "R$ 79/mês", icon: Zap, color: "text-emerald-600 dark:text-emerald-400",
+    { id: "VISIBILITY", name: "Visibilidade", price: `${formatBRL(visCents)}/mês`, icon: Zap, color: "text-emerald-600 dark:text-emerald-400",
       features: ["Destaque na listagem", "Descrição + 6 fotos", "Métricas detalhadas", "Vitrine com 10 produtos", "Selo Destaque"] },
-    { id: "PREMIUM", name: "Premium", price: "R$ 197/mês", icon: Crown, color: "text-amber-600 dark:text-amber-400",
+    { id: "PREMIUM", name: "Premium", price: `${formatBRL(premCents)}/mês`, icon: Crown, color: "text-amber-600 dark:text-amber-400",
       features: ["Topo da listagem", "Até 20 fotos", "Vitrine com 50 produtos", "Selo Premium", "Suporte prioritário"] },
   ]
 
@@ -90,6 +94,7 @@ export default async function PlanoPage() {
         qrDataUrl={qrDataUrl}
         mercadoPagoLink={config?.mercadoPagoLink ?? null}
         instructions={config?.instructions ?? null}
+        priceCents={{ VISIBILITY: visCents, PREMIUM: premCents }}
       />
     </div>
   )

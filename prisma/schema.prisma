@@ -361,6 +361,8 @@ model PaymentConfig {
   pixCopyPaste    String?  @db.Text  // PIX copia-e-cola (BR Code) → vira QR
   mercadoPagoLink String?  @db.Text
   instructions    String?  @db.Text
+  visibilityCents Int      @default(7900)   // preço do plano Visibilidade (centavos)
+  premiumCents    Int      @default(19700)  // preço do plano Premium (centavos)
   updatedAt       DateTime @updatedAt
 }
 

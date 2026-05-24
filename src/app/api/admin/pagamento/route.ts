@@ -10,6 +10,8 @@ const schema = z.object({
   pixCopyPaste: z.string().max(2000).optional(),
   mercadoPagoLink: z.string().url().or(z.literal("")).optional(),
   instructions: z.string().max(2000).optional(),
+  visibilityCents: z.number().int().min(0).max(1_000_000).optional(),
+  premiumCents: z.number().int().min(0).max(1_000_000).optional(),
 })
 
 export async function PATCH(req: NextRequest) {
@@ -27,6 +29,8 @@ export async function PATCH(req: NextRequest) {
     pixCopyPaste: v.data.pixCopyPaste || null,
     mercadoPagoLink: v.data.mercadoPagoLink || null,
     instructions: v.data.instructions || null,
+    ...(v.data.visibilityCents !== undefined ? { visibilityCents: v.data.visibilityCents } : {}),
+    ...(v.data.premiumCents !== undefined ? { premiumCents: v.data.premiumCents } : {}),
   }
 
   await db.paymentConfig.upsert({

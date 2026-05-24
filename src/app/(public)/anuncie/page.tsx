@@ -6,6 +6,7 @@ import {
   ArrowRight, Search, MessageCircle, BarChart3, ShieldCheck, Zap, Crown,
   Check, MapPin,
 } from "lucide-react"
+import { priceCentsFor, formatBRL } from "@/lib/plans"
 
 export const revalidate = 3600
 
@@ -42,7 +43,15 @@ const PLANS = [
 ]
 
 export default async function AnunciePage() {
-  const totalBusinesses = await db.business.count({ where: { status: { in: ["IMPORTED", "CLAIMED"] } } })
+  const [totalBusinesses, config] = await Promise.all([
+    db.business.count({ where: { status: { in: ["IMPORTED", "CLAIMED"] } } }),
+    db.paymentConfig.findUnique({ where: { id: "default" } }),
+  ])
+  const priceById: Record<string, string> = {
+    FREE: "Grátis",
+    VISIBILITY: formatBRL(priceCentsFor("VISIBILITY", config)),
+    PREMIUM: formatBRL(priceCentsFor("PREMIUM", config)),
+  }
 
   return (
     <main>
@@ -134,7 +143,7 @@ export default async function AnunciePage() {
                 <span className="font-serif text-xl font-semibold flora-ink">{p.name}</span>
               </div>
               <div className="flex items-end gap-1 mb-5">
-                <span className="font-serif text-4xl font-bold flora-ink">{p.price}</span>
+                <span className="font-serif text-4xl font-bold flora-ink">{priceById[p.id]}</span>
                 {p.per && <span className="flora-muted text-sm mb-1">{p.per}</span>}
               </div>
               <ul className="space-y-2.5 mb-6">
