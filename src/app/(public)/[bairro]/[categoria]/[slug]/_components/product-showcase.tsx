@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { ShoppingBag, MessageCircle, X } from "lucide-react"
+import { ShoppingBag, MessageCircle, X, ChevronRight } from "lucide-react"
 
 interface Variation { nome: string; opcoes: string[] }
 interface Product {
@@ -24,12 +24,15 @@ function priceLabel(p: Product) {
 }
 
 export function ProductShowcase({
-  products, businessId, whatsapp, storeMessage, businessUrl,
+  products, businessId, whatsapp, storeMessage, businessUrl, storeHref,
 }: {
-  products: Product[]; businessId: string; whatsapp: string | null; storeMessage: string | null; businessUrl: string
+  products: Product[]; businessId: string; whatsapp: string | null; storeMessage: string | null; businessUrl: string; storeHref?: string
 }) {
   const [sort, setSort] = useState("recent")
   const [selected, setSelected] = useState<Product | null>(null)
+  const [activeImg, setActiveImg] = useState(0)
+
+  function openProduct(p: Product) { setActiveImg(0); setSelected(p) }
 
   const sorted = [...products].sort((a, b) => {
     if (sort === "price_asc") return (a.priceCents ?? Infinity) - (b.priceCents ?? Infinity)
@@ -61,9 +64,17 @@ export function ProductShowcase({
         </select>
       </div>
 
+      {/* Link para a loja completa (mostrado no perfil quando há mais produtos) */}
+      {storeHref && products.length > 6 && (
+        <a href={storeHref} className="inline-flex items-center gap-1.5 text-sm font-semibold text-flora-green dark:text-flora-fresh hover:gap-2.5 transition-all mb-4">
+          Ver loja completa ({products.length} produtos)
+          <ChevronRight className="w-4 h-4" />
+        </a>
+      )}
+
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-        {sorted.map(p => (
-          <button key={p.id} onClick={() => setSelected(p)}
+        {(storeHref ? sorted.slice(0, 6) : sorted).map(p => (
+          <button key={p.id} onClick={() => openProduct(p)}
             className="flora-card rounded-2xl overflow-hidden text-left group">
             <div className="aspect-square bg-flora-sand dark:bg-white/5 relative overflow-hidden">
               {p.images[0]
@@ -85,14 +96,19 @@ export function ProductShowcase({
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto" style={{ background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)" }} onClick={() => setSelected(null)}>
           <div className="w-full max-w-md my-8 bg-white dark:bg-[#0f1c18] rounded-3xl overflow-hidden" onClick={e => e.stopPropagation()}>
             <div className="relative aspect-square bg-flora-sand dark:bg-white/5">
-              {selected.images[0]
-                ? <img src={selected.images[0]} alt={selected.name} className="w-full h-full object-cover" />
+              {selected.images[activeImg] ?? selected.images[0]
+                ? <img src={selected.images[activeImg] ?? selected.images[0]} alt={selected.name} className="w-full h-full object-cover" />
                 : <div className="w-full h-full flex items-center justify-center"><ShoppingBag className="w-12 h-12 text-flora-green/30" /></div>}
               <button onClick={() => setSelected(null)} className="absolute top-3 right-3 p-2 rounded-full bg-white/90 text-gray-700"><X className="w-4 h-4" /></button>
             </div>
             {selected.images.length > 1 && (
               <div className="flex gap-2 p-3 overflow-x-auto">
-                {selected.images.map((img, i) => <img key={i} src={img} alt="" className="w-14 h-14 rounded-lg object-cover flex-shrink-0" />)}
+                {selected.images.map((img, i) => (
+                  <button key={i} onClick={() => setActiveImg(i)}
+                    className={`w-14 h-14 rounded-lg overflow-hidden flex-shrink-0 border-2 transition-colors ${i === activeImg ? "border-flora-green dark:border-flora-fresh" : "border-transparent"}`}>
+                    <img src={img} alt="" className="w-full h-full object-cover" />
+                  </button>
+                ))}
               </div>
             )}
             <div className="p-5 space-y-3">

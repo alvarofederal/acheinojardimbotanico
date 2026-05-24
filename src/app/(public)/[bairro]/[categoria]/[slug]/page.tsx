@@ -8,6 +8,7 @@ import { TrackView } from "./_components/track-view"
 import { WhatsAppButton } from "./_components/whatsapp-button"
 import { ClaimBanner } from "./_components/claim-banner"
 import { ProductShowcase } from "./_components/product-showcase"
+import { PhotoGallery } from "./_components/photo-gallery"
 
 export const revalidate = 3600
 
@@ -129,18 +130,8 @@ export default async function BusinessPage({ params }: PageProps) {
           <span className="flora-ink truncate max-w-[200px]">{business.name}</span>
         </nav>
 
-        {/* Fotos — galeria editorial */}
-        {business.photos.length > 0 && (
-          <div className="mb-8 grid grid-cols-4 grid-rows-2 gap-2.5 rounded-3xl overflow-hidden flora-rise" style={{ height: "min(70vw, 460px)" }}>
-            {business.photos.slice(0, 3).map((photo, i) => (
-              <div key={photo.id} className={`overflow-hidden bg-flora-sand dark:bg-white/5 ${i === 0 ? "col-span-4 sm:col-span-2 row-span-2" : "col-span-2 sm:col-span-2"}`}>
-                <img src={photo.url} alt={`${business.name} - foto ${i + 1}`}
-                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
-                  loading={i === 0 ? "eager" : "lazy"} />
-              </div>
-            ))}
-          </div>
-        )}
+        {/* Fotos — galeria editorial com lightbox */}
+        <PhotoGallery photos={business.photos.map(p => p.url)} name={business.name} />
 
         {/* Header */}
         <div className="mb-6 flora-rise">
@@ -268,6 +259,7 @@ export default async function BusinessPage({ params }: PageProps) {
             whatsapp={business.whatsapp}
             storeMessage={business.storeWhatsappMessage}
             businessUrl={businessUrl}
+            storeHref={`/${bairro}/${categoria}/${slug}/loja`}
           />
         )}
 
