@@ -16,12 +16,14 @@ import {
   ScrollText,
   UserCog,
   DollarSign,
+  BarChart3,
 } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
 import { TopNavbar } from "./top-navbar"
 
 const anuncianteNav: { href: string; label: string; icon: LucideIcon }[] = [
   { href: "/dashboard",           label: "Visão Geral",  icon: LayoutDashboard },
+  { href: "/dashboard/metricas",  label: "Métricas",     icon: BarChart3       },
   { href: "/dashboard/negocio",   label: "Meu Negócio",  icon: Store           },
   { href: "/dashboard/plano",     label: "Meu Plano",    icon: ShieldCheck     },
   { href: "/dashboard/conta",     label: "Minha Conta",  icon: UserCog         },
