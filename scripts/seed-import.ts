@@ -18,11 +18,14 @@ import {
 
 const db = new PrismaClient()
 
-// Centro do Jardim Botânico (DF)
-const LAT = -15.8762
-const LNG = -47.9292
+// Centro do BAIRRO Jardim Botânico (DF) — Comércio do JB, ao lado do Lago Sul.
+// NÃO confundir com o Parque/Jardim Botânico (atração) nem com o Aeroporto.
+// Coordenadas do place oficial no Google Maps.
+const LAT = -15.8794145
+const LNG = -47.8105738
 const RADIUS = Number(process.argv[2] ?? 3000)
 const MAX_PER_TYPE = Number(process.argv[3] ?? 10)
+const CLEAR = process.argv.includes("--clear")
 
 async function main() {
   if (!process.env.GOOGLE_PLACES_API_KEY) {
@@ -34,7 +37,14 @@ async function main() {
   let updated = 0
   let errors = 0
 
-  console.log(`🔎 Importando do Jardim Botânico (raio ${RADIUS}m, até ${MAX_PER_TYPE}/tipo)\n`)
+  if (CLEAR) {
+    // Só limpa negócios NÃO reivindicados (preserva os que têm dono)
+    const del = await db.business.deleteMany({ where: { ownerId: null } })
+    console.log(`🧹 Limpos ${del.count} negócios não reivindicados\n`)
+  }
+
+  console.log(`🔎 Importando do bairro Jardim Botânico (raio ${RADIUS}m, até ${MAX_PER_TYPE}/tipo)`)
+  console.log(`   centro: ${LAT}, ${LNG}\n`)
 
   for (const placeType of PLACE_TYPES_TO_IMPORT) {
     let places

@@ -4,9 +4,10 @@ import { useState } from "react"
 import { PLACE_TYPES_TO_IMPORT, CATEGORY_MAP } from "@/lib/places"
 import { Loader2, Download, CheckCircle, AlertCircle, RefreshCw } from "lucide-react"
 
-// Centro padrão: Jardim Botânico DF
-const DEFAULT_LAT = -15.8762
-const DEFAULT_LNG = -47.9292
+// Centro padrão: BAIRRO Jardim Botânico DF (Comércio do JB, ao lado do Lago Sul)
+// Não confundir com o Parque/Jardim Botânico nem com o Aeroporto.
+const DEFAULT_LAT = -15.8794145
+const DEFAULT_LNG = -47.8105738
 const DEFAULT_RADIUS = 3000
 
 interface ImportResult {
