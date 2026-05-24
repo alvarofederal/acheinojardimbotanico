@@ -16,6 +16,7 @@ import {
   CATEGORY_MAP,
   PLACE_TYPES_TO_IMPORT,
 } from "../src/lib/places"
+import { costUsd } from "../src/lib/api-costs"
 
 // Negócios menores / sem tipo — buscados por texto (Google Meu Negócio)
 const TEXT_QUERIES = [
@@ -66,6 +67,7 @@ async function main() {
       continue
     }
 
+    await db.apiUsage.create({ data: { kind: "NEARBY", units: 1, results: places.length, costUsd: costUsd("NEARBY"), query: placeType } })
     if (places.length === 0) continue
     process.stdout.write(`  ${placeType}: ${places.length} `)
 
@@ -151,6 +153,7 @@ async function main() {
       errors++
       continue
     }
+    await db.apiUsage.create({ data: { kind: "TEXT", units: 1, results: places.length, costUsd: costUsd("TEXT"), query } })
     if (!places.length) continue
     process.stdout.write(`  texto "${query}": ${places.length} `)
     for (const place of places) {

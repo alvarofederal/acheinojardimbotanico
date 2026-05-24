@@ -136,6 +136,8 @@ export async function searchNearby(params: {
     body: JSON.stringify({
       includedTypes: [placeType],
       maxResultCount: Math.min(maxResults, 20),
+      languageCode: "pt-BR",
+      regionCode: "BR",
       locationRestriction: {
         circle: {
           center: { latitude: lat, longitude: lng },
@@ -194,6 +196,8 @@ export async function searchText(params: {
     body: JSON.stringify({
       textQuery,
       maxResultCount: Math.min(maxResults, 20),
+      languageCode: "pt-BR",
+      regionCode: "BR",
       locationBias: {
         circle: { center: { latitude: lat, longitude: lng }, radius: radiusMeters },
       },

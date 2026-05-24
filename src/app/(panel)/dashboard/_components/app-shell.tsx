@@ -15,6 +15,7 @@ import {
   Download,
   ScrollText,
   UserCog,
+  DollarSign,
 } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
 import { TopNavbar } from "./top-navbar"
@@ -30,6 +31,7 @@ const adminNav: { href: string; label: string; icon: LucideIcon }[] = [
   { href: "/dashboard",              label: "Visão Geral",  icon: LayoutDashboard },
   { href: "/dashboard/admin/negocios", label: "Negócios",   icon: Building2       },
   { href: "/dashboard/admin/import",   label: "Importar",   icon: Download        },
+  { href: "/dashboard/admin/custos",   label: "Custos API", icon: DollarSign      },
   { href: "/dashboard/admin/claims",   label: "Reivind.",   icon: ShieldCheck     },
   { href: "/dashboard/admin/usuarios", label: "Usuários",   icon: Users           },
   { href: "/dashboard/admin/audit",    label: "Auditoria",  icon: ScrollText      },

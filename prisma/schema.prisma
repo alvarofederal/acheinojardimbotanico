@@ -299,3 +299,20 @@ model AuditLog {
   @@index([entity, entityId])
   @@index([createdAt])
 }
+
+// ===================================================
+// API USAGE — monitoração de custo da Google Places API
+// ===================================================
+
+model ApiUsage {
+  id        String   @id @default(cuid())
+  kind      String   // NEARBY | TEXT | PHOTO | DETAILS
+  units     Int      @default(1)   // nº de requisições
+  results   Int      @default(0)   // nº de negócios retornados (p/ custo por negócio)
+  costUsd   Float    @default(0)
+  query     String?  @db.Text       // tipo ou termo pesquisado
+  createdAt DateTime @default(now())
+
+  @@index([kind])
+  @@index([createdAt])
+}

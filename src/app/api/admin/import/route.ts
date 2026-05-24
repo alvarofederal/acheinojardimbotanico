@@ -18,6 +18,7 @@ import {
   PLACE_TYPES_TO_IMPORT,
   type PlaceResult,
 } from "@/lib/places"
+import { costUsd } from "@/lib/api-costs"
 import { z } from "zod"
 
 const importSchema = z.object({
@@ -153,6 +154,7 @@ export async function POST(request: NextRequest) {
       results.details.push({ name: `[tipo: ${placeType}]`, status: "error", error: err instanceof Error ? err.message : "Erro na API" })
       continue
     }
+    await db.apiUsage.create({ data: { kind: "NEARBY", units: 1, results: places.length, costUsd: costUsd("NEARBY"), query: placeType } })
     const cat = CATEGORY_MAP[placeType] ?? { slug: "outros", name: "Outros" }
     for (const place of places) {
       try { await persistPlace(place, cat.slug, cat.name) }
@@ -173,6 +175,7 @@ export async function POST(request: NextRequest) {
       results.details.push({ name: `[texto: ${query}]`, status: "error", error: err instanceof Error ? err.message : "Erro na API" })
       continue
     }
+    await db.apiUsage.create({ data: { kind: "TEXT", units: 1, results: places.length, costUsd: costUsd("TEXT"), query } })
     for (const place of places) {
       try {
         // Categoria inferida do primaryType, senão "outros"
