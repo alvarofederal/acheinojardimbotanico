@@ -10,7 +10,7 @@ import { PrismaClient } from "../src/generated/prisma/index.js"
 import {
   searchNearby,
   searchText,
-  getPhotoUrl,
+  getPhotoProxyPath,
   extractNeighborhood,
   generateSlug,
   CATEGORY_MAP,
@@ -132,7 +132,7 @@ async function main() {
             await db.photo.createMany({
               data: place.photos.slice(0, 5).map((p, i) => ({
                 businessId: created.id,
-                url: getPhotoUrl(p.name, 1600),
+                url: getPhotoProxyPath(p.name),
                 width: p.widthPx ?? null,
                 height: p.heightPx ?? null,
                 source: "GOOGLE_PLACES" as const,
@@ -191,7 +191,7 @@ async function main() {
         })
         if (place.photos?.length) {
           await db.photo.createMany({ data: place.photos.slice(0, 5).map((p, i) => ({
-            businessId: created.id, url: getPhotoUrl(p.name, 1600),
+            businessId: created.id, url: getPhotoProxyPath(p.name),
             width: p.widthPx ?? null, height: p.heightPx ?? null, source: "GOOGLE_PLACES" as const, order: i,
           })) })
         }

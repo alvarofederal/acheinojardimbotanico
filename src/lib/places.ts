@@ -232,12 +232,21 @@ export async function searchText(params: {
 }
 
 /**
- * Gera URL de foto do Google Places para exibição direta em <img src>.
- * O endpoint /media redireciona (302) para a imagem real do CDN do Google.
- * Limite de uso: só para exibição — não armazenar permanentemente (TOS).
+ * Caminho do PROXY interno de foto (armazenado no banco, sem expor a chave).
+ * Ex: getPhotoProxyPath("places/X/photos/Y") → "/api/photo/places/X/photos/Y"
+ * O navegador chama esse caminho; o proxy busca no Google e redireciona p/ o CDN.
  */
-export function getPhotoUrl(photoName: string, maxWidth = 800): string {
-  return `${BASE_URL}/${photoName}/media?maxWidthPx=${maxWidth}&key=${API_KEY}`
+export function getPhotoProxyPath(photoName: string): string {
+  return `/api/photo/${photoName}`
+}
+
+/**
+ * URL real do Google Places Photo (uso SERVER-SIDE apenas, dentro do proxy).
+ * Com skipRedirect=true retorna JSON { photoUri } em vez de redirecionar.
+ */
+export function getGooglePhotoUrl(photoName: string, maxWidth = 1600, skipRedirect = false): string {
+  const skip = skipRedirect ? "&skipHttpRedirect=true" : ""
+  return `${BASE_URL}/${photoName}/media?maxWidthPx=${maxWidth}&key=${API_KEY}${skip}`
 }
 
 /**

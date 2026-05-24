@@ -11,7 +11,7 @@ import { db, Prisma } from "@/lib/prisma"
 import {
   searchNearby,
   searchText,
-  getPhotoUrl,
+  getPhotoProxyPath,
   extractNeighborhood,
   generateSlug,
   CATEGORY_MAP,
@@ -131,7 +131,7 @@ export async function POST(request: NextRequest) {
         await db.photo.createMany({
           data: place.photos.slice(0, 5).map((p, i) => ({
             businessId: created.id,
-            url: getPhotoUrl(p.name, 1600),
+            url: getPhotoProxyPath(p.name),
             width: p.widthPx ?? null,
             height: p.heightPx ?? null,
             source: "GOOGLE_PLACES" as const,
