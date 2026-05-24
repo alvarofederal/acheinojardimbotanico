@@ -46,12 +46,14 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <Logo />
-            <p className="text-sm flora-muted text-center sm:text-right">
-              Guia comercial hiperlocal do Jardim Botânico · Brasília (DF)
-            </p>
+            <nav className="flex items-center gap-5 text-sm flora-muted">
+              <Link href="/termos" className="hover:text-flora-green dark:hover:text-flora-fresh transition-colors">Termos</Link>
+              <Link href="/privacidade" className="hover:text-flora-green dark:hover:text-flora-fresh transition-colors">Privacidade</Link>
+              <Link href="/register" className="hover:text-flora-green dark:hover:text-flora-fresh transition-colors">Anunciar</Link>
+            </nav>
           </div>
           <p className="mt-6 text-xs flora-muted/70 text-center sm:text-left">
-            © 2026 Achei no Jardim Botânico. Algumas informações fornecidas por Google.
+            © 2026 Achei no Jardim Botânico · Guia hiperlocal do Jardim Botânico (DF). Algumas informações fornecidas por Google.
           </p>
         </div>
       </footer>

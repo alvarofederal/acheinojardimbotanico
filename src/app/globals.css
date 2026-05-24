@@ -1269,3 +1269,28 @@ select:focus {
 @media (prefers-reduced-motion: reduce) {
   .flora-wind, .flora-flutter, .flora-sway { animation: none; }
 }
+
+/* Skeleton — shimmer suave em tom de jardim */
+@keyframes flora-shimmer {
+  0%   { background-position: -480px 0; }
+  100% { background-position: 480px 0; }
+}
+.flora-skeleton {
+  background: linear-gradient(90deg,
+    rgba(30,92,69,0.06) 25%,
+    rgba(30,92,69,0.12) 37%,
+    rgba(30,92,69,0.06) 63%);
+  background-size: 960px 100%;
+  animation: flora-shimmer 1.4s ease-in-out infinite;
+  border-radius: 12px;
+}
+.dark .flora-skeleton {
+  background: linear-gradient(90deg,
+    rgba(255,255,255,0.04) 25%,
+    rgba(255,255,255,0.08) 37%,
+    rgba(255,255,255,0.04) 63%);
+  background-size: 960px 100%;
+}
+@media (prefers-reduced-motion: reduce) {
+  .flora-skeleton { animation: none; }
+}

@@ -14,6 +14,7 @@ export default function ClaimPage() {
   const [business, setBusiness] = useState<{ name: string } | null>(null)
   const [loading, setLoading] = useState(false)
   const [done, setDone] = useState(false)
+  const [consent, setConsent] = useState(false)
   const [form, setForm] = useState({ message: "", cnpj: "" })
 
   useEffect(() => {
@@ -25,6 +26,7 @@ export default function ClaimPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
+    if (!consent) { toast.error("É preciso aceitar os Termos e a Política de Privacidade"); return }
     setLoading(true)
     try {
       const res = await fetch("/api/claims", {
@@ -106,10 +108,25 @@ export default function ClaimPage() {
             />
           </div>
 
+          <label className="flex items-start gap-2.5 cursor-pointer select-none">
+            <input
+              type="checkbox"
+              checked={consent}
+              onChange={e => setConsent(e.target.checked)}
+              className="mt-0.5 w-4 h-4 accent-emerald-600 flex-shrink-0"
+            />
+            <span className="text-xs text-gray-500 dark:text-white/40 leading-relaxed">
+              Declaro ser o responsável por este negócio e aceito os{" "}
+              <Link href="/termos" target="_blank" className="text-emerald-600 dark:text-emerald-400 hover:underline">Termos de Uso</Link>{" "}
+              e a{" "}
+              <Link href="/privacidade" target="_blank" className="text-emerald-600 dark:text-emerald-400 hover:underline">Política de Privacidade</Link>.
+            </span>
+          </label>
+
           <button
             type="submit"
-            disabled={loading}
-            className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60 text-white rounded-xl font-semibold text-sm transition-colors flex items-center justify-center gap-2"
+            disabled={loading || !consent}
+            className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl font-semibold text-sm transition-colors flex items-center justify-center gap-2"
           >
             {loading ? <><Loader2 className="w-4 h-4 animate-spin" /> Enviando...</> : "Enviar solicitação"}
           </button>
