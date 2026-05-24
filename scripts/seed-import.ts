@@ -113,6 +113,8 @@ async function main() {
               googleRatingCount: place.userRatingCount ?? null,
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               openingHours: (place.regularOpeningHours ?? undefined) as any,
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              reviews: (place.reviews?.slice(0, 5) ?? undefined) as any,
               status: "IMPORTED", plan: "FREE", lastSyncedAt: new Date(),
             },
           })
@@ -121,7 +123,7 @@ async function main() {
             await db.photo.createMany({
               data: place.photos.slice(0, 5).map((p, i) => ({
                 businessId: created.id,
-                url: getPhotoUrl(p.name, 800),
+                url: getPhotoUrl(p.name, 1600),
                 width: p.widthPx ?? null,
                 height: p.heightPx ?? null,
                 source: "GOOGLE_PLACES" as const,
@@ -179,7 +181,7 @@ async function main() {
         })
         if (place.photos?.length) {
           await db.photo.createMany({ data: place.photos.slice(0, 5).map((p, i) => ({
-            businessId: created.id, url: getPhotoUrl(p.name, 800),
+            businessId: created.id, url: getPhotoUrl(p.name, 1600),
             width: p.widthPx ?? null, height: p.heightPx ?? null, source: "GOOGLE_PLACES" as const, order: i,
           })) })
         }

@@ -21,7 +21,7 @@ model User {
   email         String    @unique
   emailVerified DateTime?
   name          String?
-  image         String?
+  image         String?   @db.Text
   passwordHash  String?
   role          UserRole  @default(VISITOR)
   createdAt     DateTime  @default(now())
@@ -118,11 +118,11 @@ model Business {
   longitude         Float
   phone             String?
   whatsapp          String?
-  website           String?
+  website           String? @db.Text
   instagram         String?
-  facebook          String?
-  linkedin          String?
-  youtube           String?
+  facebook          String? @db.Text
+  linkedin          String? @db.Text
+  youtube           String? @db.Text
   googleRating      Float?
   googleRatingCount Int?
   openingHours      Json?
@@ -183,7 +183,7 @@ model Category {
 model Photo {
   id         String      @id @default(cuid())
   businessId String
-  url        String
+  url        String      @db.Text
   width      Int?
   height     Int?
   source     PhotoSource
