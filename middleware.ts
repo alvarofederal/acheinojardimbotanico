@@ -1,16 +1,19 @@
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 
-const CANONICAL_HOST = "acheinojardimbotanico.com.br"
+// Domínio canônico — só redireciona quando definido via env (CANONICAL_HOST).
+// Enquanto o domínio não existir, deixe a env vazia para o .vercel.app funcionar.
+const CANONICAL_HOST = process.env.CANONICAL_HOST?.trim()
 
 // Apenas estas rotas exigem autenticação. Todo o resto é público
 // (homepage, listagens, detalhe de negócio, reivindicação, auth).
 const PROTECTED_PREFIXES = ["/dashboard"]
 
 export function middleware(request: NextRequest) {
-  // Redireciona domínio Vercel → domínio canônico em produção
+  // Redireciona .vercel.app → domínio canônico SOMENTE se CANONICAL_HOST estiver
+  // configurado (ou seja, depois que você comprar e apontar o domínio).
   const host = request.headers.get("host") ?? ""
-  if (host.includes("vercel.app") && process.env.NODE_ENV === "production") {
+  if (CANONICAL_HOST && host.includes("vercel.app") && host !== CANONICAL_HOST) {
     const url = request.nextUrl.clone()
     url.protocol = "https:"
     url.host = CANONICAL_HOST
