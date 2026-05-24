@@ -1,18 +1,16 @@
 import { PrismaClient } from "../src/generated/prisma/index.js"
 const db = new PrismaClient()
 
-const usage = await db.apiUsage.groupBy({ by: ["kind"], _sum: { units: true, costUsd: true } })
-console.log("API Usage:")
-let total = 0
-for (const u of usage) { console.log(`  ${u.kind}: ${u._sum.units} chamadas, US$ ${u._sum.costUsd?.toFixed(2)}`); total += u._sum.costUsd ?? 0 }
-console.log(`  TOTAL: US$ ${total.toFixed(2)} ≈ R$ ${(total * 5.3).toFixed(2)}`)
+const total = await db.business.count()
+const cats = await db.category.count()
+console.log(`Negócios: ${total} | Categorias: ${cats}`)
 
-// amostra de review (idioma)
-const b = await db.business.findFirst({ where: { NOT: { reviews: { equals: null } } }, select: { name: true, reviews: true } })
-if (b) {
-  const r = Array.isArray(b.reviews) ? b.reviews[0] : null
-  console.log(`\nReview de "${b.name}":`)
-  console.log(`  texto: ${r?.text?.text?.slice(0, 100) ?? "(sem)"}`)
-  console.log(`  idioma: ${r?.text?.languageCode ?? "?"}`)
-}
+const ayres = await db.business.findMany({
+  where: { name: { contains: "AyresMed" } },
+  select: { name: true, neighborhood: true, _count: { select: { photos: true } }, category: { select: { name: true } } },
+})
+console.log("\nAyresMed:", ayres.length ? ayres.map(a => `${a.name} (${a.category.name}, ${a._count.photos} fotos)`) : "NÃO ENCONTRADO")
+
+const usage = await db.apiUsage.aggregate({ _sum: { costUsd: true, units: true } })
+console.log(`\nCusto acumulado: US$ ${usage._sum.costUsd?.toFixed(2)} (${usage._sum.units} chamadas) ≈ R$ ${((usage._sum.costUsd ?? 0) * 5.3).toFixed(2)}`)
 await db.$disconnect()

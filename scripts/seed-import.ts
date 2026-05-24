@@ -25,6 +25,13 @@ const TEXT_QUERIES = [
   "doces caseiros Jardim Botânico",
   "ateliê Jardim Botânico Brasília",
   "MEI Jardim Botânico Brasília",
+  "clínica Jardim Botânico Brasília",
+  "consultório Jardim Botânico Brasília",
+  "escritório Jardim Botânico Brasília",
+  "loja Jardim Botânico Brasília",
+  "serviços Jardim Botânico Brasília",
+  "estética Jardim Botânico Brasília",
+  "comércio Jardim Botânico Brasília",
 ]
 
 const db = new PrismaClient()

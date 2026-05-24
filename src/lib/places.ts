@@ -43,17 +43,21 @@ export interface NearbySearchResponse {
 
 export const PLACE_TYPES_TO_IMPORT = [
   // Comida e bebida
-  "restaurant", "cafe", "bakery", "bar", "meal_takeaway",
+  "restaurant", "cafe", "bakery", "bar", "meal_takeaway", "meal_delivery",
   "ice_cream_shop", "pizza_restaurant", "sushi_restaurant",
   "hamburger_restaurant", "brazilian_restaurant", "sandwich_shop",
   // Saúde e beleza
   "beauty_salon", "hair_care", "barber_shop", "nail_salon", "spa",
   "gym", "pharmacy", "dentist", "doctor", "physiotherapist",
+  "medical_center", "veterinary_care",
   // Compras
   "supermarket", "convenience_store", "pet_store", "clothing_store",
-  "shoe_store", "florist",
+  "shoe_store", "florist", "book_store", "jewelry_store",
+  "electronics_store", "hardware_store", "home_goods_store", "furniture_store",
+  "liquor_store",
   // Serviços
-  "car_repair", "car_wash", "laundry",
+  "car_repair", "car_wash", "laundry", "real_estate_agency",
+  "lawyer", "accounting", "bank",
   // Educação
   "school",
 ] as const
@@ -67,6 +71,7 @@ export const CATEGORY_MAP: Record<string, { slug: string; name: string }> = {
   bakery:                { slug: "padarias",           name: "Padarias" },
   bar:                   { slug: "bares",              name: "Bares" },
   meal_takeaway:         { slug: "delivery",           name: "Delivery" },
+  meal_delivery:         { slug: "delivery",           name: "Delivery" },
   ice_cream_shop:        { slug: "sorveterias",        name: "Sorveterias" },
   pizza_restaurant:      { slug: "pizzarias",          name: "Pizzarias" },
   sushi_restaurant:      { slug: "japonesa",           name: "Japonesa" },
@@ -83,15 +88,28 @@ export const CATEGORY_MAP: Record<string, { slug: string; name: string }> = {
   dentist:               { slug: "dentistas",          name: "Dentistas" },
   doctor:                { slug: "medicos",            name: "Médicos" },
   physiotherapist:       { slug: "fisioterapia",       name: "Fisioterapia" },
+  medical_center:        { slug: "clinicas",           name: "Clínicas" },
+  veterinary_care:       { slug: "veterinarias",       name: "Veterinárias" },
   supermarket:           { slug: "supermercados",      name: "Supermercados" },
   convenience_store:     { slug: "conveniencias",      name: "Conveniências" },
   pet_store:             { slug: "pet-shops",          name: "Pet Shops" },
   clothing_store:        { slug: "moda",               name: "Moda" },
   shoe_store:            { slug: "calcados",           name: "Calçados" },
   florist:               { slug: "floricultura",       name: "Floricultura" },
+  book_store:            { slug: "livrarias",          name: "Livrarias" },
+  jewelry_store:         { slug: "joalherias",         name: "Joalherias" },
+  electronics_store:     { slug: "eletronicos",        name: "Eletrônicos" },
+  hardware_store:        { slug: "materiais-construcao", name: "Materiais de Construção" },
+  home_goods_store:      { slug: "casa-decoracao",     name: "Casa e Decoração" },
+  furniture_store:       { slug: "moveis",             name: "Móveis" },
+  liquor_store:          { slug: "adegas",             name: "Adegas e Bebidas" },
   car_repair:            { slug: "mecanicas",          name: "Mecânicas" },
   car_wash:              { slug: "lava-rapido",        name: "Lava Rápido" },
   laundry:               { slug: "lavanderias",        name: "Lavanderias" },
+  real_estate_agency:    { slug: "imobiliarias",       name: "Imobiliárias" },
+  lawyer:                { slug: "advocacia",          name: "Advocacia" },
+  accounting:            { slug: "contabilidade",      name: "Contabilidade" },
+  bank:                  { slug: "bancos",             name: "Bancos" },
   school:                { slug: "escolas",            name: "Escolas" },
 }
 

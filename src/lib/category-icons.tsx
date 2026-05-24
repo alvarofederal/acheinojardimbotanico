@@ -2,7 +2,9 @@ import {
   UtensilsCrossed, Coffee, Croissant, Wine, Bike, IceCream, Pizza, Fish,
   Beef, Sandwich, Scissors, Sparkles, Dumbbell, Pill, Stethoscope,
   HeartPulse, ShoppingCart, Store, PawPrint, Shirt, Footprints, Flower2,
-  Wrench, Car, WashingMachine, GraduationCap, Tag, type LucideIcon,
+  Wrench, Car, WashingMachine, GraduationCap, Tag, Cross, Dog, BookOpen,
+  Gem, Smartphone, Hammer, Sofa, Lamp, Building2, Scale, Calculator,
+  Landmark, type LucideIcon,
 } from "lucide-react"
 
 const ICON_BY_SLUG: Record<string, LucideIcon> = {
@@ -37,6 +39,19 @@ const ICON_BY_SLUG: Record<string, LucideIcon> = {
   "lava-rapido": Car,
   lavanderias: WashingMachine,
   escolas: GraduationCap,
+  clinicas: Cross,
+  veterinarias: Dog,
+  livrarias: BookOpen,
+  joalherias: Gem,
+  eletronicos: Smartphone,
+  "materiais-construcao": Hammer,
+  "casa-decoracao": Lamp,
+  moveis: Sofa,
+  adegas: Wine,
+  imobiliarias: Building2,
+  advocacia: Scale,
+  contabilidade: Calculator,
+  bancos: Landmark,
 }
 
 export function getCategoryIcon(slug: string): LucideIcon {
