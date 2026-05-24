@@ -48,3 +48,6 @@ next-env.d.ts
 backups/
 *.sql
 .claude/worktrees/
+
+# Segredos do Google Cloud (OAuth client)
+client_secret_*.json

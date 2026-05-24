@@ -73,34 +73,34 @@ export default async function CategoryPage({ params }: PageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <main className="max-w-5xl mx-auto px-4 py-8">
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
         {/* Breadcrumb */}
-        <nav className="text-xs text-gray-400 dark:text-white/30 mb-4 flex items-center gap-1.5">
-          <Link href="/" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">Início</Link>
-          <span>/</span>
-          <span className="text-gray-600 dark:text-white/60">{bairroLabel}</span>
-          <span>/</span>
-          <span className="text-gray-900 dark:text-white font-medium">{category.name}</span>
+        <nav className="text-xs flora-muted mb-5 flex items-center gap-1.5">
+          <Link href="/" className="hover:text-flora-green dark:hover:text-flora-fresh transition-colors">Início</Link>
+          <span className="opacity-50">/</span>
+          <span>{bairroLabel}</span>
+          <span className="opacity-50">/</span>
+          <span className="font-medium flora-ink">{category.name}</span>
         </nav>
 
         {/* Header */}
-        <div className="mb-6">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
-            {category.name} em {bairroLabel}
+        <div className="mb-8 flora-rise">
+          <h1 className="font-serif text-3xl sm:text-4xl font-semibold flora-ink">
+            {category.name} <span className="italic text-flora-green dark:text-flora-fresh">no Jardim Botânico</span>
           </h1>
-          <p className="text-gray-500 dark:text-white/40 mt-1 flex items-center gap-1.5 text-sm">
-            <MapPin className="w-3.5 h-3.5 text-emerald-500" />
-            {businesses.length} {businesses.length === 1 ? "estabelecimento encontrado" : "estabelecimentos encontrados"}
+          <p className="flora-muted mt-2 flex items-center gap-1.5 text-sm">
+            <MapPin className="w-3.5 h-3.5 text-flora-green" />
+            {businesses.length} {businesses.length === 1 ? "estabelecimento" : "estabelecimentos"} em {bairroLabel}
           </p>
         </div>
 
         {/* Lista */}
         {businesses.length === 0 ? (
-          <div className="text-center py-16 text-gray-400 dark:text-white/30">
-            <p className="text-lg font-medium mb-2">Nenhum negócio encontrado ainda</p>
-            <p className="text-sm mb-6">Em breve teremos novidades aqui.<br />Conhece algum? Nos conte!</p>
+          <div className="text-center py-16">
+            <p className="font-serif text-xl flora-ink mb-2">Ainda cultivando esta categoria</p>
+            <p className="text-sm flora-muted mb-6">Em breve teremos novidades aqui. Conhece algum? Nos conte!</p>
             <Link href="/register"
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-medium transition-colors">
+              className="inline-flex items-center gap-2 px-6 py-3 bg-flora-green hover:bg-flora-fresh text-white rounded-full text-sm font-semibold transition-all hover:shadow-lg">
               Cadastrar negócio
             </Link>
           </div>

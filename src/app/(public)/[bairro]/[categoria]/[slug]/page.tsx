@@ -88,123 +88,119 @@ export default async function BusinessPage({ params }: PageProps) {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <TrackView businessId={business.id} />
 
-      <main className="max-w-3xl mx-auto px-4 py-8">
+      <main className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
         {/* Breadcrumb */}
-        <nav className="text-xs text-gray-400 dark:text-white/30 mb-5 flex items-center gap-1.5 flex-wrap">
-          <Link href="/" className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors">Início</Link>
-          <span>/</span>
-          <Link href={`/${bairro}/${categoria}`} className="hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors capitalize">
+        <nav className="text-xs flora-muted mb-5 flex items-center gap-1.5 flex-wrap">
+          <Link href="/" className="hover:text-flora-green dark:hover:text-flora-fresh transition-colors">Início</Link>
+          <span className="opacity-50">/</span>
+          <Link href={`/${bairro}/${categoria}`} className="hover:text-flora-green dark:hover:text-flora-fresh transition-colors">
             {business.category.name}
           </Link>
-          <span>/</span>
-          <span className="text-gray-600 dark:text-white/60 truncate max-w-[200px]">{business.name}</span>
+          <span className="opacity-50">/</span>
+          <span className="flora-ink truncate max-w-[200px]">{business.name}</span>
         </nav>
 
-        {/* Header */}
-        <div className="mb-6">
-          <div className="flex items-start gap-3 flex-wrap">
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white flex-1">
-              {business.name}
-            </h1>
-            {business.plan === "PREMIUM" && (
-              <span className="text-xs font-bold px-2 py-1 rounded-lg bg-amber-100 dark:bg-amber-500/15 text-amber-700 dark:text-amber-400 uppercase tracking-wide">Premium</span>
-            )}
-          </div>
-
-          <div className="flex items-center gap-4 mt-2 flex-wrap">
-            <span className="text-sm text-gray-500 dark:text-white/40 capitalize">{business.category.name}</span>
-            {business.googleRating && (
-              <span className="flex items-center gap-1 text-sm">
-                <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
-                <span className="font-semibold text-gray-800 dark:text-white/80">{business.googleRating.toFixed(1)}</span>
-                {business.googleRatingCount && (
-                  <span className="text-gray-400 dark:text-white/30 text-xs">({business.googleRatingCount} avaliações)</span>
-                )}
-              </span>
-            )}
-          </div>
-        </div>
-
-        {/* Fotos */}
+        {/* Fotos — galeria editorial */}
         {business.photos.length > 0 && (
-          <div className="mb-6 grid grid-cols-3 gap-2 sm:grid-cols-4">
-            {business.photos.slice(0, 4).map((photo, i) => (
-              <div key={photo.id} className={`rounded-xl overflow-hidden bg-gray-100 dark:bg-white/5 ${i === 0 ? "col-span-2 row-span-2 aspect-square" : "aspect-square"}`}>
-                <img src={photo.url} alt={`${business.name} - foto ${i + 1}`} className="w-full h-full object-cover" loading={i === 0 ? "eager" : "lazy"} />
+          <div className="mb-7 grid grid-cols-4 grid-rows-2 gap-2 rounded-3xl overflow-hidden flora-rise" style={{ height: "min(60vw, 380px)" }}>
+            {business.photos.slice(0, 3).map((photo, i) => (
+              <div key={photo.id} className={`overflow-hidden bg-flora-sand dark:bg-white/5 ${i === 0 ? "col-span-4 sm:col-span-2 row-span-2" : "col-span-2 sm:col-span-2"}`}>
+                <img src={photo.url} alt={`${business.name} - foto ${i + 1}`}
+                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
+                  loading={i === 0 ? "eager" : "lazy"} />
               </div>
             ))}
           </div>
         )}
 
+        {/* Header */}
+        <div className="mb-6 flora-rise">
+          <div className="flex items-start gap-3 flex-wrap">
+            <p className="text-xs font-medium uppercase tracking-wider text-flora-green dark:text-flora-fresh">{business.category.name}</p>
+            {business.plan === "PREMIUM" && (
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-flora-gold text-flora-ink uppercase tracking-wide">Premium</span>
+            )}
+          </div>
+          <h1 className="font-serif text-3xl sm:text-4xl font-semibold flora-ink leading-tight mt-1.5">
+            {business.name}
+          </h1>
+          {business.googleRating && (
+            <span className="inline-flex items-center gap-1.5 text-sm mt-2.5">
+              <Star className="w-4 h-4 fill-flora-gold text-flora-gold" />
+              <span className="font-semibold flora-ink">{business.googleRating.toFixed(1)}</span>
+              {business.googleRatingCount && (
+                <span className="flora-muted text-xs">· {business.googleRatingCount} avaliações no Google</span>
+              )}
+            </span>
+          )}
+        </div>
+
         {/* CTAs principais */}
-        <div className="flex flex-wrap gap-3 mb-8">
+        <div className="flex flex-wrap gap-2.5 mb-8">
           {business.whatsapp && (
             <WhatsAppButton businessId={business.id} whatsapp={business.whatsapp} name={business.name} />
           )}
           {business.phone && (
             <a href={`tel:${business.phone}`}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 text-sm font-medium text-gray-700 dark:text-white/70 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
-              <Phone className="w-4 h-4" />
+              className="flex items-center gap-2 px-4 py-2.5 rounded-full flora-chip text-sm font-medium flora-ink transition-all">
+              <Phone className="w-4 h-4 text-flora-green" />
               {business.phone}
             </a>
           )}
           <a href={mapsUrl} target="_blank" rel="noopener noreferrer"
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 text-sm font-medium text-gray-700 dark:text-white/70 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
-            <Navigation className="w-4 h-4" />
+            className="flex items-center gap-2 px-4 py-2.5 rounded-full flora-chip text-sm font-medium flora-ink transition-all">
+            <Navigation className="w-4 h-4 text-flora-green" />
             Como chegar
           </a>
           {business.website && (
             <a href={business.website} target="_blank" rel="noopener noreferrer"
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 text-sm font-medium text-gray-700 dark:text-white/70 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
-              <Globe className="w-4 h-4" />
+              className="flex items-center gap-2 px-4 py-2.5 rounded-full flora-chip text-sm font-medium flora-ink transition-all">
+              <Globe className="w-4 h-4 text-flora-green" />
               Site
             </a>
           )}
           {business.instagram && (
             <a href={`https://instagram.com/${business.instagram.replace("@", "")}`} target="_blank" rel="noopener noreferrer"
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 text-sm font-medium text-gray-700 dark:text-white/70 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
-              <Instagram className="w-4 h-4" />
+              className="flex items-center gap-2 px-4 py-2.5 rounded-full flora-chip text-sm font-medium flora-ink transition-all">
+              <Instagram className="w-4 h-4 text-flora-green" />
               Instagram
             </a>
           )}
         </div>
 
+        {/* Descrição */}
+        {business.description && (
+          <div className="mb-8 flora-card rounded-3xl p-6">
+            <p className="font-serif text-lg flora-ink leading-relaxed italic">“{business.description}”</p>
+          </div>
+        )}
+
         <div className="grid sm:grid-cols-2 gap-6">
           {/* Endereço */}
-          <div className="space-y-3">
-            <h2 className="font-semibold text-gray-900 dark:text-white text-sm uppercase tracking-wide">Localização</h2>
-            <p className="text-sm text-gray-600 dark:text-white/60 flex gap-2">
-              <MapPin className="w-4 h-4 text-emerald-500 flex-shrink-0 mt-0.5" />
-              {business.address}
-            </p>
+          <div className="flora-card rounded-2xl p-5 space-y-2">
+            <h2 className="font-semibold flora-ink text-xs uppercase tracking-wider flex items-center gap-2">
+              <MapPin className="w-4 h-4 text-flora-green" /> Localização
+            </h2>
+            <p className="text-sm flora-muted leading-relaxed">{business.address}</p>
           </div>
 
           {/* Horários */}
           {weekdays.length > 0 && (
-            <div className="space-y-3">
-              <h2 className="font-semibold text-gray-900 dark:text-white text-sm uppercase tracking-wide flex items-center gap-2">
-                <Clock className="w-4 h-4 text-emerald-500" />
-                Horários
+            <div className="flora-card rounded-2xl p-5 space-y-3">
+              <h2 className="font-semibold flora-ink text-xs uppercase tracking-wider flex items-center gap-2">
+                <Clock className="w-4 h-4 text-flora-green" /> Horários
               </h2>
-              <ul className="text-sm text-gray-600 dark:text-white/60 space-y-1">
+              <ul className="text-sm flora-muted space-y-1">
                 {weekdays.map((day, i) => (
                   <li key={i} className="flex justify-between gap-4">
-                    <span className="text-gray-400 dark:text-white/30">{day.split(":")[0]}</span>
-                    <span className="text-right">{day.split(":").slice(1).join(":").trim()}</span>
+                    <span className="opacity-70">{day.split(":")[0]}</span>
+                    <span className="text-right flora-ink">{day.split(":").slice(1).join(":").trim()}</span>
                   </li>
                 ))}
               </ul>
             </div>
           )}
         </div>
-
-        {/* Descrição */}
-        {business.description && (
-          <div className="mt-6 pt-6 border-t border-gray-100 dark:border-white/[0.06]">
-            <h2 className="font-semibold text-gray-900 dark:text-white text-sm uppercase tracking-wide mb-3">Sobre</h2>
-            <p className="text-sm text-gray-600 dark:text-white/60 leading-relaxed">{business.description}</p>
-          </div>
-        )}
 
         {/* Claim banner */}
         {!business.ownerId && <ClaimBanner businessId={business.id} businessName={business.name} />}

@@ -6,8 +6,19 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-inter);
+  --font-serif: var(--font-playfair);
+  --font-mono: var(--font-inter);
+
+  /* ── Flora Design System — paleta ── */
+  --color-flora-green: #2A6F4E;       /* verde jardim (principal) */
+  --color-flora-fresh: #4A9C6E;       /* verde fresco (hover/destaque) */
+  --color-flora-sand: #F5F0E8;        /* bege/areia (fundo quente) */
+  --color-flora-earth: #8C6F4E;       /* terra */
+  --color-flora-gold: #D4B88C;        /* dourado suave (premium) */
+  --color-flora-ink: #2F2F2F;         /* texto escuro */
+  --color-flora-cream: #F8F6F2;       /* cinza claro quente */
+  --color-flora-deep: #122A1F;        /* verde muito escuro (dark mode) */
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -1139,3 +1150,84 @@ select:focus {
     text-shadow: 0 0 14px rgba(16, 185, 129, 0.40);
   }
 }
+
+/* ════════════════════════════════════════════════════════════════
+   FLORA DESIGN SYSTEM — utilitários do site público
+   ════════════════════════════════════════════════════════════════ */
+
+.font-serif {
+  font-family: var(--font-playfair), Georgia, "Times New Roman", serif;
+}
+
+/* Fundo orgânico claro com leve textura de jardim */
+.flora-bg {
+  background-color: #F8F6F2;
+  background-image:
+    radial-gradient(at 12% 8%, rgba(74, 156, 110, 0.07) 0px, transparent 45%),
+    radial-gradient(at 88% 4%, rgba(212, 184, 140, 0.10) 0px, transparent 40%),
+    radial-gradient(at 50% 100%, rgba(42, 111, 78, 0.05) 0px, transparent 55%);
+}
+.dark .flora-bg {
+  background-color: #0C1A13;
+  background-image:
+    radial-gradient(at 12% 8%, rgba(74, 156, 110, 0.10) 0px, transparent 45%),
+    radial-gradient(at 88% 4%, rgba(212, 184, 140, 0.06) 0px, transparent 40%),
+    radial-gradient(at 50% 100%, rgba(42, 111, 78, 0.10) 0px, transparent 55%);
+}
+
+/* Hero — gradiente verde jardim profundo */
+.flora-hero {
+  background:
+    radial-gradient(ellipse 120% 80% at 50% -20%, rgba(74,156,110,0.35), transparent 60%),
+    linear-gradient(165deg, #2A6F4E 0%, #1C5238 55%, #163F2C 100%);
+}
+
+/* Cartão com vidro suave */
+.flora-card {
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(42, 111, 78, 0.10);
+  backdrop-filter: blur(8px);
+  transition: transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s, border-color .35s;
+}
+.flora-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 40px -18px rgba(42, 111, 78, 0.45);
+  border-color: rgba(74, 156, 110, 0.45);
+}
+.dark .flora-card {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+.dark .flora-card:hover {
+  border-color: rgba(74, 156, 110, 0.40);
+  box-shadow: 0 18px 40px -18px rgba(0,0,0,0.6);
+}
+
+/* Texto base do site público */
+.flora-ink   { color: #2F2F2F; }
+.dark .flora-ink   { color: #F4EFE6; }
+.flora-muted { color: #6B6B63; }
+.dark .flora-muted { color: rgba(244,239,230,0.45); }
+
+/* Chip de filtro/categoria */
+.flora-chip {
+  border: 1px solid rgba(42, 111, 78, 0.18);
+  background: rgba(255,255,255,0.6);
+  transition: all .25s ease;
+}
+.flora-chip:hover { border-color: #4A9C6E; background: rgba(74,156,110,0.08); }
+.dark .flora-chip { background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.10); }
+
+/* Crescimento sutil ao entrar (fade + rise) */
+@keyframes flora-rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.flora-rise { animation: flora-rise .6s cubic-bezier(.2,.8,.2,1) both; }
+
+/* Folha decorativa flutuante */
+@keyframes flora-sway {
+  0%,100% { transform: rotate(-4deg) translateY(0); }
+  50%     { transform: rotate(4deg) translateY(-6px); }
+}
+.flora-sway { animation: flora-sway 7s ease-in-out infinite; }

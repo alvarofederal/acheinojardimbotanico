@@ -57,24 +57,24 @@ export function CategoryList({
   }, [businesses, query, openOnly])
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {/* Controles */}
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-white/30" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-flora-green/50" />
           <input
             value={query}
             onChange={e => setQuery(e.target.value)}
             placeholder="Buscar nesta categoria..."
-            className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/[0.02] text-sm text-gray-800 dark:text-white focus:outline-none focus:border-emerald-500 transition-colors"
+            className="w-full pl-11 pr-4 py-3 rounded-full bg-white/70 dark:bg-white/[0.04] border border-flora-green/10 dark:border-white/10 text-sm flora-ink placeholder:text-flora-ink/35 focus:outline-none focus:ring-2 focus:ring-flora-fresh/40 transition-all"
           />
         </div>
         <button
           onClick={() => setOpenOnly(v => !v)}
-          className={`px-4 py-2.5 rounded-xl text-sm font-medium border transition-colors flex-shrink-0 ${
+          className={`px-5 py-3 rounded-full text-sm font-semibold transition-all flex-shrink-0 ${
             openOnly
-              ? "bg-emerald-600 border-emerald-600 text-white"
-              : "border-gray-200 dark:border-white/10 text-gray-600 dark:text-white/60 hover:bg-gray-50 dark:hover:bg-white/5"
+              ? "bg-flora-green text-white shadow-lg shadow-flora-green/20"
+              : "flora-chip flora-ink"
           }`}
         >
           Aberto agora
@@ -83,11 +83,11 @@ export function CategoryList({
 
       {/* Resultado */}
       {filtered.length === 0 ? (
-        <p className="text-center py-12 text-sm text-gray-400 dark:text-white/30">
+        <p className="text-center py-12 text-sm flora-muted">
           Nenhum resultado para os filtros atuais.
         </p>
       ) : (
-        <div className="space-y-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {filtered.map(business => (
             <BusinessCard key={business.id} business={business} bairro={bairro} categoria={categoria} />
           ))}

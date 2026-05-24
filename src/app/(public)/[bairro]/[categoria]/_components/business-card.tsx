@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { MapPin, Star, Phone, MessageCircle, Clock } from "lucide-react"
+import { MapPin, Star, MessageCircle, Clock } from "lucide-react"
 
 interface BusinessCardProps {
   business: {
@@ -47,83 +47,83 @@ export function BusinessCard({ business, bairro, categoria }: BusinessCardProps)
   return (
     <Link
       href={`/${bairro}/${categoria}/${business.slug}`}
-      className="group flex gap-4 p-4 rounded-2xl border border-gray-100 dark:border-white/[0.07] bg-white dark:bg-white/[0.02] hover:border-emerald-200 dark:hover:border-emerald-500/20 hover:shadow-sm transition-all"
+      className="flora-card group block rounded-3xl overflow-hidden"
     >
-      {/* Foto */}
-      <div className="w-20 h-20 sm:w-24 sm:h-24 flex-shrink-0 rounded-xl overflow-hidden bg-gray-100 dark:bg-white/5">
+      {/* Imagem */}
+      <div className="relative aspect-[16/10] overflow-hidden bg-flora-sand dark:bg-white/5">
         {photo ? (
-          <img src={photo} alt={business.name} className="w-full h-full object-cover" loading="lazy" />
+          <img
+            src={photo}
+            alt={business.name}
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+            loading="lazy"
+          />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-gray-300 dark:text-white/20 text-2xl font-bold">
-            {business.name[0]}
+          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-flora-green/15 to-flora-fresh/10">
+            <span className="font-serif text-5xl text-flora-green/40 dark:text-flora-fresh/40">{business.name[0]}</span>
           </div>
         )}
-      </div>
 
-      {/* Info */}
-      <div className="flex-1 min-w-0">
-        <div className="flex items-start gap-2 flex-wrap">
-          <h3 className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base leading-tight group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
-            {business.name}
-          </h3>
+        {/* Badges sobre a imagem */}
+        <div className="absolute top-3 left-3 flex gap-1.5">
           {isPremium && (
-            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-amber-100 dark:bg-amber-500/15 text-amber-700 dark:text-amber-400 uppercase tracking-wide flex-shrink-0">
+            <span className="text-[10px] font-bold px-2 py-1 rounded-full bg-flora-gold text-flora-ink uppercase tracking-wide shadow-sm">
               Premium
             </span>
           )}
           {isVisibility && !isPremium && (
-            <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 uppercase tracking-wide flex-shrink-0">
+            <span className="text-[10px] font-bold px-2 py-1 rounded-full bg-flora-green text-white uppercase tracking-wide shadow-sm">
               Destaque
             </span>
           )}
         </div>
 
-        <div className="flex items-center gap-3 mt-1 flex-wrap">
+        {open !== null && (
+          <span className={`absolute top-3 right-3 flex items-center gap-1 text-[11px] font-semibold px-2 py-1 rounded-full backdrop-blur-md shadow-sm ${
+            open ? "bg-white/90 text-flora-green" : "bg-white/90 text-red-500"
+          }`}>
+            <Clock className="w-3 h-3" />
+            {open ? "Aberto" : "Fechado"}
+          </span>
+        )}
+      </div>
+
+      {/* Conteúdo */}
+      <div className="p-4">
+        <h3 className="font-serif text-lg font-semibold flora-ink leading-tight group-hover:text-flora-green dark:group-hover:text-flora-fresh transition-colors line-clamp-1">
+          {business.name}
+        </h3>
+
+        <div className="flex items-center gap-3 mt-1.5">
           {business.googleRating && (
-            <span className="flex items-center gap-1 text-xs text-gray-500 dark:text-white/50">
-              <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
-              <span className="font-medium text-gray-700 dark:text-white/70">{business.googleRating.toFixed(1)}</span>
+            <span className="flex items-center gap-1 text-sm">
+              <Star className="w-3.5 h-3.5 fill-flora-gold text-flora-gold" />
+              <span className="font-semibold flora-ink">{business.googleRating.toFixed(1)}</span>
               {business.googleRatingCount && (
-                <span className="text-gray-400 dark:text-white/30">({business.googleRatingCount})</span>
+                <span className="flora-muted text-xs">({business.googleRatingCount})</span>
               )}
-            </span>
-          )}
-          {open !== null && (
-            <span className={`text-xs font-medium ${open ? "text-emerald-600 dark:text-emerald-400" : "text-red-500 dark:text-red-400"}`}>
-              <Clock className="w-3 h-3 inline mr-0.5" />
-              {open ? "Aberto" : "Fechado"}
             </span>
           )}
         </div>
 
-        <p className="mt-1 text-xs text-gray-400 dark:text-white/35 flex items-center gap-1 truncate">
-          <MapPin className="w-3 h-3 flex-shrink-0" />
+        <p className="mt-2 text-xs flora-muted flex items-center gap-1 line-clamp-1">
+          <MapPin className="w-3 h-3 flex-shrink-0 text-flora-green/60" />
           {business.address.split(",").slice(0, 2).join(",")}
         </p>
 
-        {/* CTAs */}
-        <div className="flex gap-2 mt-2" onClick={e => e.preventDefault()}>
-          {business.whatsapp && (
+        {business.whatsapp && (
+          <div className="mt-3" onClick={e => e.preventDefault()}>
             <a
               href={`https://wa.me/${business.whatsapp.replace(/\D/g, "")}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-500/20 transition-colors"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-flora-green dark:text-flora-fresh hover:gap-2 transition-all"
             >
-              <MessageCircle className="w-3 h-3" />
-              WhatsApp
+              <MessageCircle className="w-3.5 h-3.5" />
+              Falar no WhatsApp
             </a>
-          )}
-          {business.phone && !business.whatsapp && (
-            <a
-              href={`tel:${business.phone}`}
-              className="flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium bg-gray-50 dark:bg-white/5 text-gray-600 dark:text-white/50 hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
-            >
-              <Phone className="w-3 h-3" />
-              Ligar
-            </a>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </Link>
   )
