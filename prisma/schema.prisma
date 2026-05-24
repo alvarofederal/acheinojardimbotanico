@@ -131,10 +131,12 @@ model Business {
   plan              Plan           @default(FREE)
   planExpiresAt     DateTime?
   ownerId           String?
+  storeWhatsappMessage String?     @db.Text  // mensagem padrão da vitrine (WhatsApp)
 
   category       Category        @relation(fields: [categoryId], references: [id])
   owner          User?           @relation(fields: [ownerId], references: [id])
   photos         Photo[]
+  products       Product[]
   views          BusinessView[]
   whatsappClicks WhatsappClick[]
   claimRequests  ClaimRequest[]
@@ -315,4 +317,67 @@ model ApiUsage {
 
   @@index([kind])
   @@index([createdAt])
+}
+
+// ===================================================
+// VITRINE DE PRODUTOS (mini-loja do anunciante)
+// ===================================================
+
+model Product {
+  id          String           @id @default(cuid())
+  businessId  String
+  name        String
+  description String?          @db.Text
+  categoria   String?          // tipo/categoria do produto (texto livre)
+  priceMode   ProductPriceMode @default(FIXED)
+  priceCents  Int?             // preço em centavos; null se ON_REQUEST
+  images      Json?            // até 4 URLs (Cloudinary)
+  variations  Json?            // ex: [{ "nome": "Tamanho", "opcoes": ["P","M","G"] }]
+  soldOut     Boolean          @default(false)
+  active      Boolean          @default(true)
+  order       Int              @default(0)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@index([businessId])
+}
+
+enum ProductPriceMode {
+  FIXED       // "R$ 30,00"
+  FROM        // "A partir de R$ 30,00"
+  ON_REQUEST  // "Sob consulta"
+}
+
+// ===================================================
+// PAGAMENTO MANUAL (PIX + Mercado Pago)
+// ===================================================
+
+model PaymentConfig {
+  id              String   @id @default("default")
+  pixKey          String?
+  pixHolderName   String?
+  pixCopyPaste    String?  @db.Text  // PIX copia-e-cola (BR Code) → vira QR
+  mercadoPagoLink String?  @db.Text
+  instructions    String?  @db.Text
+  updatedAt       DateTime @updatedAt
+}
+
+model PaymentClaim {
+  id          String    @id @default(cuid())
+  businessId  String
+  userId      String
+  plan        Plan
+  method      String    // PIX | MERCADO_PAGO
+  months      Int       @default(1)
+  amountCents Int       @default(0)
+  status      String    @default("PENDING") // PENDING | CONFIRMED | REJECTED
+  note        String?   @db.Text
+  createdAt   DateTime  @default(now())
+  reviewedAt  DateTime?
+  reviewerId  String?
+
+  @@index([status])
+  @@index([businessId])
 }

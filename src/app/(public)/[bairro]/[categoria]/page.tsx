@@ -39,6 +39,7 @@ export default async function CategoryPage({ params }: PageProps) {
     },
     include: {
       photos: { orderBy: { order: "asc" }, take: 1 },
+      products: { where: { active: true }, take: 1, select: { id: true } },
     },
     orderBy: [
       { plan: "desc" },

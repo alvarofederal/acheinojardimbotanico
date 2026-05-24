@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { MapPin, Star, MessageCircle, Clock } from "lucide-react"
+import { MapPin, Star, MessageCircle, Clock, ShoppingBag } from "lucide-react"
 
 interface BusinessCardProps {
   business: {
@@ -17,6 +17,8 @@ interface BusinessCardProps {
     plan: string
     photos: Array<{ url: string }>
     openingHours: unknown
+    hasStore?: boolean
+    products?: Array<{ id: string }>
   }
   bairro: string
   categoria: string
@@ -43,6 +45,7 @@ export function BusinessCard({ business, bairro, categoria }: BusinessCardProps)
   const open = isOpenNow(business.openingHours)
   const isPremium = business.plan === "PREMIUM"
   const isVisibility = business.plan === "VISIBILITY"
+  const hasStore = business.hasStore ?? (business.products?.length ?? 0) > 0
 
   return (
     <Link
@@ -74,6 +77,11 @@ export function BusinessCard({ business, bairro, categoria }: BusinessCardProps)
           {isVisibility && !isPremium && (
             <span className="text-[10px] font-bold px-2 py-1 rounded-full bg-flora-green text-white uppercase tracking-wide shadow-sm">
               Destaque
+            </span>
+          )}
+          {hasStore && (
+            <span className="flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-full bg-white/90 text-flora-green uppercase tracking-wide shadow-sm">
+              <ShoppingBag className="w-2.5 h-2.5" /> Loja
             </span>
           )}
         </div>

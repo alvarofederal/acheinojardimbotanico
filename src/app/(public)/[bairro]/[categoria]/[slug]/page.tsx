@@ -7,6 +7,7 @@ import { MapPin, Phone, Globe, Instagram, Facebook, Linkedin, Youtube, Star, Clo
 import { TrackView } from "./_components/track-view"
 import { WhatsAppButton } from "./_components/whatsapp-button"
 import { ClaimBanner } from "./_components/claim-banner"
+import { ProductShowcase } from "./_components/product-showcase"
 
 export const revalidate = 3600
 
@@ -64,6 +65,7 @@ export default async function BusinessPage({ params }: PageProps) {
     include: {
       category: true,
       photos: { orderBy: { order: "asc" }, take: 10 },
+      products: { where: { active: true }, orderBy: { order: "asc" } },
     },
   })
 
@@ -72,6 +74,15 @@ export default async function BusinessPage({ params }: PageProps) {
 
   const weekdays = getWeekdayDescriptions(business.openingHours)
   const reviews = getReviews(business.reviews)
+
+  const showcaseProducts = business.products.map(p => ({
+    id: p.id, name: p.name, description: p.description, categoria: p.categoria,
+    priceMode: p.priceMode as "FIXED" | "FROM" | "ON_REQUEST", priceCents: p.priceCents,
+    images: Array.isArray(p.images) ? (p.images as unknown as string[]) : [],
+    variations: Array.isArray(p.variations) ? (p.variations as unknown as { nome: string; opcoes: string[] }[]) : [],
+    soldOut: p.soldOut,
+  }))
+  const businessUrl = `${SITE_URL}/${slugify(business.neighborhood)}/${business.category.slug}/${business.slug}`
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -248,6 +259,17 @@ export default async function BusinessPage({ params }: PageProps) {
             </div>
           )}
         </div>
+
+        {/* Vitrine de produtos */}
+        {showcaseProducts.length > 0 && (
+          <ProductShowcase
+            products={showcaseProducts}
+            businessId={business.id}
+            whatsapp={business.whatsapp}
+            storeMessage={business.storeWhatsappMessage}
+            businessUrl={businessUrl}
+          />
+        )}
 
         {/* Avaliações do Google */}
         {reviews.length > 0 && (

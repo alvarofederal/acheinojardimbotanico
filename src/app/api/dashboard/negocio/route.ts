@@ -15,6 +15,7 @@ const schema = z.object({
   facebook: urlOrEmpty,
   linkedin: urlOrEmpty,
   youtube: urlOrEmpty,
+  storeWhatsappMessage: z.string().max(400).optional(),
 })
 
 export async function PATCH(req: NextRequest) {
@@ -40,6 +41,7 @@ export async function PATCH(req: NextRequest) {
       facebook: data.facebook || business.facebook,
       linkedin: data.linkedin || business.linkedin,
       youtube: data.youtube || business.youtube,
+      storeWhatsappMessage: data.storeWhatsappMessage ?? business.storeWhatsappMessage,
     },
   })
 

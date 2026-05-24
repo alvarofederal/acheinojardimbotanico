@@ -17,6 +17,7 @@ interface BusinessItem {
   plan: string
   photos: Array<{ url: string }>
   openingHours: unknown
+  products?: Array<{ id: string }>
 }
 
 function isOpenNow(openingHours: unknown): boolean | null {

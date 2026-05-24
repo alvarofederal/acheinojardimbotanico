@@ -132,6 +132,74 @@ export async function sendClaimResultEmail(
   if (error) console.error("Erro ao enviar email de resultado de claim:", error)
 }
 
+/** Notifica o admin de um novo pagamento informado (aguardando confirmação). */
+export async function sendPaymentClaimEmail(
+  adminEmail: string,
+  businessName: string,
+  plan: string,
+  months: number,
+  amountCents: number,
+  method: string
+) {
+  const valor = (amountCents / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })
+  if (isDev) {
+    console.log(`\n💳 [DEV] Pagamento informado: ${businessName} — ${plan} ${months}m ${valor} (${method})`)
+    return
+  }
+  if (!process.env.RESEND_API_KEY) return
+
+  const html = emailShell("💳 Pagamento informado", `
+    <p style="color:#4b5563;font-size:16px">Um anunciante informou um pagamento que aguarda sua confirmação:</p>
+    <ul style="color:#4b5563;font-size:15px;line-height:1.8">
+      <li><strong>Negócio:</strong> ${businessName}</li>
+      <li><strong>Plano:</strong> ${plan} — ${months} ${months > 1 ? "meses" : "mês"}</li>
+      <li><strong>Valor:</strong> ${valor}</li>
+      <li><strong>Método:</strong> ${method}</li>
+    </ul>
+    <div style="text-align:center;margin:28px 0">
+      <a href="https://acheinojardimbotanico.com.br/dashboard/admin/pagamentos" style="display:inline-block;background:#10b981;color:#fff;padding:14px 28px;text-decoration:none;border-radius:8px;font-weight:600">Confirmar pagamento</a>
+    </div>
+    <p style="color:#6b7280;font-size:13px">Confira o recebimento (PIX/Mercado Pago) antes de liberar.</p>`)
+
+  const { error } = await getResend().emails.send({
+    from: EMAIL_FROM,
+    to: adminEmail,
+    subject: `💳 Pagamento informado: ${businessName} (${valor})`,
+    html,
+  })
+  if (error) console.error("Erro ao enviar email de pagamento:", error)
+}
+
+/** Notifica o anunciante que o plano foi liberado. */
+export async function sendPlanActivatedEmail(
+  email: string,
+  businessName: string,
+  plan: string,
+  expiresAt: Date
+) {
+  if (isDev) {
+    console.log(`\n✅ [DEV] Plano liberado: ${businessName} — ${plan} até ${expiresAt.toLocaleDateString("pt-BR")}`)
+    return
+  }
+  if (!process.env.RESEND_API_KEY) return
+
+  const html = emailShell("✅ Plano ativado!", `
+    <p style="color:#4b5563;font-size:16px">Confirmamos seu pagamento e o plano <strong>${plan}</strong> de
+    <strong>${businessName}</strong> está ativo até <strong>${expiresAt.toLocaleDateString("pt-BR")}</strong>.</p>
+    <p style="color:#4b5563;font-size:15px">Agora você pode montar sua vitrine de produtos, destacar seu negócio e muito mais.</p>
+    <div style="text-align:center;margin:28px 0">
+      <a href="https://acheinojardimbotanico.com.br/dashboard" style="display:inline-block;background:#10b981;color:#fff;padding:14px 28px;text-decoration:none;border-radius:8px;font-weight:600">Acessar painel</a>
+    </div>`)
+
+  const { error } = await getResend().emails.send({
+    from: EMAIL_FROM,
+    to: email,
+    subject: `✅ Plano ${plan} ativado — ${businessName}`,
+    html,
+  })
+  if (error) console.error("Erro ao enviar email de ativação:", error)
+}
+
 export async function sendPasswordResetEmail(email: string, resetUrl: string) {
   if (isDev) {
     console.log("\n🔑 [DEV] Recuperação de Senha →", email, "\nLink:", resetUrl)

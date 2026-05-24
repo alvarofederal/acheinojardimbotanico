@@ -29,7 +29,11 @@ export default async function SearchPage({ searchParams }: PageProps) {
             { description: { contains: term } },
           ],
         },
-        include: { category: true, photos: { take: 1, orderBy: { order: "asc" } } },
+        include: {
+          category: true,
+          photos: { take: 1, orderBy: { order: "asc" } },
+          products: { where: { active: true }, take: 1, select: { id: true } },
+        },
         orderBy: [{ plan: "desc" }, { googleRating: "desc" }],
         take: 60,
       })
