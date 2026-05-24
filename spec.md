@@ -1207,6 +1207,77 @@ Estes vão para `.specify/memory/constitution.md` e o Spec-Kit os lê em toda ex
 
 ---
 
+## Parte 11 — Estado da implementação (atualizado mai/2026)
+
+> Esta seção reflete o que **realmente foi construído** — vai além do plano original
+> em vários pontos (novidades nascidas durante o desenvolvimento). É a fonte de
+> verdade do estado atual.
+
+### 11.1 Base e infraestrutura
+- Projeto partiu do Courtesyfy, limpo. Criada branch `template/base` genérica reutilizável.
+- Stack: Next.js 15 (App Router) + TypeScript + Prisma 5.17 + MySQL (Hostinger) + Tailwind v4.
+- Deploy alvo: Vercel. Analytics: Vercel Analytics + Speed Insights + GA4 opcional (`NEXT_PUBLIC_GA_ID`).
+- ADRs 0001–0006 em `docs/adr/`. Constitution em `.specify/memory/`.
+
+### 11.2 Importação Google Places (Spec 001) — ampliada
+- Cliente `src/lib/places.ts`: `searchNearby` + `searchText` (cauda longa), `languageCode=pt-BR`
+  (reviews em português), mapa de ~50 tipos → categorias.
+- **Correções importantes:** coordenadas do **bairro** JB (não aeroporto), campos de URL
+  longos viraram `@db.Text` (fotos truncavam), tier pago ativo (fotos + reviews).
+- **Proxy de fotos** `/api/photo/[...ref]`: esconde a chave, cacheia e redireciona pro CDN
+  do Google (corta custo por exibição).
+- **Painel de custos** `/dashboard/admin/custos`: estima gasto da API por tipo de chamada,
+  custo por negócio, crédito gratuito restante. Modelo `ApiUsage` registra cada chamada.
+  Config de preços em `src/lib/api-costs.ts`.
+- Scripts: `npm run db:import` (`scripts/seed-import.ts`), `set-admin`.
+- Base atual: ~600 negócios reais do Jardim Botânico, com fotos e avaliações.
+
+### 11.3 Site público (Specs 002/003) — Design System "Flora"
+- Identidade **Flora**: Playfair Display + Inter, paleta verde jardim/areia/dourado,
+  ilustrações botânicas em SVG com animação de vento, dark mode.
+- Homepage com hero cinematográfico + busca + browse por categoria + destaques.
+- `/[bairro]/[categoria]` (ISR 1h) com busca e filtro "aberto agora"; `/busca` global.
+- Detalhe do negócio: galeria, CTAs, redes sociais (Instagram/Facebook/LinkedIn/YouTube),
+  horários, **avaliações do Google** (em PT), **vitrine de produtos**, "Como chegar" via Place ID.
+- SEO: sitemap, robots, JSON-LD LocalBusiness, canonical, **Open Graph images dinâmicas** (`next/og`).
+- Skeletons de loading; foco visível (WCAG); páginas `/termos` e `/privacidade`.
+
+### 11.4 Reivindicação e painel do anunciante (Specs 005/006)
+- Claim com consentimento LGPD; emails (admin notificado, dono avisado do resultado).
+- `/dashboard/negocio`: edição de perfil + upload de fotos (limite por plano).
+- `/dashboard/metricas`: **Dashboard de ROI** — views e contatos WhatsApp (30d) com
+  comparação vs período anterior, taxa de conversão, gráfico de 14 dias.
+- `/dashboard/conta`: exclusão LGPD.
+
+### 11.5 Vitrine de Produtos (novidade — `docs/spec-vitrine-produtos.md`)
+- `/dashboard/produtos`: CRUD de produtos com até 4 fotos, categoria, **modo de preço**
+  (fixo / a partir de / sob consulta), variações, "esgotado". Limite por plano: Free 2,
+  Visibilidade 10, Premium 50. Mensagem de WhatsApp personalizável.
+- Vitrine pública no perfil + botão **"Comprar pelo WhatsApp"** (mensagem do lojista +
+  link do produto, rastreado no ROI). Filtro de ordenação. **Selo "Loja"** nos cards.
+- Modelo `Product` + enum `ProductPriceMode`.
+
+### 11.6 Pagamento Manual (novidade — `docs/spec-pagamento-manual.md`)
+- **Sem automação no 1º momento** (Asaas fica dormente). Modelos `PaymentConfig` + `PaymentClaim`.
+- Admin `/dashboard/admin/pagamento`: configura PIX (chave + copia-e-cola → QR), Mercado Pago,
+  instruções e **preços dos planos** (configuráveis).
+- Anunciante `/dashboard/plano`: escolhe plano + período (1/3/6/12 meses), vê QR/chave/cartão,
+  clica "Já paguei" → cria `PaymentClaim` + email ao admin.
+- Admin `/dashboard/admin/pagamentos`: confere e **libera o plano manualmente** pelos meses
+  pagos (estende se já ativo) + email de ativação ao anunciante.
+
+### 11.7 Admin completo (Spec 007)
+- `/dashboard/admin`: KPIs. `negocios` (filtro+paginação), `claims`, `usuarios`, `import`,
+  `custos`, `pagamento`, `pagamentos`, `audit`.
+
+### 11.8 Pendências conhecidas / próximos passos
+- Restringir a chave Google por IP (servidor) — segurança.
+- Conferência automática de pagamento (webhook PIX/MP ou Asaas) — quando o volume justificar.
+- Mapa interativo no perfil; autocomplete de endereço no cadastro.
+- Expiração automática de plano via cron (hoje a checagem é pontual).
+
+---
+
 ## Apêndice A — Glossário rápido
 
 - **ICP** (Ideal Customer Profile): perfil do cliente ideal
