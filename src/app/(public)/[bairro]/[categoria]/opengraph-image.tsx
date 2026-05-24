@@ -1,0 +1,64 @@
+import { ImageResponse } from "next/og"
+import { db } from "@/lib/prisma"
+
+export const runtime = "nodejs"
+export const size = { width: 1200, height: 630 }
+export const contentType = "image/png"
+export const alt = "Achei no Jardim Botânico"
+
+interface Props {
+  params: Promise<{ bairro: string; categoria: string }>
+}
+
+export default async function Image({ params }: Props) {
+  const { bairro, categoria } = await params
+  const category = await db.category.findUnique({
+    where: { slug: categoria },
+    select: { name: true, _count: { select: { businesses: true } } },
+  })
+
+  const bairroLabel = bairro.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase())
+  const name = category?.name ?? "Categoria"
+  const count = category?._count.businesses ?? 0
+
+  return new ImageResponse(
+    (
+      <div
+        style={{
+          width: "100%", height: "100%", display: "flex", flexDirection: "column",
+          justifyContent: "space-between", padding: "70px",
+          background: "linear-gradient(135deg, #1E5C45 0%, #134034 60%, #0F2E26 100%)",
+          fontFamily: "sans-serif",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+          <div style={{ display: "flex", width: "44px", height: "44px", borderRadius: "14px", background: "rgba(255,255,255,0.12)", alignItems: "center", justifyContent: "center" }}>
+            <svg width="26" height="26" viewBox="0 0 24 24"><path d="M21 3C9 3 4 10 4 18c0 1 0 2 .3 3 6-9 12-12 16-13-4 3-8 7-11 14 9 0 15-6 15-16 0-1 0-2-.3-3Z" fill="#A3C4B3" /></svg>
+          </div>
+          <div style={{ display: "flex", fontSize: "26px", color: "rgba(255,255,255,0.85)", fontWeight: 600 }}>
+            Achei no Jardim Botânico
+          </div>
+        </div>
+
+        <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+          <div style={{ display: "flex", fontSize: "84px", color: "#ffffff", fontWeight: 800, lineHeight: 1.05 }}>
+            {name}
+          </div>
+          <div style={{ display: "flex", fontSize: "34px", color: "#D2B48C" }}>
+            em {bairroLabel} · Brasília (DF)
+          </div>
+          {count > 0 ? (
+            <div style={{ display: "flex", fontSize: "28px", color: "rgba(255,255,255,0.6)", marginTop: "6px" }}>
+              {count} {count === 1 ? "estabelecimento" : "estabelecimentos"}
+            </div>
+          ) : null}
+        </div>
+
+        <div style={{ display: "flex", fontSize: "24px", color: "rgba(255,255,255,0.45)" }}>
+          acheinojardimbotanico.com.br
+        </div>
+      </div>
+    ),
+    { ...size }
+  )
+}
