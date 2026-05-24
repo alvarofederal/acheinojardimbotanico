@@ -120,6 +120,9 @@ model Business {
   whatsapp          String?
   website           String?
   instagram         String?
+  facebook          String?
+  linkedin          String?
+  youtube           String?
   googleRating      Float?
   googleRatingCount Int?
   openingHours      Json?

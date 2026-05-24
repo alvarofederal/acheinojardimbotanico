@@ -36,13 +36,13 @@ export default async function HomePage() {
     <main>
       {/* ═══════════ HERO CINEMATOGRÁFICO ═══════════ */}
       <section className="relative flora-hero overflow-hidden">
-        {/* Camada botânica — profundidade */}
-        <MonsteraLeaf className="absolute -left-16 -top-10 w-72 h-72 text-flora-fresh/25 flora-sway" style={{ animationDuration: "9s" }} />
-        <MonsteraLeaf className="absolute -right-20 top-24 w-96 h-96 text-flora-green/30 flora-sway" style={{ animationDuration: "11s", animationDelay: "2s" }} />
-        <LeafSprig className="absolute right-[12%] -top-6 w-28 h-72 text-flora-soft/30 flora-sway" style={{ animationDelay: "1s" }} />
-        <FernFrond className="absolute left-[8%] bottom-8 w-24 h-64 text-flora-soft/25 flora-sway hidden sm:block" style={{ animationDelay: "3s" }} />
-        <SimpleLeaf className="absolute left-[30%] top-[18%] w-8 h-8 text-flora-gold/40 flora-sway" style={{ animationDelay: "1.5s" }} />
-        <SimpleLeaf className="absolute right-[28%] bottom-[26%] w-6 h-6 text-flora-soft/40 flora-sway" style={{ animationDelay: "4s" }} />
+        {/* Camada botânica — profundidade, balançando ao vento */}
+        <MonsteraLeaf className="absolute -left-16 -top-10 w-72 h-72 text-flora-fresh/25 flora-wind" style={{ animationDuration: "8s" }} />
+        <MonsteraLeaf className="absolute -right-20 top-24 w-96 h-96 text-flora-green/30 flora-wind" style={{ animationDuration: "11s", animationDelay: "1.5s" }} />
+        <LeafSprig className="absolute right-[12%] -top-6 w-28 h-72 text-flora-soft/30 flora-wind" style={{ animationDelay: "0.8s", animationDuration: "7s" }} />
+        <FernFrond className="absolute left-[8%] bottom-8 w-24 h-64 text-flora-soft/25 flora-wind hidden sm:block" style={{ animationDelay: "2.5s", animationDuration: "9s" }} />
+        <SimpleLeaf className="absolute left-[30%] top-[18%] w-7 h-11 text-flora-gold/45 flora-flutter" style={{ animationDelay: "1.5s" }} />
+        <SimpleLeaf className="absolute right-[28%] bottom-[26%] w-6 h-9 text-flora-soft/45 flora-flutter" style={{ animationDelay: "3s" }} />
 
         {/* Brilho dourado superior */}
         <div aria-hidden className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-flora-gold/10 to-transparent pointer-events-none" />
@@ -189,8 +189,8 @@ export default async function HomePage() {
       {/* ═══════════ CTA ANUNCIANTE ═══════════ */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-20">
         <div className="relative overflow-hidden rounded-[2.5rem] flora-hero p-10 sm:p-16 text-center">
-          <MonsteraLeaf className="absolute -top-8 -right-8 w-44 h-44 text-flora-fresh/20 flora-sway" />
-          <LeafSprig className="absolute -bottom-4 left-4 w-24 h-56 text-flora-soft/20 flora-sway hidden sm:block" style={{ animationDelay: "2s" }} />
+          <MonsteraLeaf className="absolute -top-8 -right-8 w-44 h-44 text-flora-fresh/20 flora-wind" />
+          <LeafSprig className="absolute -bottom-4 left-4 w-24 h-56 text-flora-soft/20 flora-wind hidden sm:block" style={{ animationDelay: "2s" }} />
           <h2 className="relative font-serif text-3xl sm:text-4xl font-semibold text-white leading-tight">
             Seu negócio merece ser <span className="italic text-flora-gold">descoberto</span>
           </h2>

@@ -9,12 +9,22 @@ import "dotenv/config"
 import { PrismaClient } from "../src/generated/prisma/index.js"
 import {
   searchNearby,
+  searchText,
   getPhotoUrl,
   extractNeighborhood,
   generateSlug,
   CATEGORY_MAP,
   PLACE_TYPES_TO_IMPORT,
 } from "../src/lib/places"
+
+// Negócios menores / sem tipo — buscados por texto (Google Meu Negócio)
+const TEXT_QUERIES = [
+  "Arte e Tradição Jardim Botânico",
+  "artesanato Jardim Botânico Brasília",
+  "doces caseiros Jardim Botânico",
+  "ateliê Jardim Botânico Brasília",
+  "MEI Jardim Botânico Brasília",
+]
 
 const db = new PrismaClient()
 
@@ -125,6 +135,54 @@ async function main() {
         errors++
         console.error(`\n    ✗ ${place.displayName?.text}: ${e instanceof Error ? e.message : e}`)
       }
+    }
+    process.stdout.write("✓\n")
+  }
+
+  // Busca por texto — negócios menores
+  for (const query of TEXT_QUERIES) {
+    let places
+    try {
+      places = await searchText({ textQuery: query, lat: LAT, lng: LNG, radiusMeters: RADIUS, maxResults: MAX_PER_TYPE })
+    } catch (e) {
+      console.error(`  ⚠️  texto "${query}": ${e instanceof Error ? e.message : e}`)
+      errors++
+      continue
+    }
+    if (!places.length) continue
+    process.stdout.write(`  texto "${query}": ${places.length} `)
+    for (const place of places) {
+      try {
+        const mapped = place.primaryType ? CATEGORY_MAP[place.primaryType] : undefined
+        const cat = mapped ?? { slug: "outros", name: "Outros" }
+        const category = await db.category.upsert({
+          where: { slug: cat.slug }, create: { slug: cat.slug, name: cat.name }, update: {},
+        })
+        const name = place.displayName.text
+        const existing = await db.business.findUnique({ where: { placeId: place.id } })
+        if (existing) { updated++; continue }
+        const created = await db.business.create({
+          data: {
+            placeId: place.id, slug: generateSlug(name, place.id), name, categoryId: category.id,
+            description: place.editorialSummary?.text ?? null,
+            address: place.formattedAddress, neighborhood: extractNeighborhood(place.formattedAddress),
+            city: "Brasília", state: "DF",
+            latitude: place.location.latitude, longitude: place.location.longitude,
+            phone: place.nationalPhoneNumber ?? null, website: place.websiteUri ?? null,
+            googleRating: place.rating ?? null, googleRatingCount: place.userRatingCount ?? null,
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            openingHours: (place.regularOpeningHours ?? undefined) as any,
+            status: "IMPORTED", plan: "FREE", lastSyncedAt: new Date(),
+          },
+        })
+        if (place.photos?.length) {
+          await db.photo.createMany({ data: place.photos.slice(0, 5).map((p, i) => ({
+            businessId: created.id, url: getPhotoUrl(p.name, 800),
+            width: p.widthPx ?? null, height: p.heightPx ?? null, source: "GOOGLE_PLACES" as const, order: i,
+          })) })
+        }
+        imported++
+      } catch { errors++ }
     }
     process.stdout.write("✓\n")
   }

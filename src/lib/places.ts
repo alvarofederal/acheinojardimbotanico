@@ -148,6 +148,60 @@ export async function searchNearby(params: {
 }
 
 /**
+ * Text Search (New) — busca lugares por texto livre, com viés de localização.
+ * Ideal para negócios menores/sem tipo (ex: ateliês em casa, MEIs) que não
+ * aparecem na Nearby Search por tipo, mas existem no Google Meu Negócio.
+ */
+export async function searchText(params: {
+  textQuery: string
+  lat: number
+  lng: number
+  radiusMeters: number
+  maxResults?: number
+}): Promise<PlaceResult[]> {
+  const { textQuery, lat, lng, radiusMeters, maxResults = 20 } = params
+
+  const fieldMask = [
+    "places.id",
+    "places.displayName",
+    "places.formattedAddress",
+    "places.location",
+    "places.nationalPhoneNumber",
+    "places.websiteUri",
+    "places.regularOpeningHours",
+    "places.primaryType",
+    "places.rating",
+    "places.userRatingCount",
+    "places.photos",
+    "places.editorialSummary",
+  ].join(",")
+
+  const res = await fetch(`${BASE_URL}/places:searchText`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Goog-Api-Key": API_KEY,
+      "X-Goog-FieldMask": fieldMask,
+    },
+    body: JSON.stringify({
+      textQuery,
+      maxResultCount: Math.min(maxResults, 20),
+      locationBias: {
+        circle: { center: { latitude: lat, longitude: lng }, radius: radiusMeters },
+      },
+    }),
+  })
+
+  if (!res.ok) {
+    const err = await res.text()
+    throw new Error(`Places Text Search error (${res.status}): ${err}`)
+  }
+
+  const data: NearbySearchResponse = await res.json()
+  return data.places ?? []
+}
+
+/**
  * Gera URL de foto do Google Places para exibição direta em <img src>.
  * O endpoint /media redireciona (302) para a imagem real do CDN do Google.
  * Limite de uso: só para exibição — não armazenar permanentemente (TOS).

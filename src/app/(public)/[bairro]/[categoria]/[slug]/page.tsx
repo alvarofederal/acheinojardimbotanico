@@ -3,7 +3,7 @@ import type { Metadata } from "next"
 import { db } from "@/lib/prisma"
 import { slugify, SITE_URL } from "@/lib/utils"
 import Link from "next/link"
-import { MapPin, Phone, Globe, Instagram, Star, Clock, Navigation } from "lucide-react"
+import { MapPin, Phone, Globe, Instagram, Facebook, Linkedin, Youtube, Star, Clock, Navigation } from "lucide-react"
 import { TrackView } from "./_components/track-view"
 import { WhatsAppButton } from "./_components/whatsapp-button"
 import { ClaimBanner } from "./_components/claim-banner"
@@ -107,7 +107,7 @@ export default async function BusinessPage({ params }: PageProps) {
 
         {/* Fotos — galeria editorial */}
         {business.photos.length > 0 && (
-          <div className="mb-7 grid grid-cols-4 grid-rows-2 gap-2 rounded-3xl overflow-hidden flora-rise" style={{ height: "min(60vw, 380px)" }}>
+          <div className="mb-8 grid grid-cols-4 grid-rows-2 gap-2.5 rounded-3xl overflow-hidden flora-rise" style={{ height: "min(70vw, 460px)" }}>
             {business.photos.slice(0, 3).map((photo, i) => (
               <div key={photo.id} className={`overflow-hidden bg-flora-sand dark:bg-white/5 ${i === 0 ? "col-span-4 sm:col-span-2 row-span-2" : "col-span-2 sm:col-span-2"}`}>
                 <img src={photo.url} alt={`${business.name} - foto ${i + 1}`}
@@ -140,38 +140,63 @@ export default async function BusinessPage({ params }: PageProps) {
           )}
         </div>
 
-        {/* CTAs principais */}
-        <div className="flex flex-wrap gap-2.5 mb-8">
+        {/* CTAs principais — maiores, mais visíveis */}
+        <div className="flex flex-wrap gap-3 mb-6">
           {business.whatsapp && (
             <WhatsAppButton businessId={business.id} whatsapp={business.whatsapp} name={business.name} />
           )}
           {business.phone && (
             <a href={`tel:${business.phone}`}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-full flora-chip text-sm font-medium flora-ink transition-all">
+              className="flex items-center gap-2 px-5 py-3 rounded-full flora-chip text-sm font-semibold flora-ink transition-all">
               <Phone className="w-4 h-4 text-flora-green" />
               {business.phone}
             </a>
           )}
           <a href={mapsUrl} target="_blank" rel="noopener noreferrer"
-            className="flex items-center gap-2 px-4 py-2.5 rounded-full flora-chip text-sm font-medium flora-ink transition-all">
+            className="flex items-center gap-2 px-5 py-3 rounded-full flora-chip text-sm font-semibold flora-ink transition-all">
             <Navigation className="w-4 h-4 text-flora-green" />
             Como chegar
           </a>
           {business.website && (
             <a href={business.website} target="_blank" rel="noopener noreferrer"
-              className="flex items-center gap-2 px-4 py-2.5 rounded-full flora-chip text-sm font-medium flora-ink transition-all">
+              className="flex items-center gap-2 px-5 py-3 rounded-full flora-chip text-sm font-semibold flora-ink transition-all">
               <Globe className="w-4 h-4 text-flora-green" />
               Site
             </a>
           )}
-          {business.instagram && (
-            <a href={`https://instagram.com/${business.instagram.replace("@", "")}`} target="_blank" rel="noopener noreferrer"
-              className="flex items-center gap-2 px-4 py-2.5 rounded-full flora-chip text-sm font-medium flora-ink transition-all">
-              <Instagram className="w-4 h-4 text-flora-green" />
-              Instagram
-            </a>
-          )}
         </div>
+
+        {/* Redes sociais — centraliza a visão do negócio */}
+        {(business.instagram || business.facebook || business.linkedin || business.youtube) && (
+          <div className="flex flex-wrap items-center gap-2.5 mb-8">
+            <span className="text-xs font-semibold uppercase tracking-wider flora-muted">Redes</span>
+            {business.instagram && (
+              <a href={`https://instagram.com/${business.instagram.replace("@", "")}`} target="_blank" rel="noopener noreferrer"
+                aria-label="Instagram"
+                className="flex items-center justify-center w-11 h-11 rounded-full flora-chip text-flora-green hover:text-flora-fresh transition-all">
+                <Instagram className="w-5 h-5" />
+              </a>
+            )}
+            {business.facebook && (
+              <a href={business.facebook} target="_blank" rel="noopener noreferrer" aria-label="Facebook"
+                className="flex items-center justify-center w-11 h-11 rounded-full flora-chip text-flora-green hover:text-flora-fresh transition-all">
+                <Facebook className="w-5 h-5" />
+              </a>
+            )}
+            {business.linkedin && (
+              <a href={business.linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"
+                className="flex items-center justify-center w-11 h-11 rounded-full flora-chip text-flora-green hover:text-flora-fresh transition-all">
+                <Linkedin className="w-5 h-5" />
+              </a>
+            )}
+            {business.youtube && (
+              <a href={business.youtube} target="_blank" rel="noopener noreferrer" aria-label="YouTube"
+                className="flex items-center justify-center w-11 h-11 rounded-full flora-chip text-flora-green hover:text-flora-fresh transition-all">
+                <Youtube className="w-5 h-5" />
+              </a>
+            )}
+          </div>
+        )}
 
         {/* Descrição */}
         {business.description && (
@@ -180,22 +205,26 @@ export default async function BusinessPage({ params }: PageProps) {
           </div>
         )}
 
-        <div className="grid sm:grid-cols-2 gap-6">
+        <div className="grid sm:grid-cols-2 gap-5">
           {/* Endereço */}
-          <div className="flora-card rounded-2xl p-5 space-y-2">
-            <h2 className="font-semibold flora-ink text-xs uppercase tracking-wider flex items-center gap-2">
-              <MapPin className="w-4 h-4 text-flora-green" /> Localização
+          <div className="flora-card rounded-3xl p-6 space-y-3">
+            <h2 className="font-semibold flora-ink text-sm uppercase tracking-wider flex items-center gap-2">
+              <MapPin className="w-5 h-5 text-flora-green" /> Localização
             </h2>
-            <p className="text-sm flora-muted leading-relaxed">{business.address}</p>
+            <p className="text-base flora-muted leading-relaxed">{business.address}</p>
+            <a href={mapsUrl} target="_blank" rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-sm font-semibold text-flora-green dark:text-flora-fresh hover:gap-2.5 transition-all">
+              <Navigation className="w-4 h-4" /> Ver rota
+            </a>
           </div>
 
           {/* Horários */}
           {weekdays.length > 0 && (
-            <div className="flora-card rounded-2xl p-5 space-y-3">
-              <h2 className="font-semibold flora-ink text-xs uppercase tracking-wider flex items-center gap-2">
-                <Clock className="w-4 h-4 text-flora-green" /> Horários
+            <div className="flora-card rounded-3xl p-6 space-y-3">
+              <h2 className="font-semibold flora-ink text-sm uppercase tracking-wider flex items-center gap-2">
+                <Clock className="w-5 h-5 text-flora-green" /> Horários
               </h2>
-              <ul className="text-sm flora-muted space-y-1">
+              <ul className="text-base flora-muted space-y-1.5">
                 {weekdays.map((day, i) => (
                   <li key={i} className="flex justify-between gap-4">
                     <span className="opacity-70">{day.split(":")[0]}</span>

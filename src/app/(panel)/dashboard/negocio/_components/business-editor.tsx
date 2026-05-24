@@ -14,6 +14,9 @@ interface Business {
   whatsapp: string | null
   website: string | null
   instagram: string | null
+  facebook: string | null
+  linkedin: string | null
+  youtube: string | null
   neighborhood: string
   address: string
   category: { slug: string; name: string }
@@ -30,6 +33,9 @@ export function BusinessEditor({ business }: { business: Business }) {
     whatsapp: business.whatsapp ?? "",
     website: business.website ?? "",
     instagram: business.instagram ?? "",
+    facebook: business.facebook ?? "",
+    linkedin: business.linkedin ?? "",
+    youtube: business.youtube ?? "",
   })
 
   function set(field: keyof typeof form) {
@@ -112,6 +118,24 @@ export function BusinessEditor({ business }: { business: Business }) {
           <label className={labelCls}>Instagram</label>
           <input type="text" value={form.instagram} onChange={set("instagram")}
             placeholder="@seunegocio" className={inputCls} />
+        </div>
+        {/* Facebook */}
+        <div className="space-y-1.5">
+          <label className={labelCls}>Facebook</label>
+          <input type="url" value={form.facebook} onChange={set("facebook")}
+            placeholder="https://facebook.com/seunegocio" className={inputCls} />
+        </div>
+        {/* LinkedIn */}
+        <div className="space-y-1.5">
+          <label className={labelCls}>LinkedIn</label>
+          <input type="url" value={form.linkedin} onChange={set("linkedin")}
+            placeholder="https://linkedin.com/company/..." className={inputCls} />
+        </div>
+        {/* YouTube */}
+        <div className="space-y-1.5">
+          <label className={labelCls}>YouTube</label>
+          <input type="url" value={form.youtube} onChange={set("youtube")}
+            placeholder="https://youtube.com/@seucanal" className={inputCls} />
         </div>
       </div>
 

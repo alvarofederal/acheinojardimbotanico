@@ -24,6 +24,7 @@ export default function ImportPage() {
   const [radius, setRadius]   = useState(DEFAULT_RADIUS.toString())
   const [maxPer, setMaxPer]   = useState("20")
   const [selectedTypes, setSelectedTypes] = useState<string[]>([...PLACE_TYPES_TO_IMPORT])
+  const [textQueries, setTextQueries] = useState("")
   const [loading, setLoading] = useState(false)
   const [result, setResult]   = useState<ImportResult | null>(null)
   const [error, setError]     = useState<string | null>(null)
@@ -38,8 +39,9 @@ export default function ImportPage() {
   function deselectAll() { setSelectedTypes([]) }
 
   async function handleImport() {
-    if (selectedTypes.length === 0) {
-      setError("Selecione ao menos um tipo.")
+    const queries = textQueries.split(/[\n,]/).map(q => q.trim()).filter(q => q.length >= 2)
+    if (selectedTypes.length === 0 && queries.length === 0) {
+      setError("Selecione ao menos um tipo ou informe um termo de busca.")
       return
     }
     setLoading(true)
@@ -56,6 +58,7 @@ export default function ImportPage() {
           radiusMeters: parseInt(radius),
           types: selectedTypes,
           maxPerType: parseInt(maxPer),
+          textQueries: queries,
         }),
       })
 
@@ -176,6 +179,24 @@ export default function ImportPage() {
         </div>
       </div>
 
+      {/* Busca por texto — negócios menores */}
+      <div className="rounded-xl border border-gray-200 dark:border-white/[0.08] bg-white dark:bg-white/[0.03] p-5 space-y-3">
+        <div>
+          <h2 className="text-sm font-semibold dash-title">Negócios menores (busca por texto)</h2>
+          <p className="text-xs dash-muted mt-0.5">
+            Ateliês, MEIs e negócios em casa que não aparecem por tipo. Um termo por linha
+            (ex: <em>Arte e Tradição</em>, <em>artesanato</em>, <em>doces caseiros</em>).
+          </p>
+        </div>
+        <textarea
+          value={textQueries}
+          onChange={e => setTextQueries(e.target.value)}
+          rows={3}
+          placeholder={"Arte e Tradição\nartesanato Jardim Botânico\nbolos caseiros"}
+          className="w-full px-3 py-2 text-sm rounded-lg border border-gray-200 dark:border-white/10 bg-transparent dash-title placeholder:text-gray-300 dark:placeholder:text-white/20 focus:outline-none focus:border-emerald-500 resize-none"
+        />
+      </div>
+
       {/* Erro */}
       {error && (
         <div className="flex items-center gap-2 px-4 py-3 rounded-lg bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 text-red-700 dark:text-red-400 text-sm">
@@ -187,7 +208,7 @@ export default function ImportPage() {
       {/* Botão */}
       <button
         onClick={handleImport}
-        disabled={loading || selectedTypes.length === 0}
+        disabled={loading}
         className="flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl font-medium text-sm transition-colors">
         {loading ? (
           <>

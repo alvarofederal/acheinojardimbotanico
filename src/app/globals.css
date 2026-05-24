@@ -1231,9 +1231,41 @@ select:focus {
 }
 .flora-rise { animation: flora-rise .6s cubic-bezier(.2,.8,.2,1) both; }
 
-/* Folha decorativa flutuante */
+/* Folha decorativa flutuante (legado simples) */
 @keyframes flora-sway {
   0%,100% { transform: rotate(-4deg) translateY(0); }
   50%     { transform: rotate(4deg) translateY(-6px); }
 }
 .flora-sway { animation: flora-sway 7s ease-in-out infinite; }
+
+/* Vento — folha pivota pelo talo com rajadas orgânicas */
+@keyframes flora-wind {
+  0%   { transform: rotate(0deg) skewX(0deg) translateX(0); }
+  12%  { transform: rotate(3.5deg) skewX(-2.5deg) translateX(3px); }
+  24%  { transform: rotate(-1.5deg) skewX(1deg) translateX(-1px); }
+  38%  { transform: rotate(5deg) skewX(-3.5deg) translateX(4px); }
+  52%  { transform: rotate(0.5deg) skewX(0.5deg) translateX(0); }
+  66%  { transform: rotate(3deg) skewX(-2deg) translateX(2px); }
+  80%  { transform: rotate(-1deg) skewX(0.5deg) translateX(-1px); }
+  100% { transform: rotate(0deg) skewX(0deg) translateX(0); }
+}
+.flora-wind {
+  transform-origin: bottom center;
+  animation: flora-wind 6s cubic-bezier(.37,.16,.32,1) infinite;
+  will-change: transform;
+}
+/* Vento suave para folhas pequenas (flutter mais rápido) */
+@keyframes flora-flutter {
+  0%,100% { transform: rotate(-6deg) translateY(0); }
+  25%     { transform: rotate(8deg) translateY(-3px); }
+  50%     { transform: rotate(-3deg) translateY(2px); }
+  75%     { transform: rotate(5deg) translateY(-2px); }
+}
+.flora-flutter {
+  transform-origin: bottom center;
+  animation: flora-flutter 4.5s ease-in-out infinite;
+  will-change: transform;
+}
+@media (prefers-reduced-motion: reduce) {
+  .flora-wind, .flora-flutter, .flora-sway { animation: none; }
+}

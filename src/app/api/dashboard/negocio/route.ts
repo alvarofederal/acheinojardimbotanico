@@ -4,12 +4,17 @@ import { auth } from "@/lib/auth"
 import { db } from "@/lib/prisma"
 import { z } from "zod"
 
+const urlOrEmpty = z.string().url().or(z.literal("")).optional()
+
 const schema = z.object({
   description: z.string().max(500).optional(),
   phone: z.string().max(20).optional(),
   whatsapp: z.string().max(20).optional(),
-  website: z.string().url().or(z.literal("")).optional(),
+  website: urlOrEmpty,
   instagram: z.string().max(60).optional(),
+  facebook: urlOrEmpty,
+  linkedin: urlOrEmpty,
+  youtube: urlOrEmpty,
 })
 
 export async function PATCH(req: NextRequest) {
@@ -32,6 +37,9 @@ export async function PATCH(req: NextRequest) {
       whatsapp: data.whatsapp || business.whatsapp,
       website: data.website || business.website,
       instagram: data.instagram || business.instagram,
+      facebook: data.facebook || business.facebook,
+      linkedin: data.linkedin || business.linkedin,
+      youtube: data.youtube || business.youtube,
     },
   })
 
