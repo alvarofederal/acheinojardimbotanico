@@ -165,6 +165,13 @@ export function RegisterForm() {
         >
           {loading ? <><Loader2 className="w-4 h-4 animate-spin" /> Criando conta...</> : "Criar conta grátis"}
         </button>
+
+        <p className="text-center text-xs leading-relaxed" style={{ color: "rgba(255,255,255,0.30)" }}>
+          Ao criar conta, você concorda com os{" "}
+          <a href="/termos" target="_blank" style={{ color: "#10b981" }} className="hover:underline">Termos de Uso</a>{" "}
+          e a{" "}
+          <a href="/privacidade" target="_blank" style={{ color: "#10b981" }} className="hover:underline">Política de Privacidade</a>.
+        </p>
       </form>
     </div>
   )

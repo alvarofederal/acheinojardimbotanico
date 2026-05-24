@@ -1270,6 +1270,17 @@ select:focus {
   .flora-wind, .flora-flutter, .flora-sway { animation: none; }
 }
 
+/* Acessibilidade — foco visível para teclado (WCAG 2.1) */
+.flora-bg a:focus-visible,
+.flora-bg button:focus-visible,
+.flora-bg input:focus-visible,
+.flora-bg textarea:focus-visible,
+.flora-bg select:focus-visible {
+  outline: 2px solid #3A8B6A;
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
 /* Skeleton — shimmer suave em tom de jardim */
 @keyframes flora-shimmer {
   0%   { background-position: -480px 0; }
