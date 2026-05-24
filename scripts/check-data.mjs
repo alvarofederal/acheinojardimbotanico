@@ -1,18 +1,25 @@
-import "dotenv/config"
 import { PrismaClient } from "../src/generated/prisma/index.js"
 const db = new PrismaClient()
-const KEY = process.env.GOOGLE_PLACES_API_KEY
 
-const total = await db.photo.count()
-const all = await db.photo.findMany({ select: { url: true } })
-const proxied = all.filter(p => p.url.startsWith("/api/photo/")).length
-console.log(`Fotos: ${total} | proxy: ${proxied} | antigas: ${total - proxied}`)
+const total = await db.business.count()
+const cats = await db.category.count()
+const photos = await db.photo.count()
+console.log(`Negócios: ${total} | Categorias: ${cats} | Fotos: ${photos}`)
 
-// simula o que o proxy faz: photoName → Google skipHttpRedirect → photoUri
-const name = all[0].url.replace("/api/photo/", "")
-const url = `https://places.googleapis.com/v1/${name}/media?maxWidthPx=1600&key=${KEY}&skipHttpRedirect=true`
-const res = await fetch(url)
-const data = await res.json()
-console.log(`\nProxy → Google: HTTP ${res.status}`)
-console.log("photoUri:", data.photoUri ? data.photoUri.slice(0, 70) + "..." : JSON.stringify(data).slice(0, 150))
+const churrasco = await db.business.findMany({
+  where: { name: { contains: "Churrasco na Barca" } },
+  select: { name: true, category: { select: { name: true } } },
+})
+console.log("\nChurrasco na Barca:", churrasco.length ? churrasco.map(c => `${c.name} (${c.category.name})`) : "NÃO ENCONTRADO")
+
+// top categorias por nº de negócios
+const top = await db.category.findMany({
+  select: { name: true, _count: { select: { businesses: true } } },
+  orderBy: { businesses: { _count: "desc" } }, take: 12,
+})
+console.log("\nTop categorias:")
+top.forEach(c => console.log(`  ${c._count.businesses}x  ${c.name}`))
+
+const usage = await db.apiUsage.aggregate({ _sum: { costUsd: true } })
+console.log(`\nCusto acumulado: US$ ${usage._sum.costUsd?.toFixed(2)} ≈ R$ ${((usage._sum.costUsd ?? 0) * 5.3).toFixed(2)}`)
 await db.$disconnect()
