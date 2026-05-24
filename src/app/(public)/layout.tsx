@@ -31,7 +31,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
               className="text-sm font-medium flora-muted hover:flora-ink transition-colors px-3 py-2">
               Entrar
             </Link>
-            <Link href="/register"
+            <Link href="/anuncie"
               className="text-sm font-semibold px-4 py-2 rounded-full bg-flora-green hover:bg-flora-fresh text-white transition-all hover:shadow-lg hover:shadow-flora-green/25">
               Anunciar
             </Link>

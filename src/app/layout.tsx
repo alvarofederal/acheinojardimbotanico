@@ -5,6 +5,11 @@ import "./globals.css";
 import { SessionAuthProvider } from "@/components/session-auth";
 import { QueryClientContext } from "@/providers/queryclient";
 import { Toaster } from "sonner";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import Script from "next/script";
+
+const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
 
 // Flora Design System — Playfair Display (títulos) + Inter (corpo/UI)
 const inter = Inter({
@@ -94,6 +99,23 @@ export default function RootLayout({
             <Toaster position="top-right" richColors duration={2500} />
           </QueryClientContext>
         </SessionAuthProvider>
+
+        {/* Métricas — Vercel Analytics + Speed Insights */}
+        <Analytics />
+        <SpeedInsights />
+
+        {/* Google Analytics 4 — só carrega se NEXT_PUBLIC_GA_ID estiver definido */}
+        {GA_ID && (
+          <>
+            <Script src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} strategy="afterInteractive" />
+            <Script id="ga4" strategy="afterInteractive">
+              {`window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', '${GA_ID}');`}
+            </Script>
+          </>
+        )}
       </body>
     </html>
   );
