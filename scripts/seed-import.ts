@@ -172,6 +172,8 @@ async function main() {
             googleRating: place.rating ?? null, googleRatingCount: place.userRatingCount ?? null,
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             openingHours: (place.regularOpeningHours ?? undefined) as any,
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            reviews: (place.reviews?.slice(0, 5) ?? undefined) as any,
             status: "IMPORTED", plan: "FREE", lastSyncedAt: new Date(),
           },
         })
