@@ -126,6 +126,7 @@ model Business {
   googleRating      Float?
   googleRatingCount Int?
   openingHours      Json?
+  reviews           Json?            // top reviews do Google (tier pago)
   status            BusinessStatus @default(IMPORTED)
   plan              Plan           @default(FREE)
   planExpiresAt     DateTime?

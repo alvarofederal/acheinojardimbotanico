@@ -26,6 +26,12 @@ export interface PlaceResult {
   userRatingCount?: number
   editorialSummary?: { text: string; languageCode: string }
   photos?: Array<{ name: string; widthPx: number; heightPx: number }>
+  reviews?: Array<{
+    rating?: number
+    text?: { text: string }
+    relativePublishTimeDescription?: string
+    authorAttribution?: { displayName?: string; photoUri?: string }
+  }>
 }
 
 export interface NearbySearchResponse {
@@ -117,6 +123,7 @@ export async function searchNearby(params: {
     "places.userRatingCount",
     "places.photos",
     "places.editorialSummary",
+    "places.reviews",
   ].join(",")
 
   const res = await fetch(`${BASE_URL}/places:searchNearby`, {
@@ -174,6 +181,7 @@ export async function searchText(params: {
     "places.userRatingCount",
     "places.photos",
     "places.editorialSummary",
+    "places.reviews",
   ].join(",")
 
   const res = await fetch(`${BASE_URL}/places:searchText`, {

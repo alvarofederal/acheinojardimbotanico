@@ -1,107 +1,94 @@
 /**
  * Ilustrações botânicas em SVG — Flora Design System.
- * Folhas realistas (nervuras, recortes orgânicos) para compor o hero e
- * estados vazios sem depender de fotografia. Aceitam className/style.
+ * Folhas naturalistas com curvas suaves (formato ovado/amêndoa, ponta
+ * alongada e nervuras) para compor o hero e estados vazios, sem fotografia.
+ * Mantém os 4 nomes usados pelo restante do app.
  */
 
-/** Folha de monstera realista com fenestrações e nervuras. */
-export function MonsteraLeaf({ className = "", style }: { className?: string; style?: React.CSSProperties }) {
+// Folha normalizada: base na origem (0,0), ponta para cima (0,-60).
+const LEAF_PATH =
+  "M0 0 C -12 -16 -15 -38 -5 -54 C -2.5 -58 0 -60 0 -60 C 0 -60 2.5 -58 5 -54 C 15 -38 12 -16 0 0 Z"
+const MIDRIB_PATH = "M0 -5 C -1 -24 -0.5 -42 0 -55"
+const VEIN_L = "M0 -16 C -4 -20 -7 -26 -9 -32"
+const VEIN_R = "M0 -16 C 4 -20 7 -26 9 -32"
+const VEIN_L2 = "M0 -30 C -3 -33 -5 -38 -6 -43"
+const VEIN_R2 = "M0 -30 C 3 -33 5 -38 6 -43"
+
+function Leaflet({ x, y, rot, scale, opacity = 1 }: { x: number; y: number; rot: number; scale: number; opacity?: number }) {
   return (
-    <svg viewBox="0 0 240 260" fill="none" className={className} style={style} aria-hidden>
-      {/* contorno da folha com recortes (fenestrações da borda) */}
-      <path
-        d="M120 250
-           C118 200 118 150 120 120
-           C70 118 36 92 30 120
-           C24 96 40 60 70 56
-           C66 30 86 14 120 10
-           C154 14 174 30 170 56
-           C200 60 216 96 210 120
-           C204 92 170 118 120 120
-           C122 150 122 200 120 250 Z"
-        fill="currentColor"
-      />
-      <path
-        d="M120 12C92 30 72 44 60 70c14-6 30-8 46-6-2 18-2 38 0 56-22 2-44-6-58-22 4 28 26 50 54 56
-           -2 24-2 48 0 70 18-2 18-2 24-2-2-22-2-46 0-68 28-6 50-28 54-56-14 16-36 24-58 22 2-18 2-38 0-56 16-2 32 0 46 6-12-26-32-40-60-58Z"
-        fill="rgba(0,0,0,0.08)"
-      />
-      {/* nervuras */}
-      <g stroke="rgba(255,255,255,0.28)" strokeWidth="2" strokeLinecap="round" fill="none">
-        <path d="M120 22v220" />
-        <path d="M120 64C100 62 78 54 64 70" />
-        <path d="M120 64c20-2 42-10 56 6" />
-        <path d="M120 120C96 118 70 108 52 90" />
-        <path d="M120 120c24-2 50-12 68-30" />
-        <path d="M120 178c-18 0-36-8-48-22" />
-        <path d="M120 178c18 0 36-8 48-22" />
+    <g transform={`translate(${x} ${y}) rotate(${rot}) scale(${scale})`} opacity={opacity}>
+      <path d={LEAF_PATH} fill="currentColor" />
+      <g stroke="rgba(255,255,255,0.28)" strokeWidth={1.4 / scale} fill="none" strokeLinecap="round">
+        <path d={MIDRIB_PATH} />
+        <path d={VEIN_L} /><path d={VEIN_R} />
+        <path d={VEIN_L2} /><path d={VEIN_R2} />
       </g>
-    </svg>
+    </g>
   )
 }
 
-/** Folha lanceolada realista (uma folha, com nervuras finas). */
+/** Uma folha elegante isolada. */
 export function SimpleLeaf({ className = "", style }: { className?: string; style?: React.CSSProperties }) {
   return (
-    <svg viewBox="0 0 100 160" fill="none" className={className} style={style} aria-hidden>
-      <path
-        d="M50 156C20 120 8 80 18 44 24 22 36 8 50 2c14 6 26 20 32 42 10 36-2 76-32 112Z"
-        fill="currentColor"
-      />
-      <g stroke="rgba(255,255,255,0.30)" strokeWidth="1.6" strokeLinecap="round" fill="none">
-        <path d="M50 8v140" />
-        {[126, 104, 82, 60, 40].map((y, i) => (
-          <g key={y}>
-            <path d={`M50 ${y}c-${14 - i * 1.5} -2 -${24 - i * 2} -10 -${30 - i * 2} -22`} />
-            <path d={`M50 ${y}c${14 - i * 1.5} -2 ${24 - i * 2} -10 ${30 - i * 2} -22`} />
-          </g>
-        ))}
-      </g>
+    <svg viewBox="-22 -64 44 70" fill="none" className={className} style={style} aria-hidden>
+      <Leaflet x={0} y={0} rot={0} scale={1} />
     </svg>
   )
 }
 
-/** Ramo com folhas alternadas (realista, com nervura central). */
-export function LeafSprig({ className = "", style }: { className?: string; style?: React.CSSProperties }) {
-  const leaves = [205, 170, 135, 100, 66]
+/** Trio de folhas saindo de um ponto (cluster cheio para cantos do hero). */
+export function MonsteraLeaf({ className = "", style }: { className?: string; style?: React.CSSProperties }) {
   return (
-    <svg viewBox="0 0 180 250" fill="none" className={className} style={style} aria-hidden>
-      <path d="M86 248C86 188 84 128 100 56c3-14 8-26 18-36" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" fill="none" />
-      {leaves.map((y, i) => {
-        const dir = i % 2 === 0 ? 1 : -1
-        const tx = 86 + dir * 2
-        return (
-          <g key={y}>
-            {/* folha preenchida */}
-            <path
-              d={`M${tx} ${y}
-                  c${dir * 30} -2 ${dir * 54} -16 ${dir * 62} -40
-                  c${dir * -26} -2 ${dir * -50} 10 ${dir * -62} 40 Z`}
-              fill="currentColor" fillOpacity="0.85"
-            />
-            {/* nervura da folha */}
-            <path d={`M${tx} ${y}c${dir * 30} -10 ${dir * 50} -22 ${dir * 58} -38`} stroke="rgba(255,255,255,0.25)" strokeWidth="1.4" fill="none" strokeLinecap="round" />
-          </g>
-        )
-      })}
+    <svg viewBox="-90 -130 180 150" fill="none" className={className} style={style} aria-hidden>
+      {/* caules curtos */}
+      <g stroke="currentColor" strokeWidth="3" strokeLinecap="round" opacity="0.8">
+        <path d="M0 18 C -8 0 -22 -14 -38 -26" />
+        <path d="M0 18 C 0 -6 0 -30 0 -52" />
+        <path d="M0 18 C 8 0 22 -14 38 -26" />
+      </g>
+      <Leaflet x={-38} y={-26} rot={-42} scale={1.35} opacity={0.92} />
+      <Leaflet x={38} y={-26} rot={42} scale={1.35} opacity={0.92} />
+      <Leaflet x={0} y={-52} rot={0} scale={1.7} />
     </svg>
   )
 }
 
-/** Fronde de samambaia (delicada, folíolos curvos). */
+/** Ramo curvo com folhas alternadas — naturalista. */
+export function LeafSprig({ className = "", style }: { className?: string; style?: React.CSSProperties }) {
+  const points = [
+    { x: 66, y: 206, rot: -118, scale: 0.95 },
+    { x: 70, y: 168, rot: 64, scale: 1.05 },
+    { x: 78, y: 130, rot: -112, scale: 1.1 },
+    { x: 88, y: 94, rot: 70, scale: 1.05 },
+    { x: 100, y: 60, rot: -104, scale: 0.95 },
+    { x: 112, y: 32, rot: 60, scale: 0.85 },
+  ]
+  return (
+    <svg viewBox="0 0 180 230" fill="none" className={className} style={style} aria-hidden>
+      <path d="M62 226 C 58 184 66 130 84 88 C 96 60 110 40 124 24"
+        stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" fill="none" opacity="0.85" />
+      {points.map((p, i) => <Leaflet key={i} {...p} opacity={0.95 - i * 0.04} />)}
+    </svg>
+  )
+}
+
+/** Fronde de samambaia — folíolos curvos e afilados. */
 export function FernFrond({ className = "", style }: { className?: string; style?: React.CSSProperties }) {
   return (
-    <svg viewBox="0 0 130 270" fill="none" className={className} style={style} aria-hidden>
-      <path d="M65 266C65 200 60 128 76 44c3-14 8-24 16-32" stroke="currentColor" strokeWidth="2" strokeLinecap="round" fill="none" />
+    <svg viewBox="0 0 130 260" fill="none" className={className} style={style} aria-hidden>
+      <path d="M64 256 C 60 196 62 130 78 56 C 84 34 90 22 100 12"
+        stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" fill="none" />
       <g fill="currentColor">
-        {Array.from({ length: 11 }).map((_, i) => {
-          const y = 250 - i * 21
-          const len = 16 + i * 2.4
-          const op = 0.9 - i * 0.05
+        {Array.from({ length: 13 }).map((_, i) => {
+          const t = i / 12
+          const y = 244 - t * 220
+          const x = 64 + t * 30
+          const len = 26 - t * 16
+          const dir = i % 2 === 0 ? -1 : 1
+          const rot = dir * (70 - t * 20)
           return (
-            <g key={i} opacity={op}>
-              <path d={`M65 ${y}q-${len} 2 -${len + 6} -${len} q${len * 0.6} ${len * 0.5} ${len + 6} ${len} Z`} />
-              <path d={`M65 ${y}q${len} 2 ${len + 6} -${len} q-${len * 0.6} ${len * 0.5} -${len + 6} ${len} Z`} />
+            <g key={i} transform={`translate(${x} ${y}) rotate(${rot}) scale(${len / 60})`} opacity={0.92 - t * 0.3}>
+              <path d={LEAF_PATH} />
             </g>
           )
         })}

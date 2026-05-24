@@ -12,8 +12,8 @@ function Logo() {
       <span className="flex items-center justify-center w-8 h-8 rounded-xl bg-flora-green/10 dark:bg-flora-fresh/15 group-hover:bg-flora-green/15 transition-colors">
         <Leaf className="w-4 h-4 text-flora-green dark:text-flora-fresh" strokeWidth={2.2} />
       </span>
-      <span className="font-serif text-lg font-semibold tracking-tight flora-ink leading-none">
-        Achei no <span className="text-flora-green dark:text-flora-fresh italic">Jardim</span>
+      <span className="font-serif text-base sm:text-lg font-semibold tracking-tight flora-ink leading-none">
+        Achei no <span className="text-flora-green dark:text-flora-fresh italic">Jardim Botânico</span>
       </span>
     </Link>
   )

@@ -88,6 +88,9 @@ export async function POST(request: NextRequest) {
           openingHours: place.regularOpeningHours
             ? (place.regularOpeningHours as Prisma.InputJsonValue)
             : existing.openingHours ?? Prisma.DbNull,
+          reviews: place.reviews?.length
+            ? (place.reviews.slice(0, 5) as unknown as Prisma.InputJsonValue)
+            : existing.reviews ?? Prisma.DbNull,
           lastSyncedAt: new Date(),
         },
       })
@@ -113,6 +116,9 @@ export async function POST(request: NextRequest) {
           googleRatingCount: place.userRatingCount ?? null,
           openingHours: place.regularOpeningHours
             ? (place.regularOpeningHours as Prisma.InputJsonValue)
+            : Prisma.DbNull,
+          reviews: place.reviews?.length
+            ? (place.reviews.slice(0, 5) as unknown as Prisma.InputJsonValue)
             : Prisma.DbNull,
           status: "IMPORTED",
           plan: "FREE",

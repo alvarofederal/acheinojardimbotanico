@@ -37,6 +37,18 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 }
 
+interface PlaceReview {
+  rating?: number
+  text?: { text: string }
+  relativePublishTimeDescription?: string
+  authorAttribution?: { displayName?: string; photoUri?: string }
+}
+
+function getReviews(reviews: unknown): PlaceReview[] {
+  if (!Array.isArray(reviews)) return []
+  return (reviews as PlaceReview[]).filter(r => r?.text?.text).slice(0, 3)
+}
+
 function getWeekdayDescriptions(openingHours: unknown): string[] {
   try {
     const h = openingHours as { weekdayDescriptions?: string[] }
@@ -59,6 +71,7 @@ export default async function BusinessPage({ params }: PageProps) {
   if (business.status === "SUSPENDED") notFound()
 
   const weekdays = getWeekdayDescriptions(business.openingHours)
+  const reviews = getReviews(business.reviews)
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -235,6 +248,43 @@ export default async function BusinessPage({ params }: PageProps) {
             </div>
           )}
         </div>
+
+        {/* Avaliações do Google */}
+        {reviews.length > 0 && (
+          <div className="mt-10">
+            <h2 className="font-serif text-2xl font-semibold flora-ink mb-5 flex items-center gap-2">
+              <Star className="w-5 h-5 fill-flora-gold text-flora-gold" />
+              O que dizem no Google
+            </h2>
+            <div className="grid sm:grid-cols-3 gap-4">
+              {reviews.map((r, i) => (
+                <div key={i} className="flora-card rounded-2xl p-5 flex flex-col gap-3">
+                  <div className="flex items-center gap-0.5">
+                    {Array.from({ length: 5 }).map((_, s) => (
+                      <Star key={s} className={`w-3.5 h-3.5 ${s < Math.round(r.rating ?? 0) ? "fill-flora-gold text-flora-gold" : "text-flora-soft/40"}`} />
+                    ))}
+                  </div>
+                  <p className="text-sm flora-muted leading-relaxed line-clamp-5 flex-1">“{r.text?.text}”</p>
+                  <div className="flex items-center gap-2 pt-1">
+                    {r.authorAttribution?.photoUri ? (
+                      <img src={r.authorAttribution.photoUri} alt="" className="w-7 h-7 rounded-full object-cover" loading="lazy" />
+                    ) : (
+                      <span className="w-7 h-7 rounded-full bg-flora-green/15 flex items-center justify-center text-flora-green text-xs font-bold">
+                        {(r.authorAttribution?.displayName ?? "?")[0]}
+                      </span>
+                    )}
+                    <div className="min-w-0">
+                      <p className="text-xs font-semibold flora-ink truncate">{r.authorAttribution?.displayName ?? "Visitante"}</p>
+                      {r.relativePublishTimeDescription && (
+                        <p className="text-[11px] flora-muted">{r.relativePublishTimeDescription}</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Claim banner */}
         {!business.ownerId && <ClaimBanner businessId={business.id} businessName={business.name} />}

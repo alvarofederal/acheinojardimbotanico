@@ -10,11 +10,21 @@ export async function POST(req: NextRequest) {
     const today = new Date()
     today.setHours(0, 0, 0, 0)
 
-    await db.whatsappClick.upsert({
-      where: { businessId_date: { businessId, date: today } },
-      create: { businessId, date: today, count: 1 },
-      update: { count: { increment: 1 } },
+    const updated = await db.whatsappClick.updateMany({
+      where: { businessId, date: today },
+      data: { count: { increment: 1 } },
     })
+
+    if (updated.count === 0) {
+      try {
+        await db.whatsappClick.create({ data: { businessId, date: today, count: 1 } })
+      } catch {
+        await db.whatsappClick.updateMany({
+          where: { businessId, date: today },
+          data: { count: { increment: 1 } },
+        })
+      }
+    }
 
     return NextResponse.json({ ok: true })
   } catch {
