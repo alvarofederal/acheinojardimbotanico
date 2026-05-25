@@ -6,27 +6,8 @@ import { Loader2, Mail, Lock, Chrome } from "lucide-react"
 import { toast } from "sonner"
 import Link from "next/link"
 
-const inputStyle: React.CSSProperties = {
-  width: "100%",
-  background: "rgba(255,255,255,0.04)",
-  border: "1px solid rgba(255,255,255,0.10)",
-  borderRadius: "12px",
-  padding: "12px 12px 12px 40px",
-  color: "#fff",
-  fontSize: "14px",
-  outline: "none",
-  transition: "border-color 0.2s",
-}
-
-const labelStyle: React.CSSProperties = {
-  display: "block",
-  fontSize: "12px",
-  fontWeight: 600,
-  marginBottom: "6px",
-  color: "rgba(255,255,255,0.50)",
-  textTransform: "uppercase",
-  letterSpacing: "0.06em",
-}
+const inputCls = "w-full pl-10 pr-3 py-3 rounded-xl text-sm flora-ink bg-white/70 dark:bg-white/[0.04] border border-flora-green/15 dark:border-white/10 placeholder:text-flora-ink/30 focus:outline-none focus:border-flora-fresh focus:ring-2 focus:ring-flora-fresh/30 transition-all"
+const labelCls = "block text-xs font-semibold mb-1.5 uppercase tracking-wide flora-muted"
 
 /** Só aceita caminhos internos (evita open redirect). */
 function safeCallbackUrl(): string {
@@ -92,33 +73,25 @@ export function LoginForm() {
         type="button"
         onClick={handleGoogle}
         disabled={googleLoading}
-        className="w-full flex items-center justify-center gap-3 py-3 rounded-xl text-sm font-semibold transition-all hover:scale-[1.01] active:scale-95 disabled:opacity-50"
-        style={{
-          background: "rgba(255,255,255,0.06)",
-          border: "1px solid rgba(255,255,255,0.10)",
-          color: "rgba(255,255,255,0.80)",
-        }}
+        className="w-full flex items-center justify-center gap-3 py-3 rounded-xl text-sm font-semibold flora-chip flora-ink transition-all disabled:opacity-50"
       >
-        {googleLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Chrome className="w-4 h-4" />}
+        {googleLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Chrome className="w-4 h-4 text-flora-green dark:text-flora-fresh" />}
         Continuar com Google
       </button>
 
       {/* Divider */}
       <div className="flex items-center gap-3">
-        <div className="flex-1 h-px" style={{ background: "rgba(255,255,255,0.07)" }} />
-        <span className="text-xs" style={{ color: "rgba(255,255,255,0.25)" }}>ou</span>
-        <div className="flex-1 h-px" style={{ background: "rgba(255,255,255,0.07)" }} />
+        <div className="flex-1 h-px bg-flora-green/10 dark:bg-white/10" />
+        <span className="text-xs flora-muted">ou</span>
+        <div className="flex-1 h-px bg-flora-green/10 dark:bg-white/10" />
       </div>
 
       {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label style={labelStyle}>Email</label>
+          <label className={labelCls}>Email</label>
           <div className="relative">
-            <Mail
-              className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4"
-              style={{ color: focused === "email" ? "#10b981" : "rgba(255,255,255,0.28)" }}
-            />
+            <Mail className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors ${focused === "email" ? "text-flora-green dark:text-flora-fresh" : "text-flora-ink/30"}`} />
             <input
               type="email"
               required
@@ -127,30 +100,20 @@ export function LoginForm() {
               onFocus={() => setFocused("email")}
               onBlur={() => setFocused(null)}
               placeholder="seu@email.com"
-              style={{
-                ...inputStyle,
-                borderColor: focused === "email" ? "rgba(16,185,129,0.5)" : "rgba(255,255,255,0.10)",
-              }}
+              className={inputCls}
             />
           </div>
         </div>
 
         <div>
           <div className="flex items-center justify-between mb-1.5">
-            <label style={labelStyle}>Senha</label>
-            <Link
-              href="/forgot-password"
-              className="text-xs transition-colors hover:text-white"
-              style={{ color: "rgba(255,255,255,0.30)" }}
-            >
+            <label className={labelCls}>Senha</label>
+            <Link href="/forgot-password" className="text-xs flora-muted hover:text-flora-green dark:hover:text-flora-fresh transition-colors">
               Esqueceu?
             </Link>
           </div>
           <div className="relative">
-            <Lock
-              className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4"
-              style={{ color: focused === "password" ? "#10b981" : "rgba(255,255,255,0.28)" }}
-            />
+            <Lock className={`absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors ${focused === "password" ? "text-flora-green dark:text-flora-fresh" : "text-flora-ink/30"}`} />
             <input
               type="password"
               required
@@ -159,10 +122,7 @@ export function LoginForm() {
               onFocus={() => setFocused("password")}
               onBlur={() => setFocused(null)}
               placeholder="••••••••"
-              style={{
-                ...inputStyle,
-                borderColor: focused === "password" ? "rgba(16,185,129,0.5)" : "rgba(255,255,255,0.10)",
-              }}
+              className={inputCls}
             />
           </div>
         </div>
@@ -170,11 +130,7 @@ export function LoginForm() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold text-black transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-60 mt-2"
-          style={{
-            background: "linear-gradient(135deg, #10b981, #059669)",
-            boxShadow: "0 0 24px rgba(16,185,129,0.30)",
-          }}
+          className="w-full flex items-center justify-center gap-2 py-3 rounded-full text-sm font-semibold text-white bg-flora-green hover:bg-flora-fresh transition-all hover:shadow-lg hover:shadow-flora-green/25 disabled:opacity-60 mt-2"
         >
           {loading ? <><Loader2 className="w-4 h-4 animate-spin" /> Entrando...</> : "Entrar"}
         </button>

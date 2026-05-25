@@ -2,75 +2,38 @@ import { auth } from "@/lib/auth"
 import { redirect } from "next/navigation"
 import { LoginForm } from "./_components/login-form"
 import Link from "next/link"
+import { Leaf } from "lucide-react"
+import { MonsteraLeaf, FernFrond } from "@/app/(public)/_components/botanicals"
 
 export default async function LoginPage() {
   const session = await auth()
   if (session?.user) redirect("/dashboard")
 
   return (
-    <div
-      className="min-h-screen flex flex-col items-center justify-center px-4"
-      style={{ background: "#050505" }}
-    >
-      {/* Grid faint background */}
-      <div
-        aria-hidden="true"
-        className="fixed inset-0 pointer-events-none"
-        style={{
-          backgroundImage:
-            "linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px)",
-          backgroundSize: "48px 48px",
-        }}
-      />
-      {/* Ambient green orb */}
-      <div
-        aria-hidden="true"
-        className="fixed pointer-events-none"
-        style={{
-          width: "600px",
-          height: "600px",
-          top: "-200px",
-          left: "50%",
-          transform: "translateX(-50%)",
-          background: "radial-gradient(circle, rgba(16,185,129,0.12), transparent 65%)",
-          borderRadius: "50%",
-        }}
-      />
+    <div className="min-h-screen flora-bg flex flex-col items-center justify-center px-4 py-10 relative overflow-hidden">
+      {/* Botânica de fundo */}
+      <MonsteraLeaf className="absolute -left-16 -top-10 w-64 h-64 text-flora-green/10 dark:text-flora-fresh/10 flora-wind" />
+      <FernFrond className="absolute right-[6%] -bottom-10 w-24 h-64 text-flora-soft/20 flora-wind hidden sm:block" style={{ animationDelay: "1.5s" }} />
 
-      {/* Card */}
-      <div
-        className="relative w-full max-w-md rounded-3xl p-8 z-10"
-        style={{
-          background: "rgba(255,255,255,0.03)",
-          border: "1px solid rgba(255,255,255,0.08)",
-          boxShadow: "0 32px 64px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.06)",
-          backdropFilter: "blur(24px)",
-        }}
-      >
+      <div className="relative w-full max-w-md flora-card rounded-3xl p-8 z-10">
         {/* Logo */}
         <div className="text-center mb-8">
-          <Link href="/">
-            <span
-              className="logo-shine font-bold tracking-tight select-none"
-              style={{
-                fontFamily: "var(--font-open-sans), 'Open Sans', sans-serif",
-                fontSize: "28px",
-              }}
-            >
-              <span style={{ color: "#ffffff" }}>Achei no</span>
-              <span className="logo-fy-pulse" style={{ color: "#10b981" }}> JBT</span>
+          <Link href="/" className="inline-flex items-center gap-2">
+            <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-flora-green/10 dark:bg-flora-fresh/15">
+              <Leaf className="w-5 h-5 text-flora-green dark:text-flora-fresh" strokeWidth={2.2} />
+            </span>
+            <span className="font-serif text-xl font-semibold flora-ink leading-none">
+              Achei no <span className="text-flora-green dark:text-flora-fresh italic">Jardim Botânico</span>
             </span>
           </Link>
-          <p className="text-sm mt-3" style={{ color: "rgba(255,255,255,0.40)" }}>
-            Bem-vindo de volta
-          </p>
+          <p className="text-sm mt-3 flora-muted">Bem-vindo de volta 🌿</p>
         </div>
 
         <LoginForm />
 
-        <p className="text-center text-xs mt-6" style={{ color: "rgba(255,255,255,0.20)" }}>
+        <p className="text-center text-sm mt-6 flora-muted">
           Ainda não tem conta?{" "}
-          <Link href="/register" className="font-semibold transition-colors hover:text-white" style={{ color: "#10b981" }}>
+          <Link href="/register" className="font-semibold text-flora-green dark:text-flora-fresh hover:underline">
             Criar conta
           </Link>
         </p>
