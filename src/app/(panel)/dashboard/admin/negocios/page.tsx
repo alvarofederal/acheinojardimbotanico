@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth"
 import { db } from "@/lib/prisma"
 import Link from "next/link"
 import { ExternalLink, ShieldCheck } from "lucide-react"
+import { PendingActions } from "./_components/pending-actions"
 
 interface SearchProps {
   searchParams: Promise<{ q?: string; status?: string; page?: string }>
@@ -120,10 +121,13 @@ export default async function AdminNegociosPage({ searchParams }: SearchProps) {
                     </span>
                   </td>
                   <td className="px-4 py-3">
-                    <Link href={`/jardim-botanico/${b.category.slug}/${b.slug}`} target="_blank"
-                      className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 transition-colors inline-flex">
-                      <ExternalLink className="w-3.5 h-3.5 dash-muted" />
-                    </Link>
+                    <div className="flex items-center gap-2 justify-end">
+                      {b.status === "PENDING_REVIEW" && <PendingActions businessId={b.id} />}
+                      <Link href={`/jardim-botanico/${b.category.slug}/${b.slug}`} target="_blank"
+                        className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 transition-colors inline-flex">
+                        <ExternalLink className="w-3.5 h-3.5 dash-muted" />
+                      </Link>
+                    </div>
                   </td>
                 </tr>
               ))}

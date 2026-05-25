@@ -1281,11 +1281,17 @@ Estes vão para `.specify/memory/constitution.md` e o Spec-Kit os lê em toda ex
 - Pagamentos admin agora tem **dashboard de receita** (total, mês, MRR, assinantes) + **histórico**.
 - **Testes:** `npm run test:plans` (camada de dados), `npm run test:expire` (cron), Cypress E2E `npm run test:e2e`.
 
-### 11.9 Pendências conhecidas / próximos passos
+### 11.9 Entregas recentes (UX/operacional)
+- **Identidade Flora** aplicada em todas as telas de auth (login/register/forgot/reset/verify) e 404.
+- **Mapa interativo** no perfil do negócio (OpenStreetMap embutido, sem chave/custo).
+- **Histórico de Ações** (admin) + busca por lojista no Log de Auditoria (coluna `AuditLog.businessId`).
+- **Cadastro de negócio pelo anunciante** (`/dashboard/negocio/novo`) — para negócios fora do Google
+  (ex.: que atendem em casa). Autocomplete de endereço via Photon/OSM (sem chave), captura coordenadas,
+  entra como `PENDING_REVIEW`; admin aprova/rejeita na lista de Negócios. Proxy em `/api/geocode`.
+
+### 11.10 Pendências conhecidas / próximos passos
 - Restringir a chave Google por IP (servidor) — segurança.
 - Conferência automática de pagamento (webhook PIX/MP ou Asaas) — quando o volume justificar.
-- Mapa interativo no perfil; autocomplete de endereço no cadastro.
-- Aplicar identidade Flora nas telas de auth restantes (register/forgot/reset/verify).
 
 ---
 

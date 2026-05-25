@@ -30,10 +30,14 @@ export default async function NegocioPage() {
         <p className="dash-subtitle text-sm mb-6 max-w-sm mx-auto">
           Seu negócio já pode estar cadastrado. Encontre-o na listagem e reivindique o perfil.
         </p>
-        <div className="flex justify-center">
+        <div className="flex flex-col sm:flex-row justify-center items-center gap-3">
           <Link href="/" className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium transition-colors">
             <ShieldCheck className="w-4 h-4" />
             Buscar e reivindicar meu negócio
+          </Link>
+          <Link href="/dashboard/negocio/novo" className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 dash-title text-sm font-medium hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
+            <Store className="w-4 h-4" />
+            Não está no guia? Cadastrar
           </Link>
         </div>
       </div>

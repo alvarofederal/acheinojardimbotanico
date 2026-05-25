@@ -6,6 +6,8 @@ const ACTION_TONE: Record<string, string> = {
   "payment.confirmed": "text-emerald-600 dark:text-emerald-400",
   "claim.approved": "text-emerald-600 dark:text-emerald-400",
   "event.approve": "text-emerald-600 dark:text-emerald-400",
+  "business.approved": "text-emerald-600 dark:text-emerald-400",
+  "business.rejected": "text-red-500",
   "payment.rejected": "text-red-500",
   "claim.rejected": "text-red-500",
   "claim.rejectd": "text-red-500",

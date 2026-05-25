@@ -31,6 +31,9 @@ export async function logAudit(input: LogAuditInput) {
 /** Rótulos amigáveis das ações registradas. */
 export const ACTION_LABELS: Record<string, string> = {
   "business.import": "Importação de negócios",
+  "business.created": "Negócio cadastrado",
+  "business.approved": "Negócio aprovado",
+  "business.rejected": "Negócio rejeitado",
   "claim.created": "Reivindicação criada",
   "claim.approved": "Reivindicação aprovada",
   "claim.rejected": "Reivindicação rejeitada",

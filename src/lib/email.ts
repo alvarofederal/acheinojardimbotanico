@@ -225,6 +225,20 @@ export async function sendPlanExpiredEmail(email: string, businessName: string, 
   if (error) console.error("Erro ao enviar email de expiração:", error)
 }
 
+/** Notifica admins de um novo negócio cadastrado pelo anunciante (aguardando moderação). */
+export async function sendBusinessSubmittedEmail(adminEmail: string, businessName: string) {
+  if (isDev) { console.log(`\n🏪 [DEV] Negócio submetido para moderação: ${businessName}`); return }
+  if (!process.env.RESEND_API_KEY) return
+  const html = emailShell("🏪 Novo negócio para moderar", `
+    <p style="color:#4b5563;font-size:16px">Um anunciante cadastrou um novo negócio que aguarda sua aprovação:</p>
+    <p style="color:#4b5563;font-size:15px"><strong>${businessName}</strong></p>
+    <div style="text-align:center;margin:28px 0">
+      <a href="https://acheinojardimbotanico.com.br/dashboard/admin/negocios?status=PENDING_REVIEW" style="display:inline-block;background:#10b981;color:#fff;padding:14px 28px;text-decoration:none;border-radius:8px;font-weight:600">Revisar negócio</a>
+    </div>`)
+  const { error } = await getResend().emails.send({ from: EMAIL_FROM, to: adminEmail, subject: `🏪 Negócio para moderar: ${businessName}`, html })
+  if (error) console.error("Erro email negócio submetido:", error)
+}
+
 /** Notifica admins de um novo evento submetido (aguardando moderação). */
 export async function sendEventSubmittedEmail(adminEmail: string, businessName: string, title: string) {
   if (isDev) { console.log(`\n📅 [DEV] Evento submetido: "${title}" por ${businessName}`); return }
