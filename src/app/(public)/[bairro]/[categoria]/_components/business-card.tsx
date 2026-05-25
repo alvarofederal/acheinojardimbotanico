@@ -1,7 +1,8 @@
 "use client"
 
 import Link from "next/link"
-import { MapPin, Star, MessageCircle, Clock, ShoppingBag } from "lucide-react"
+import { MapPin, Star, Clock, ShoppingBag } from "lucide-react"
+import { WhatsappIcon } from "@/components/whatsapp-icon"
 
 interface BusinessCardProps {
   business: {
@@ -127,7 +128,7 @@ export function BusinessCard({ business, bairro, categoria }: BusinessCardProps)
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 text-xs font-semibold text-flora-green dark:text-flora-fresh hover:gap-2 transition-all"
             >
-              <MessageCircle className="w-3.5 h-3.5" />
+              <WhatsappIcon className="w-3.5 h-3.5" />
               Falar no WhatsApp
             </a>
           </div>

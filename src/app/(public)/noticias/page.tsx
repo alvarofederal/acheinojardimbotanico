@@ -14,7 +14,7 @@ const fmtDate = (d: Date | null) => d ? new Date(d).toLocaleDateString("pt-BR", 
 export default async function NoticiasPage() {
   const news = await db.news.findMany({
     where: { status: "PUBLISHED" },
-    orderBy: [{ featured: "desc" }, { publishedAt: "desc" }],
+    orderBy: [{ featured: "desc" }, { createdAt: "desc" }],
     take: 8,
   })
 

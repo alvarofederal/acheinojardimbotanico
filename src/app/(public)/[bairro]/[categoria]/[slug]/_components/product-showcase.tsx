@@ -1,7 +1,8 @@
 "use client"
 
 import { useState } from "react"
-import { ShoppingBag, MessageCircle, X, ChevronRight } from "lucide-react"
+import { ShoppingBag, X, ChevronRight } from "lucide-react"
+import { WhatsappIcon } from "@/components/whatsapp-icon"
 
 interface Variation { nome: string; opcoes: string[] }
 interface Product {
@@ -135,7 +136,7 @@ export function ProductShowcase({
               {whatsapp && !selected.soldOut && (
                 <button onClick={() => buy(selected)}
                   className="w-full flex items-center justify-center gap-2 py-3 rounded-full bg-flora-green hover:bg-flora-fresh text-white text-sm font-semibold transition-all shadow-lg shadow-flora-green/25">
-                  <MessageCircle className="w-4 h-4" /> Comprar pelo WhatsApp
+                  <WhatsappIcon className="w-4 h-4" /> Comprar pelo WhatsApp
                 </button>
               )}
               {selected.soldOut && <p className="text-center text-sm text-red-500 font-medium">Produto esgotado</p>}

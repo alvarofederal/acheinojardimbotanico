@@ -2,7 +2,8 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { MessageCircle, Store, Tag } from "lucide-react"
+import { Store, Tag } from "lucide-react"
+import { WhatsappIcon } from "@/components/whatsapp-icon"
 
 export interface PromoItem {
   id: string
@@ -77,7 +78,7 @@ export function PromoGrid({ items, categories }: { items: PromoItem[]; categorie
                 {p.whatsapp && (
                   <button onClick={() => buy(p)}
                     className="mt-2.5 flex items-center justify-center gap-1.5 py-2 rounded-full bg-flora-green hover:bg-flora-fresh text-white text-xs font-semibold transition-colors">
-                    <MessageCircle className="w-3.5 h-3.5" /> Comprar
+                    <WhatsappIcon className="w-4 h-4" /> Comprar
                   </button>
                 )}
               </div>

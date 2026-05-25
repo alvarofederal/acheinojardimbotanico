@@ -14,7 +14,7 @@ export default async function ArquivoNoticiasPage({ searchParams }: { searchPara
   const take = 18, skip = (pageNum - 1) * take
 
   const [news, total] = await Promise.all([
-    db.news.findMany({ where: { status: "PUBLISHED" }, orderBy: { publishedAt: "desc" }, take, skip }),
+    db.news.findMany({ where: { status: "PUBLISHED" }, orderBy: { createdAt: "desc" }, take, skip }),
     db.news.count({ where: { status: "PUBLISHED" } }),
   ])
   const totalPages = Math.ceil(total / take)

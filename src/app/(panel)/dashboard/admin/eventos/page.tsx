@@ -15,7 +15,7 @@ export default async function AdminEventosPage() {
   const bMap = new Map(businesses.map(b => [b.id, b.name]))
 
   const items: ModItem[] = events.map(e => ({
-    id: e.id, slug: e.slug, title: e.title, excerpt: e.excerpt, coverUrl: e.coverUrl,
+    id: e.id, slug: e.slug, title: e.title, excerpt: e.excerpt, content: e.content, coverUrl: e.coverUrl,
     eventDate: e.eventDate ? e.eventDate.toISOString() : null,
     eventLocation: e.eventLocation,
     businessName: e.businessId ? (bMap.get(e.businessId) ?? "—") : "—",

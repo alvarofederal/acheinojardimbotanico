@@ -3,13 +3,14 @@
 import { useState } from "react"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
-import { CheckCircle, XCircle, Loader2, Calendar, MapPin, Building2, Eye } from "lucide-react"
+import { CheckCircle, XCircle, Loader2, Calendar, MapPin, Building2, Eye, X } from "lucide-react"
 
 export interface ModItem {
   id: string
   slug: string
   title: string
   excerpt: string | null
+  content: string
   coverUrl: string | null
   eventDate: string | null
   eventLocation: string | null
@@ -17,11 +18,16 @@ export interface ModItem {
   createdAt: string
 }
 
+function fmtFull(d: string | null) {
+  return d ? new Date(d).toLocaleDateString("pt-BR", { weekday: "long", day: "2-digit", month: "long", hour: "2-digit", minute: "2-digit" }) : "Sem data definida"
+}
+
 export function EventModeration({ events }: { events: ModItem[] }) {
   const router = useRouter()
   const [loading, setLoading] = useState<string | null>(null)
   const [rejecting, setRejecting] = useState<string | null>(null)
   const [note, setNote] = useState("")
+  const [preview, setPreview] = useState<ModItem | null>(null)
 
   async function act(id: string, action: "approve" | "reject") {
     setLoading(id + action)
@@ -48,6 +54,7 @@ export function EventModeration({ events }: { events: ModItem[] }) {
   const fmt = (d: string | null) => d ? new Date(d).toLocaleString("pt-BR", { day: "2-digit", month: "long", hour: "2-digit", minute: "2-digit" }) : "Sem data"
 
   return (
+    <>
     <div className="space-y-3">
       {events.map(e => (
         <div key={e.id} className="rounded-2xl border border-gray-100 dark:border-white/[0.07] bg-white dark:bg-white/[0.02] p-5 space-y-3">
@@ -77,10 +84,10 @@ export function EventModeration({ events }: { events: ModItem[] }) {
             </div>
           ) : (
             <div className="flex gap-2 flex-wrap">
-              <a href={`/eventos/${e.slug}`} target="_blank" rel="noopener noreferrer"
+              <button onClick={() => setPreview(e)}
                 className="flex items-center gap-1.5 px-4 py-2 rounded-xl border border-gray-200 dark:border-white/10 dash-subtitle hover:bg-gray-50 dark:hover:bg-white/5 text-sm font-medium transition-colors">
                 <Eye className="w-3.5 h-3.5" /> Preview
-              </a>
+              </button>
               <button onClick={() => act(e.id, "approve")} disabled={!!loading} className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white text-sm font-medium transition-colors">
                 {loading === e.id + "approve" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle className="w-3.5 h-3.5" />} Aprovar e publicar
               </button>
@@ -92,5 +99,33 @@ export function EventModeration({ events }: { events: ModItem[] }) {
         </div>
       ))}
     </div>
+
+    {/* Modal de preview — versão reduzida da página do evento */}
+    {preview && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto" style={{ background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)" }} onClick={() => setPreview(null)}>
+        <div className="w-full max-w-lg my-8 bg-white dark:bg-[#0f1c18] rounded-3xl overflow-hidden" onClick={ev => ev.stopPropagation()}>
+          <div className="bg-amber-500 text-white text-xs font-medium py-1.5 px-4 text-center flex items-center justify-center gap-1.5">
+            <Eye className="w-3.5 h-3.5" /> Pré-visualização do evento
+          </div>
+          {preview.coverUrl && <img src={preview.coverUrl} alt="" className="w-full aspect-[16/9] object-cover" />}
+          <div className="p-6 space-y-3 max-h-[60vh] overflow-y-auto">
+            <h2 className="font-serif text-2xl font-semibold dash-title leading-tight">{preview.title}</h2>
+            <div className="flex flex-col gap-1.5 text-sm dash-subtitle">
+              <span className="flex items-center gap-2 capitalize"><Calendar className="w-4 h-4 text-emerald-500" /> {fmtFull(preview.eventDate)}</span>
+              {preview.eventLocation && <span className="flex items-center gap-2"><MapPin className="w-4 h-4 text-emerald-500" /> {preview.eventLocation}</span>}
+            </div>
+            <div className="space-y-2 text-sm dash-subtitle leading-relaxed pt-1">
+              {preview.content.split("\n").filter(Boolean).map((p, i) => <p key={i}>{p}</p>)}
+            </div>
+          </div>
+          <div className="p-4 border-t border-gray-100 dark:border-white/[0.06] flex justify-end">
+            <button onClick={() => setPreview(null)} className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium">
+              <X className="w-4 h-4" /> Fechar preview
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
+    </>
   )
 }
