@@ -4,7 +4,8 @@ import { auth } from "@/lib/auth"
 import { db } from "@/lib/prisma"
 import { PaymentsTable } from "./_components/payments-table"
 import { PaymentHistory } from "./_components/payment-history"
-import { formatBRL, priceCentsFor, type PlanId } from "@/lib/plans"
+import { formatBRL, type PlanId } from "@/lib/plans"
+import { getPlanConfigs } from "@/lib/plan-config"
 import { Settings, TrendingUp, Wallet, CalendarClock, Users } from "lucide-react"
 
 export default async function AdminPagamentosPage() {
@@ -15,14 +16,14 @@ export default async function AdminPagamentosPage() {
   const now = new Date()
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
 
-  const [pending, history, config, confirmedAgg, monthAgg, activeBusinesses] = await Promise.all([
+  const [pending, history, cfgs, confirmedAgg, monthAgg, activeBusinesses] = await Promise.all([
     db.paymentClaim.findMany({ where: { status: "PENDING" }, orderBy: { createdAt: "asc" } }),
     db.paymentClaim.findMany({
       where: { status: { in: ["CONFIRMED", "REJECTED"] } },
       orderBy: { reviewedAt: "desc" },
       take: 100,
     }),
-    db.paymentConfig.findUnique({ where: { id: "default" } }),
+    getPlanConfigs(),
     db.paymentClaim.aggregate({ where: { status: "CONFIRMED" }, _sum: { amountCents: true }, _count: true }),
     db.paymentClaim.aggregate({
       where: { status: "CONFIRMED", reviewedAt: { gte: monthStart } },
@@ -35,8 +36,7 @@ export default async function AdminPagamentosPage() {
   ])
 
   // MRR = soma do preço mensal de cada negócio com plano pago ativo
-  const cfg = config ? { visibilityCents: config.visibilityCents, premiumCents: config.premiumCents } : null
-  const mrrCents = activeBusinesses.reduce((sum, b) => sum + priceCentsFor(b.plan as PlanId, cfg), 0)
+  const mrrCents = activeBusinesses.reduce((sum, b) => sum + (cfgs[b.plan as PlanId]?.priceCents ?? 0), 0)
 
   const totalReceived = confirmedAgg._sum.amountCents ?? 0
   const monthReceived = monthAgg._sum.amountCents ?? 0

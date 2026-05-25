@@ -385,6 +385,20 @@ model PaymentClaim {
   @@index([businessId])
 }
 
+// Configuração de cada plano — controlada 100% pelo admin no painel.
+// Preço, limites e recursos (feature flags) ficam aqui; plans.ts é só fallback/seed.
+model PlanConfig {
+  plan         Plan     @id              // FREE | VISIBILITY | PREMIUM
+  label        String                    // nome exibido (editável)
+  active       Boolean  @default(true)   // se o plano aparece para escolha
+  order        Int      @default(0)      // ordem de exibição
+  priceCents   Int      @default(0)      // preço mensal (centavos)
+  productLimit Int      @default(2)      // máximo de produtos na vitrine
+  photoLimit   Int      @default(3)      // máximo de fotos do perfil
+  features     Json                      // { promocoes, loja, eventos, metricas, destaque, redesSociais, selo }
+  updatedAt    DateTime @updatedAt
+}
+
 // ===================================================
 // CONTEÚDO — Notícias (admin) e Eventos (anunciante + moderação)
 // ===================================================

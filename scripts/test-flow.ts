@@ -5,7 +5,7 @@
  */
 import "dotenv/config"
 import { PrismaClient } from "../src/generated/prisma/index.js"
-import { PRODUCT_LIMITS, planPriceCents } from "../src/lib/plans"
+import { DEFAULT_PLAN_CONFIGS } from "../src/lib/plans"
 import QRCode from "qrcode"
 
 const db = new PrismaClient()
@@ -36,7 +36,7 @@ async function main() {
 
   // 3) "Já paguei" → PaymentClaim
   const months = 3
-  const amount = planPriceCents("VISIBILITY", months)
+  const amount = DEFAULT_PLAN_CONFIGS.VISIBILITY.priceCents * months
   const claim = await db.paymentClaim.create({
     data: { businessId: biz.id, userId: user.id, plan: "VISIBILITY", method: "PIX", months, amountCents: amount, status: "PENDING" },
   })
@@ -60,7 +60,7 @@ async function main() {
   ok(daysAhead >= 89 && daysAhead <= 90, `Vencimento ~90 dias (${daysAhead}d)`)
 
   // 5) Limite de produtos do plano
-  const limit = PRODUCT_LIMITS["VISIBILITY"]
+  const limit = DEFAULT_PLAN_CONFIGS.VISIBILITY.productLimit
   ok(limit === 10, `Limite de produtos do plano = ${limit}`)
 
   // 6) Cria produto na vitrine

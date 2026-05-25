@@ -2,7 +2,8 @@ export const runtime = "nodejs"
 import { NextRequest, NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { db, Prisma } from "@/lib/prisma"
-import { PRODUCT_LIMITS, type PlanId } from "@/lib/plans"
+import { type PlanId } from "@/lib/plans"
+import { productLimit } from "@/lib/plan-config"
 import { z } from "zod"
 
 const variationSchema = z.object({ nome: z.string().max(40), opcoes: z.array(z.string().max(40)).max(20) })
@@ -30,7 +31,7 @@ export async function POST(req: NextRequest) {
   const business = await db.business.findFirst({ where: { ownerId: session.user.id } })
   if (!business) return NextResponse.json({ error: "Nenhum negócio vinculado" }, { status: 404 })
 
-  const limit = PRODUCT_LIMITS[business.plan as PlanId] ?? 2
+  const limit = await productLimit(business.plan as PlanId)
   const count = await db.product.count({ where: { businessId: business.id } })
   if (count >= limit) {
     return NextResponse.json(

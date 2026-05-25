@@ -2,7 +2,8 @@ import { redirect } from "next/navigation"
 import Link from "next/link"
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/prisma"
-import { PRODUCT_LIMITS, type PlanId } from "@/lib/plans"
+import { type PlanId } from "@/lib/plans"
+import { productLimit } from "@/lib/plan-config"
 import { ProductManager, type Product } from "./_components/product-manager"
 import { StoreMessage } from "./_components/store-message"
 import { Store } from "lucide-react"
@@ -41,7 +42,7 @@ export default async function ProdutosPage() {
     soldOut: p.soldOut,
   }))
 
-  const limit = PRODUCT_LIMITS[business.plan as PlanId] ?? 2
+  const limit = await productLimit(business.plan as PlanId)
 
   return (
     <div className="space-y-6 max-w-3xl">

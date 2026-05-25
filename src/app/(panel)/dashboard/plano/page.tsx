@@ -6,7 +6,8 @@ import { db } from "@/lib/prisma"
 import { ShieldCheck, Zap, Crown, Store } from "lucide-react"
 import { CheckoutManual } from "./_components/checkout-manual"
 import { FreePlanButton } from "./_components/free-plan-button"
-import { priceCentsFor, formatBRL } from "@/lib/plans"
+import { formatBRL, planDisplayFeatures, type PlanId } from "@/lib/plans"
+import { getPlanConfigs } from "@/lib/plan-config"
 
 export default async function PlanoPage() {
   const session = await auth()
@@ -48,17 +49,26 @@ export default async function PlanoPage() {
     } catch { qrDataUrl = null }
   }
 
-  const visCents = priceCentsFor("VISIBILITY", config)
-  const premCents = priceCentsFor("PREMIUM", config)
+  const cfgs = await getPlanConfigs()
+  const visCents = cfgs.VISIBILITY.priceCents
+  const premCents = cfgs.PREMIUM.priceCents
 
-  const plans = [
-    { id: "FREE", name: "Free", price: "Grátis", icon: ShieldCheck, color: "text-gray-500 dark:text-white/40",
-      features: ["Perfil no guia", "Endereço e telefone", "Até 2 produtos na vitrine"] },
-    { id: "VISIBILITY", name: "Visibilidade", price: `${formatBRL(visCents)}/mês`, icon: Zap, color: "text-emerald-600 dark:text-emerald-400",
-      features: ["Destaque na listagem", "Descrição + 6 fotos", "Métricas detalhadas", "Vitrine com 10 produtos", "Selo Destaque"] },
-    { id: "PREMIUM", name: "Premium", price: `${formatBRL(premCents)}/mês`, icon: Crown, color: "text-amber-600 dark:text-amber-400",
-      features: ["Topo da listagem", "Até 20 fotos", "Vitrine com 50 produtos", "Selo Premium", "Suporte prioritário"] },
-  ]
+  const ICONS: Record<PlanId, { icon: typeof ShieldCheck; color: string }> = {
+    FREE: { icon: ShieldCheck, color: "text-gray-500 dark:text-white/40" },
+    VISIBILITY: { icon: Zap, color: "text-emerald-600 dark:text-emerald-400" },
+    PREMIUM: { icon: Crown, color: "text-amber-600 dark:text-amber-400" },
+  }
+
+  const plans = (["FREE", "VISIBILITY", "PREMIUM"] as PlanId[])
+    .filter(id => cfgs[id].active || id === plan)
+    .map(id => ({
+      id,
+      name: cfgs[id].label,
+      price: cfgs[id].priceCents === 0 ? "Grátis" : `${formatBRL(cfgs[id].priceCents)}/mês`,
+      icon: ICONS[id].icon,
+      color: ICONS[id].color,
+      features: planDisplayFeatures(cfgs[id]),
+    }))
 
   return (
     <div className="space-y-6 max-w-3xl">

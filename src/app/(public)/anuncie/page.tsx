@@ -6,7 +6,8 @@ import {
   ArrowRight, Search, MessageCircle, BarChart3, ShieldCheck, Zap, Crown,
   Check, MapPin,
 } from "lucide-react"
-import { priceCentsFor, formatBRL } from "@/lib/plans"
+import { formatBRL, planDisplayFeatures, type PlanId } from "@/lib/plans"
+import { getPlanConfigs } from "@/lib/plan-config"
 
 export const revalidate = 3600
 
@@ -21,37 +22,27 @@ const STEPS = [
   { icon: MessageCircle, title: "Receba clientes", desc: "Botão de WhatsApp direto no seu perfil. O contato chega na sua mão." },
 ]
 
-const PLANS = [
-  {
-    id: "FREE", name: "Free", price: "Grátis", icon: ShieldCheck,
-    accent: "text-flora-ink", ring: "border-flora-green/10",
-    features: ["Perfil no guia", "Endereço e telefone", "Aparece nas buscas"],
-    cta: "Começar grátis", highlight: false,
-  },
-  {
-    id: "VISIBILITY", name: "Visibilidade", price: "R$ 79", per: "/mês", icon: Zap,
-    accent: "text-flora-green", ring: "border-flora-fresh/40",
-    features: ["Destaque na listagem", "Descrição personalizada", "Até 6 fotos", "Métricas detalhadas", "Selo Destaque"],
-    cta: "Assinar Visibilidade", highlight: true,
-  },
-  {
-    id: "PREMIUM", name: "Premium", price: "R$ 197", per: "/mês", icon: Crown,
-    accent: "text-flora-earth", ring: "border-flora-gold/50",
-    features: ["Topo garantido na busca", "Até 20 fotos", "Todas as métricas", "Selo Premium", "Suporte prioritário"],
-    cta: "Assinar Premium", highlight: false,
-  },
-]
+const PLAN_STYLE: Record<PlanId, { icon: typeof ShieldCheck; accent: string; ring: string; cta: string; highlight: boolean }> = {
+  FREE: { icon: ShieldCheck, accent: "text-flora-ink", ring: "border-flora-green/10", cta: "Começar grátis", highlight: false },
+  VISIBILITY: { icon: Zap, accent: "text-flora-green", ring: "border-flora-fresh/40", cta: "Assinar Visibilidade", highlight: true },
+  PREMIUM: { icon: Crown, accent: "text-flora-earth", ring: "border-flora-gold/50", cta: "Assinar Premium", highlight: false },
+}
 
 export default async function AnunciePage() {
-  const [totalBusinesses, config] = await Promise.all([
+  const [totalBusinesses, cfgs] = await Promise.all([
     db.business.count({ where: { status: { in: ["IMPORTED", "CLAIMED"] } } }),
-    db.paymentConfig.findUnique({ where: { id: "default" } }),
+    getPlanConfigs(),
   ])
-  const priceById: Record<string, string> = {
-    FREE: "Grátis",
-    VISIBILITY: formatBRL(priceCentsFor("VISIBILITY", config)),
-    PREMIUM: formatBRL(priceCentsFor("PREMIUM", config)),
-  }
+  const PLANS = (["FREE", "VISIBILITY", "PREMIUM"] as PlanId[])
+    .filter(id => cfgs[id].active)
+    .map(id => ({
+      id,
+      name: cfgs[id].label,
+      price: cfgs[id].priceCents === 0 ? "Grátis" : formatBRL(cfgs[id].priceCents),
+      per: cfgs[id].priceCents === 0 ? undefined : "/mês",
+      features: planDisplayFeatures(cfgs[id]),
+      ...PLAN_STYLE[id],
+    }))
 
   return (
     <main>
@@ -143,7 +134,7 @@ export default async function AnunciePage() {
                 <span className="font-serif text-xl font-semibold flora-ink">{p.name}</span>
               </div>
               <div className="flex items-end gap-1 mb-5">
-                <span className="font-serif text-4xl font-bold flora-ink">{priceById[p.id]}</span>
+                <span className="font-serif text-4xl font-bold flora-ink">{p.price}</span>
                 {p.per && <span className="flora-muted text-sm mb-1">{p.per}</span>}
               </div>
               <ul className="space-y-2.5 mb-6">

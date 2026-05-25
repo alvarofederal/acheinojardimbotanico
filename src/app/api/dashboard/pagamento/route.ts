@@ -3,7 +3,8 @@ import { NextRequest, NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/prisma"
 import { sendPaymentClaimEmail } from "@/lib/email"
-import { priceCentsFor, type PlanId } from "@/lib/plans"
+import { type PlanId } from "@/lib/plans"
+import { planPriceCents } from "@/lib/plan-config"
 import { z } from "zod"
 
 const schema = z.object({
@@ -25,8 +26,7 @@ export async function POST(req: NextRequest) {
   if (!business) return NextResponse.json({ error: "Nenhum negócio vinculado" }, { status: 404 })
 
   const { plan, method, months, note } = v.data
-  const config = await db.paymentConfig.findUnique({ where: { id: "default" } })
-  const amountCents = priceCentsFor(plan as PlanId, config) * months
+  const amountCents = await planPriceCents(plan as PlanId, months)
 
   await db.paymentClaim.create({
     data: {
