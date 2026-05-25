@@ -25,6 +25,13 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     await db.paymentClaim.update({
       where: { id }, data: { status: "REJECTED", reviewedAt: new Date(), reviewerId: session.user.id },
     })
+    await db.auditLog.create({
+      data: {
+        actorId: session.user.id, action: "payment.rejected", entity: "PaymentClaim", entityId: id,
+        businessId: claim.businessId,
+        metadata: { plan: claim.plan, months: claim.months, amountCents: claim.amountCents },
+      },
+    })
     return NextResponse.json({ ok: true })
   }
 
@@ -53,7 +60,8 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     db.auditLog.create({
       data: {
         actorId: session.user.id, action: "payment.confirmed", entity: "PaymentClaim", entityId: id,
-        metadata: { businessId: business.id, plan: claim.plan, months: claim.months, amountCents: claim.amountCents },
+        businessId: business.id,
+        metadata: { plan: claim.plan, months: claim.months, amountCents: claim.amountCents },
       },
     }),
   ])

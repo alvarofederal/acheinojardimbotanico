@@ -46,6 +46,7 @@ export async function POST(req: NextRequest) {
       action: "claim.created",
       entity: "ClaimRequest",
       entityId: businessId,
+      businessId,
       metadata: { businessName: business.name },
     },
   })

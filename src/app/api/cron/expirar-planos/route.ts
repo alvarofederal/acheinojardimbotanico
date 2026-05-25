@@ -44,6 +44,7 @@ export async function GET(req: NextRequest) {
           action: "PLAN_EXPIRED",
           entity: "Business",
           entityId: b.id,
+          businessId: b.id,
           metadata: { from: b.plan, to: "FREE", at: now.toISOString() },
         },
       }),

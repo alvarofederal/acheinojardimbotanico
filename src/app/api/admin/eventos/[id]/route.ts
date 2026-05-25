@@ -42,7 +42,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   })
 
   await db.auditLog.create({
-    data: { actorId: session.user.id, action: `event.${action}`, entity: "Event", entityId: id, metadata: { note } },
+    data: { actorId: session.user.id, action: `event.${action}`, entity: "Event", entityId: id, businessId: ev.businessId, metadata: { note } },
   })
 
   // Notifica o dono

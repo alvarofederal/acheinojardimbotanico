@@ -58,7 +58,8 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ cl
       action: `claim.${action}d`,
       entity: "ClaimRequest",
       entityId: claimId,
-      metadata: { businessId: claim.businessId, userId: claim.userId },
+      businessId: claim.businessId,
+      metadata: { userId: claim.userId },
     },
   })
 

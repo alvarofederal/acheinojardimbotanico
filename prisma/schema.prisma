@@ -290,15 +290,17 @@ enum SubStatus {
 // ===================================================
 
 model AuditLog {
-  id        String   @id @default(cuid())
-  actorId   String?
-  action    String
-  entity    String
-  entityId  String
-  metadata  Json?
-  createdAt DateTime @default(now())
+  id         String   @id @default(cuid())
+  actorId    String?
+  action     String
+  entity     String
+  entityId   String
+  businessId String?  // lojista alvo da ação (quando aplicável) — para filtro/histórico
+  metadata   Json?
+  createdAt  DateTime @default(now())
 
   @@index([entity, entityId])
+  @@index([businessId])
   @@index([createdAt])
 }
 
