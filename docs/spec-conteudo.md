@@ -1,6 +1,18 @@
 # Spec — Conteúdo: Promoções, Notícias e Eventos
 
-> Status: **proposta para discussão** (não construir ainda)
+> Status: **aprovado — em construção**
+>
+> ## Decisões (definidas com o Álvaro)
+> 1. **Notícias e Eventos SEPARADOS** (modelos distintos). Notícia = informa/
+>    acontecimento (não convoca presença). Evento = convoca participação (tem
+>    data/local).
+> 2. **Promoções = opção B:** produto ganha `promoPriceCents` opcional + selo
+>    "Oferta"; a aba `/promocoes` mostra **só os produtos em promoção**. A vitrine
+>    completa continua no perfil.
+> 3. **Permissões:** Notícias = **só admin**. Eventos = **o próprio anunciante**
+>    cria, com **moderação do admin** (fica PENDENTE → admin aprova ou rejeita
+>    com observação para ajuste). Admin também revisa erros.
+
 > Objetivo: adicionar 3 abas no topo do site (Promoções, Notícias, Eventos),
 > transformando o guia em mídia local viva — mais tráfego (Marina), mais valor
 > pro lojista (Roberto), mais SEO.

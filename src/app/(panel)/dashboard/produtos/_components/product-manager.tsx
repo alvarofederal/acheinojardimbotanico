@@ -15,6 +15,7 @@ export interface Product {
   categoria: string | null
   priceMode: PriceMode
   priceCents: number | null
+  promoPriceCents: number | null
   images: string[]
   variations: Variation[]
   soldOut: boolean
@@ -25,11 +26,12 @@ const label = "text-xs font-semibold text-gray-500 dark:text-white/40 uppercase 
 
 function priceLabel(p: Product) {
   if (p.priceMode === "ON_REQUEST") return "Sob consulta"
+  if (p.promoPriceCents) return formatBRL(p.promoPriceCents)
   const v = formatBRL(p.priceCents ?? 0)
   return p.priceMode === "FROM" ? `A partir de ${v}` : v
 }
 
-const empty: Product = { id: "", name: "", description: "", categoria: "", priceMode: "FIXED", priceCents: 0, images: [], variations: [], soldOut: false }
+const empty: Product = { id: "", name: "", description: "", categoria: "", priceMode: "FIXED", priceCents: 0, promoPriceCents: null, images: [], variations: [], soldOut: false }
 
 export function ProductManager({ products, limit, plan }: { products: Product[]; limit: number; plan: string }) {
   const router = useRouter()
@@ -129,6 +131,7 @@ function ProductForm({ product, onClose, onSaved }: { product: Product; onClose:
     const payload = {
       name: form.name, description: form.description ?? "", categoria: form.categoria ?? "",
       priceMode: form.priceMode, priceCents: form.priceCents ?? 0,
+      promoPriceCents: form.priceMode !== "ON_REQUEST" && form.promoPriceCents ? form.promoPriceCents : null,
       images: form.images, variations: form.variations.filter(v => v.nome && v.opcoes.length), soldOut: form.soldOut,
     }
     try {
@@ -143,6 +146,7 @@ function ProductForm({ product, onClose, onSaved }: { product: Product; onClose:
   }
 
   const priceReais = form.priceCents != null ? (form.priceCents / 100).toString() : ""
+  const promoReais = form.promoPriceCents != null ? (form.promoPriceCents / 100).toString() : ""
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto" style={{ background: "rgba(0,0,0,0.5)", backdropFilter: "blur(4px)" }}>
@@ -204,6 +208,17 @@ function ProductForm({ product, onClose, onSaved }: { product: Product; onClose:
             )}
           </div>
         </div>
+
+        {/* Preço promocional */}
+        {form.priceMode !== "ON_REQUEST" && (
+          <div className="space-y-1.5">
+            <label className={label}>Preço promocional (opcional)</label>
+            <input type="number" step="0.01" min="0" value={promoReais}
+              onChange={e => setForm(f => ({ ...f, promoPriceCents: e.target.value ? Math.round(parseFloat(e.target.value) * 100) : null }))}
+              className={inputCls} placeholder="Deixe vazio se não estiver em oferta" />
+            <p className="text-xs dash-muted">Se preenchido, o produto ganha selo &quot;Oferta&quot; e aparece na aba Promoções.</p>
+          </div>
+        )}
 
         {/* Esgotado */}
         <label className="flex items-center gap-2 text-sm dash-subtitle cursor-pointer">

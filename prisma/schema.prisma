@@ -331,6 +331,7 @@ model Product {
   categoria   String?          // tipo/categoria do produto (texto livre)
   priceMode   ProductPriceMode @default(FIXED)
   priceCents  Int?             // preço em centavos; null se ON_REQUEST
+  promoPriceCents Int?         // preço promocional (centavos); se preenchido → "Oferta"
   images      Json?            // até 4 URLs (Cloudinary)
   variations  Json?            // ex: [{ "nome": "Tamanho", "opcoes": ["P","M","G"] }]
   soldOut     Boolean          @default(false)
@@ -381,5 +382,49 @@ model PaymentClaim {
   reviewerId  String?
 
   @@index([status])
+  @@index([businessId])
+}
+
+// ===================================================
+// CONTEÚDO — Notícias (admin) e Eventos (anunciante + moderação)
+// ===================================================
+
+model News {
+  id          String    @id @default(cuid())
+  title       String
+  slug        String    @unique
+  excerpt     String?   @db.Text
+  content     String    @db.Text
+  coverUrl    String?   @db.Text
+  status      String    @default("DRAFT")   // DRAFT | PUBLISHED
+  featured    Boolean   @default(false)
+  authorId    String
+  publishedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([status, publishedAt])
+}
+
+model Event {
+  id            String    @id @default(cuid())
+  title         String
+  slug          String    @unique
+  excerpt       String?   @db.Text
+  content       String    @db.Text
+  coverUrl      String?   @db.Text
+  status        String    @default("PENDING") // PENDING | PUBLISHED | REJECTED
+  featured      Boolean   @default(false)
+  eventDate     DateTime?
+  eventLocation String?
+  eventUrl      String?   @db.Text
+  moderationNote String?  @db.Text            // observação do admin ao rejeitar
+  businessId    String?                       // negócio do anunciante que criou
+  authorId      String
+  publishedAt   DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([status, eventDate])
   @@index([businessId])
 }

@@ -38,7 +38,7 @@ export default async function StorePage({ params }: PageProps) {
 
   const products = business.products.map(p => ({
     id: p.id, name: p.name, description: p.description, categoria: p.categoria,
-    priceMode: p.priceMode as "FIXED" | "FROM" | "ON_REQUEST", priceCents: p.priceCents,
+    priceMode: p.priceMode as "FIXED" | "FROM" | "ON_REQUEST", priceCents: p.priceCents, promoPriceCents: p.promoPriceCents,
     images: Array.isArray(p.images) ? (p.images as unknown as string[]) : [],
     variations: Array.isArray(p.variations) ? (p.variations as unknown as { nome: string; opcoes: string[] }[]) : [],
     soldOut: p.soldOut,

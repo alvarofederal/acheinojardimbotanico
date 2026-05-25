@@ -11,14 +11,19 @@ interface Product {
   categoria: string | null
   priceMode: "FIXED" | "FROM" | "ON_REQUEST"
   priceCents: number | null
+  promoPriceCents?: number | null
   images: string[]
   variations: Variation[]
   soldOut: boolean
 }
 
 const brl = (c: number) => (c / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })
+function isPromo(p: Product) {
+  return !!p.promoPriceCents && p.priceMode !== "ON_REQUEST" && (p.priceCents == null || p.promoPriceCents < p.priceCents)
+}
 function priceLabel(p: Product) {
   if (p.priceMode === "ON_REQUEST") return "Sob consulta"
+  if (isPromo(p)) return brl(p.promoPriceCents!)
   const v = brl(p.priceCents ?? 0)
   return p.priceMode === "FROM" ? `A partir de ${v}` : v
 }
@@ -81,11 +86,15 @@ export function ProductShowcase({
                 ? <img src={p.images[0]} alt={p.name} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 : <div className="w-full h-full flex items-center justify-center"><ShoppingBag className="w-8 h-8 text-flora-green/30" /></div>}
               {p.soldOut && <span className="absolute top-2 left-2 text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-500 text-white">Esgotado</span>}
+              {!p.soldOut && isPromo(p) && <span className="absolute top-2 left-2 text-[10px] font-bold px-2 py-0.5 rounded-full bg-flora-gold text-flora-ink">Oferta</span>}
             </div>
             <div className="p-3">
               {p.categoria && <p className="text-[10px] uppercase tracking-wide flora-muted">{p.categoria}</p>}
               <p className="text-sm font-semibold flora-ink leading-tight line-clamp-1">{p.name}</p>
-              <p className="text-sm text-flora-green dark:text-flora-fresh font-medium mt-0.5">{priceLabel(p)}</p>
+              <p className="text-sm font-medium mt-0.5">
+                <span className="text-flora-green dark:text-flora-fresh">{priceLabel(p)}</span>
+                {isPromo(p) && p.priceCents != null && <span className="ml-1.5 text-xs flora-muted line-through">{brl(p.priceCents)}</span>}
+              </p>
             </div>
           </button>
         ))}
@@ -114,7 +123,11 @@ export function ProductShowcase({
             <div className="p-5 space-y-3">
               {selected.categoria && <p className="text-xs uppercase tracking-wide flora-muted">{selected.categoria}</p>}
               <h3 className="font-serif text-xl font-semibold flora-ink">{selected.name}</h3>
-              <p className="text-lg text-flora-green dark:text-flora-fresh font-semibold">{priceLabel(selected)}</p>
+              <p className="flex items-baseline gap-2">
+                <span className="text-lg text-flora-green dark:text-flora-fresh font-semibold">{priceLabel(selected)}</span>
+                {isPromo(selected) && selected.priceCents != null && <span className="text-sm flora-muted line-through">{brl(selected.priceCents)}</span>}
+                {isPromo(selected) && <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-flora-gold text-flora-ink">Oferta</span>}
+              </p>
               {selected.description && <p className="text-sm flora-muted leading-relaxed">{selected.description}</p>}
               {selected.variations?.map((v, i) => (
                 <p key={i} className="text-xs flora-muted"><strong className="flora-ink">{v.nome}:</strong> {v.opcoes.join(", ")}</p>

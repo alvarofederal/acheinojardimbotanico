@@ -35,6 +35,7 @@ export default async function ProdutosPage() {
     categoria: p.categoria,
     priceMode: p.priceMode as Product["priceMode"],
     priceCents: p.priceCents,
+    promoPriceCents: p.promoPriceCents,
     images: Array.isArray(p.images) ? (p.images as unknown as string[]) : [],
     variations: Array.isArray(p.variations) ? (p.variations as unknown as Product["variations"]) : [],
     soldOut: p.soldOut,
