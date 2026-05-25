@@ -39,6 +39,8 @@ const nextConfig: NextConfig = {
               "img-src 'self' data: blob: https://res.cloudinary.com https://*.googleusercontent.com https://places.googleapis.com https://maps.googleapis.com https://*.ggpht.com https://avatars.githubusercontent.com",
               // Conexões de API: próprios + Cloudinary + Resend
               "connect-src 'self' https://api.cloudinary.com https://api.resend.com",
+              // Mapa interativo do perfil (OpenStreetMap embed)
+              "frame-src 'self' https://www.openstreetmap.org",
               // Bloqueia tudo que não se enquadrar acima
               "base-uri 'self'",
               "form-action 'self'",

@@ -11,6 +11,7 @@ import { WhatsAppButton } from "./_components/whatsapp-button"
 import { ClaimBanner } from "./_components/claim-banner"
 import { ProductShowcase } from "./_components/product-showcase"
 import { PhotoGallery } from "./_components/photo-gallery"
+import { BusinessMap } from "./_components/business-map"
 
 export const revalidate = 3600
 
@@ -257,6 +258,9 @@ export default async function BusinessPage({ params }: PageProps) {
             </div>
           )}
         </div>
+
+        {/* Mapa interativo do local */}
+        <BusinessMap lat={business.latitude} lng={business.longitude} name={business.name} address={business.address} mapsUrl={mapsUrl} />
 
         {/* Vitrine de produtos */}
         {showcaseProducts.length > 0 && (
