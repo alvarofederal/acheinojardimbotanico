@@ -5,6 +5,7 @@ import { auth } from "@/lib/auth"
 import { db } from "@/lib/prisma"
 import { ShieldCheck, Zap, Crown, Store } from "lucide-react"
 import { CheckoutManual } from "./_components/checkout-manual"
+import { FreePlanButton } from "./_components/free-plan-button"
 import { priceCentsFor, formatBRL } from "@/lib/plans"
 
 export default async function PlanoPage() {
@@ -13,7 +14,7 @@ export default async function PlanoPage() {
 
   const business = await db.business.findFirst({
     where: { ownerId: session.user.id },
-    select: { plan: true, planExpiresAt: true, name: true },
+    select: { id: true, plan: true, planExpiresAt: true, name: true },
   })
 
   if (!business) return (
@@ -28,7 +29,15 @@ export default async function PlanoPage() {
     </div>
   )
 
+  // Expiração: se o plano pago venceu, volta ao Free automaticamente
+  if (business.plan !== "FREE" && business.planExpiresAt && business.planExpiresAt < new Date()) {
+    await db.business.update({ where: { id: business.id }, data: { plan: "FREE", planExpiresAt: null } })
+    business.plan = "FREE"
+    business.planExpiresAt = null
+  }
+
   const plan = business.plan
+  const expiresLabel = business.planExpiresAt ? new Date(business.planExpiresAt).toLocaleDateString("pt-BR") : null
   const config = await db.paymentConfig.findUnique({ where: { id: "default" } })
 
   // Gera o QR Code do PIX copia-e-cola (server-side)
@@ -82,6 +91,17 @@ export default async function PlanoPage() {
                   </li>
                 ))}
               </ul>
+              {/* Ação do plano Free (escolher/voltar) */}
+              {p.id === "FREE" && (
+                <div className="pt-1">
+                  <FreePlanButton currentPlan={plan} expiresLabel={expiresLabel} />
+                </div>
+              )}
+              {p.id !== "FREE" && isActive && (
+                <span className="block w-full text-center py-2.5 rounded-xl text-sm font-semibold bg-emerald-100 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-400">
+                  Plano ativo{expiresLabel ? ` até ${expiresLabel}` : ""}
+                </span>
+              )}
             </div>
           )
         })}
