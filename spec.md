@@ -1270,11 +1270,22 @@ Estes vão para `.specify/memory/constitution.md` e o Spec-Kit os lê em toda ex
 - `/dashboard/admin`: KPIs. `negocios` (filtro+paginação), `claims`, `usuarios`, `import`,
   `custos`, `pagamento`, `pagamentos`, `audit`.
 
-### 11.8 Pendências conhecidas / próximos passos
+### 11.8 Planos configuráveis + expiração automática (novidade)
+- **Model `PlanConfig`** (1 linha por plano): preço, limites (produtos/fotos) e **7 feature flags**
+  (promoções, loja, eventos, métricas, destaque, redes sociais, selo) — tudo editável no admin.
+- Tela admin **`/dashboard/admin/pagamento` → "Planos & Cobrança"**: checkboxes por plano + cobrança (PIX/MP).
+  `src/lib/plan-config.ts` carrega do banco com cache (público) e leitura fresca (admin); `plans.ts` é fallback.
+- Os recursos são **aplicados de verdade** nos gates (métricas, eventos UI+API, loja, promoções, redes, selo, destaque).
+- **Expiração automática via cron** `/api/cron/expirar-planos` (Vercel Cron, 3h diário): rebaixa para FREE
+  todo plano pago vencido, cancela a Subscription e registra `AuditLog` (`PLAN_EXPIRED`). Protegido por `CRON_SECRET`.
+- Pagamentos admin agora tem **dashboard de receita** (total, mês, MRR, assinantes) + **histórico**.
+- **Testes:** `npm run test:plans` (camada de dados), `npm run test:expire` (cron), Cypress E2E `npm run test:e2e`.
+
+### 11.9 Pendências conhecidas / próximos passos
 - Restringir a chave Google por IP (servidor) — segurança.
 - Conferência automática de pagamento (webhook PIX/MP ou Asaas) — quando o volume justificar.
 - Mapa interativo no perfil; autocomplete de endereço no cadastro.
-- Expiração automática de plano via cron (hoje a checagem é pontual).
+- Aplicar identidade Flora nas telas de auth restantes (register/forgot/reset/verify).
 
 ---
 

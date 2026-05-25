@@ -200,6 +200,31 @@ export async function sendPlanActivatedEmail(
   if (error) console.error("Erro ao enviar email de ativação:", error)
 }
 
+/** Avisa o anunciante que o plano pago venceu e voltou para o Free (re-venda). */
+export async function sendPlanExpiredEmail(email: string, businessName: string, plan: string) {
+  if (isDev) {
+    console.log(`\n⌛ [DEV] Plano expirado: ${businessName} — ${plan} → Free`)
+    return
+  }
+  if (!process.env.RESEND_API_KEY) return
+
+  const html = emailShell("Seu plano venceu", `
+    <p style="color:#4b5563;font-size:16px">O plano <strong>${plan}</strong> de <strong>${businessName}</strong> venceu e
+    voltou para o plano <strong>Free</strong>. Os recursos extras (destaque, vitrine completa, selo) foram pausados.</p>
+    <p style="color:#4b5563;font-size:15px">Quer continuar aparecendo em destaque? Renove em poucos cliques.</p>
+    <div style="text-align:center;margin:28px 0">
+      <a href="https://acheinojardimbotanico.com.br/dashboard/plano" style="display:inline-block;background:#10b981;color:#fff;padding:14px 28px;text-decoration:none;border-radius:8px;font-weight:600">Renovar plano</a>
+    </div>`)
+
+  const { error } = await getResend().emails.send({
+    from: EMAIL_FROM,
+    to: email,
+    subject: `Seu plano ${plan} venceu — ${businessName}`,
+    html,
+  })
+  if (error) console.error("Erro ao enviar email de expiração:", error)
+}
+
 /** Notifica admins de um novo evento submetido (aguardando moderação). */
 export async function sendEventSubmittedEmail(adminEmail: string, businessName: string, title: string) {
   if (isDev) { console.log(`\n📅 [DEV] Evento submetido: "${title}" por ${businessName}`); return }
