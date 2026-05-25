@@ -79,7 +79,7 @@ export default async function AdminPagamentosPage() {
         </div>
         <Link href="/dashboard/admin/pagamento"
           className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-gray-200 dark:border-white/10 text-xs dash-subtitle hover:bg-gray-50 dark:hover:bg-white/5 transition-colors flex-shrink-0">
-          <Settings className="w-3.5 h-3.5" /> Configurar cobrança
+          <Settings className="w-3.5 h-3.5" /> Planos & cobrança
         </Link>
       </div>
 
