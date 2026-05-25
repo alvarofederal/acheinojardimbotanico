@@ -15,8 +15,8 @@ export default async function VerifyEmailPage({
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen flex items-center justify-center" style={{ background: "#050505" }}>
-          <div className="animate-spin w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full" />
+        <div className="min-h-screen flora-bg flex items-center justify-center">
+          <div className="animate-spin w-8 h-8 border-4 border-flora-green border-t-transparent rounded-full" />
         </div>
       }
     >

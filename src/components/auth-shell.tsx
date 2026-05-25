@@ -1,17 +1,17 @@
-// src/app/verify-email/_components/verify-email-client.tsx
-"use client"
-
 import Link from "next/link"
-import { Leaf, Mail } from "lucide-react"
+import { Leaf } from "lucide-react"
 import { MonsteraLeaf, FernFrond } from "@/app/(public)/_components/botanicals"
-import { VerifyEmailForm } from "./verify-email-form"
 
-interface VerifyEmailClientProps {
-  email?: string
-  code?: string
-}
-
-export function VerifyEmailClient({ email, code }: VerifyEmailClientProps) {
+/** Moldura visual Flora compartilhada pelas telas de autenticação. */
+export function AuthShell({
+  subtitle,
+  children,
+  footer,
+}: {
+  subtitle: string
+  children: React.ReactNode
+  footer?: React.ReactNode
+}) {
   return (
     <div className="min-h-screen flora-bg flex flex-col items-center justify-center px-4 py-10 relative overflow-hidden">
       {/* Botânica de fundo */}
@@ -29,25 +29,18 @@ export function VerifyEmailClient({ email, code }: VerifyEmailClientProps) {
               Achei no <span className="text-flora-green dark:text-flora-fresh italic">Jardim Botânico</span>
             </span>
           </Link>
-
-          {/* Ícone de envelope */}
-          <div className="mx-auto mt-6 mb-3 flex items-center justify-center w-14 h-14 rounded-2xl bg-flora-green/10 dark:bg-flora-fresh/15">
-            <Mail className="w-6 h-6 text-flora-green dark:text-flora-fresh" />
-          </div>
-
-          <h1 className="font-serif text-xl font-semibold flora-ink mb-1">Verificar email</h1>
-          <p className="text-sm flora-muted">Digite o código de 6 dígitos enviado para seu email</p>
+          <p className="text-sm mt-3 flora-muted">{subtitle}</p>
         </div>
 
-        <VerifyEmailForm initialEmail={email} />
+        {children}
 
-        <p className="text-center text-sm mt-6 flora-muted">
-          Já verificou?{" "}
-          <Link href="/login" className="font-semibold text-flora-green dark:text-flora-fresh hover:underline">
-            Entrar
-          </Link>
-        </p>
+        {footer && <p className="text-center text-sm mt-6 flora-muted">{footer}</p>}
       </div>
     </div>
   )
 }
+
+/** Classes Flora reutilizadas pelos inputs/labels dos forms de auth. */
+export const authInputCls =
+  "w-full pl-10 pr-3 py-3 rounded-xl text-sm flora-ink bg-white/70 dark:bg-white/[0.04] border border-flora-green/15 dark:border-white/10 placeholder:text-flora-ink/30 focus:outline-none focus:border-flora-fresh focus:ring-2 focus:ring-flora-fresh/30 transition-all"
+export const authLabelCls = "block text-xs font-semibold mb-1.5 uppercase tracking-wide flora-muted"

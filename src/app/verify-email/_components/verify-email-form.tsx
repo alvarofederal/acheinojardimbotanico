@@ -5,46 +5,14 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Loader2, CheckCircle2, Mail, RefreshCw } from "lucide-react"
 import { toast } from "sonner"
+import { authInputCls, authLabelCls } from "@/components/auth-shell"
 
 interface VerifyEmailFormProps {
   initialEmail?: string
 }
 
-const inputStyle: React.CSSProperties = {
-  width: "100%",
-  background: "rgba(255,255,255,0.05)",
-  border: "1px solid rgba(255,255,255,0.10)",
-  borderRadius: "12px",
-  padding: "12px 12px 12px 44px",
-  color: "#fff",
-  fontSize: "14px",
-  outline: "none",
-}
-
-const codeInputStyle: React.CSSProperties = {
-  width: "100%",
-  background: "rgba(16,185,129,0.06)",
-  border: "1px solid rgba(16,185,129,0.25)",
-  borderRadius: "12px",
-  padding: "16px",
-  color: "#fff",
-  fontSize: "28px",
-  fontWeight: "bold",
-  letterSpacing: "10px",
-  textAlign: "center",
-  outline: "none",
-  fontFamily: "'Courier New', monospace",
-}
-
-const labelStyle: React.CSSProperties = {
-  display: "block",
-  fontSize: "12px",
-  fontWeight: 600,
-  marginBottom: "6px",
-  color: "rgba(255,255,255,0.45)",
-  textTransform: "uppercase",
-  letterSpacing: "0.06em",
-}
+const codeInputCls =
+  "w-full p-4 rounded-xl text-center font-mono text-3xl font-bold tracking-[10px] flora-ink bg-flora-green/5 dark:bg-flora-fresh/10 border border-flora-green/25 dark:border-flora-fresh/30 focus:outline-none focus:ring-2 focus:ring-flora-fresh/30 transition-all"
 
 export function VerifyEmailForm({ initialEmail }: VerifyEmailFormProps) {
   const router = useRouter()
@@ -136,26 +104,23 @@ export function VerifyEmailForm({ initialEmail }: VerifyEmailFormProps) {
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Email */}
         <div>
-          <label style={labelStyle}>Email</label>
+          <label className={authLabelCls}>Email</label>
           <div className="relative">
-            <Mail
-              className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4"
-              style={{ color: "rgba(255,255,255,0.28)" }}
-            />
+            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-flora-ink/30" />
             <input
               type="email"
               required
               readOnly={!!initialEmail}
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              style={inputStyle}
+              className={authInputCls + (initialEmail ? " opacity-70" : "")}
             />
           </div>
         </div>
 
         {/* Código */}
         <div>
-          <label style={labelStyle}>Código de 6 dígitos</label>
+          <label className={authLabelCls}>Código de 6 dígitos</label>
           <input
             type="text"
             required
@@ -168,9 +133,9 @@ export function VerifyEmailForm({ initialEmail }: VerifyEmailFormProps) {
             }}
             placeholder="000000"
             autoFocus
-            style={codeInputStyle}
+            className={codeInputCls}
           />
-          <p className="text-xs mt-2 text-center" style={{ color: countdown > 0 ? "rgba(16,185,129,0.70)" : "rgba(239,68,68,0.70)" }}>
+          <p className={`text-xs mt-2 text-center ${countdown > 0 ? "text-flora-green dark:text-flora-fresh" : "text-red-500"}`}>
             {countdown > 0
               ? `⏱ Expira em ${fmtCountdown(countdown)}`
               : "Código expirado — solicite um novo"}
@@ -181,34 +146,26 @@ export function VerifyEmailForm({ initialEmail }: VerifyEmailFormProps) {
         <button
           type="submit"
           disabled={loading || formData.code.length !== 6}
-          className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold text-black transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed mt-2"
-          style={{
-            background: "linear-gradient(135deg, #10b981, #059669)",
-            boxShadow: "0 0 24px rgba(16,185,129,0.30)",
-          }}
+          className="w-full flex items-center justify-center gap-2 py-3 rounded-full text-sm font-semibold text-white bg-flora-green hover:bg-flora-fresh transition-all hover:shadow-lg hover:shadow-flora-green/25 disabled:opacity-50 disabled:cursor-not-allowed mt-2"
         >
           {loading ? (
             <><Loader2 className="w-4 h-4 animate-spin" /> Verificando...</>
           ) : (
-            <><CheckCircle2 className="w-4 h-4" /> Verificar Email</>
+            <><CheckCircle2 className="w-4 h-4" /> Verificar email</>
           )}
         </button>
       </form>
 
       {/* Reenviar */}
-      <div
-        className="pt-4 text-center"
-        style={{ borderTop: "1px solid rgba(255,255,255,0.07)" }}
-      >
-        <p className="text-xs mb-3" style={{ color: "rgba(255,255,255,0.30)" }}>
+      <div className="pt-4 text-center border-t border-flora-green/10 dark:border-white/10">
+        <p className="text-xs mb-3 flora-muted">
           Não recebeu o código?
         </p>
         <button
           type="button"
           disabled={!canResend || resendLoading}
           onClick={handleResend}
-          className="inline-flex items-center gap-2 text-sm font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-          style={{ color: canResend ? "#10b981" : "rgba(255,255,255,0.30)" }}
+          className={`inline-flex items-center gap-2 text-sm font-semibold transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${canResend ? "text-flora-green dark:text-flora-fresh hover:underline" : "flora-muted"}`}
         >
           {resendLoading ? (
             <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Reenviando...</>

@@ -5,28 +5,10 @@ import { useRouter } from "next/navigation"
 import { Loader2, Mail, Lock, Chrome } from "lucide-react"
 import { toast } from "sonner"
 import { signIn } from "next-auth/react"
+import { authInputCls, authLabelCls } from "@/components/auth-shell"
 
-const inputStyle: React.CSSProperties = {
-  width: "100%",
-  background: "rgba(255,255,255,0.04)",
-  border: "1px solid rgba(255,255,255,0.10)",
-  borderRadius: "12px",
-  padding: "12px 12px 12px 40px",
-  color: "#fff",
-  fontSize: "14px",
-  outline: "none",
-  transition: "border-color 0.2s",
-}
-
-const labelStyle: React.CSSProperties = {
-  display: "block",
-  fontSize: "12px",
-  fontWeight: 600,
-  marginBottom: "6px",
-  color: "rgba(255,255,255,0.50)",
-  textTransform: "uppercase",
-  letterSpacing: "0.06em",
-}
+const iconCls = (active: boolean) =>
+  `absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors ${active ? "text-flora-green dark:text-flora-fresh" : "text-flora-ink/30"}`
 
 export function RegisterForm() {
   const router = useRouter()
@@ -85,7 +67,7 @@ export function RegisterForm() {
   const field = (id: string) => ({
     onFocus: () => setFocused(id),
     onBlur:  () => setFocused(null),
-    style:   { ...inputStyle, borderColor: focused === id ? "rgba(16,185,129,0.5)" : "rgba(255,255,255,0.10)" },
+    className: authInputCls,
   })
 
   return (
@@ -95,31 +77,25 @@ export function RegisterForm() {
         type="button"
         onClick={handleGoogle}
         disabled={googleLoading}
-        className="w-full flex items-center justify-center gap-3 py-3 rounded-xl text-sm font-semibold transition-all hover:scale-[1.01] active:scale-95 disabled:opacity-50"
-        style={{
-          background: "rgba(255,255,255,0.06)",
-          border: "1px solid rgba(255,255,255,0.10)",
-          color: "rgba(255,255,255,0.80)",
-        }}
+        className="w-full flex items-center justify-center gap-3 py-3 rounded-xl text-sm font-semibold flora-chip flora-ink transition-all disabled:opacity-50"
       >
-        {googleLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Chrome className="w-4 h-4" />}
+        {googleLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Chrome className="w-4 h-4 text-flora-green dark:text-flora-fresh" />}
         Cadastrar com Google
       </button>
 
       {/* Divider */}
       <div className="flex items-center gap-3">
-        <div className="flex-1 h-px" style={{ background: "rgba(255,255,255,0.07)" }} />
-        <span className="text-xs" style={{ color: "rgba(255,255,255,0.25)" }}>ou</span>
-        <div className="flex-1 h-px" style={{ background: "rgba(255,255,255,0.07)" }} />
+        <div className="flex-1 h-px bg-flora-green/10 dark:bg-white/10" />
+        <span className="text-xs flora-muted">ou</span>
+        <div className="flex-1 h-px bg-flora-green/10 dark:bg-white/10" />
       </div>
 
       {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label style={labelStyle}>Email</label>
+          <label className={authLabelCls}>Email</label>
           <div className="relative">
-            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4"
-              style={{ color: focused === "email" ? "#10b981" : "rgba(255,255,255,0.28)" }} />
+            <Mail className={iconCls(focused === "email")} />
             <input type="email" required placeholder="seu@email.com"
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -128,25 +104,23 @@ export function RegisterForm() {
         </div>
 
         <div>
-          <label style={labelStyle}>Senha</label>
+          <label className={authLabelCls}>Senha</label>
           <div className="relative">
-            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4"
-              style={{ color: focused === "password" ? "#10b981" : "rgba(255,255,255,0.28)" }} />
+            <Lock className={iconCls(focused === "password")} />
             <input type="password" required minLength={8} placeholder="Mín. 8 caracteres"
               value={formData.password}
               onChange={(e) => setFormData({ ...formData, password: e.target.value })}
               {...field("password")} />
           </div>
-          <p className="text-xs mt-1" style={{ color: "rgba(255,255,255,0.22)" }}>
+          <p className="text-xs mt-1 flora-muted">
             Mín. 8 caracteres, com maiúscula, número e símbolo
           </p>
         </div>
 
         <div>
-          <label style={labelStyle}>Confirmar senha</label>
+          <label className={authLabelCls}>Confirmar senha</label>
           <div className="relative">
-            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4"
-              style={{ color: focused === "confirm" ? "#10b981" : "rgba(255,255,255,0.28)" }} />
+            <Lock className={iconCls(focused === "confirm")} />
             <input type="password" required placeholder="••••••••"
               value={formData.confirmPassword}
               onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
@@ -157,20 +131,16 @@ export function RegisterForm() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-bold text-black transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-60 mt-2"
-          style={{
-            background: "linear-gradient(135deg, #10b981, #059669)",
-            boxShadow: "0 0 24px rgba(16,185,129,0.30)",
-          }}
+          className="w-full flex items-center justify-center gap-2 py-3 rounded-full text-sm font-semibold text-white bg-flora-green hover:bg-flora-fresh transition-all hover:shadow-lg hover:shadow-flora-green/25 disabled:opacity-60 mt-2"
         >
           {loading ? <><Loader2 className="w-4 h-4 animate-spin" /> Criando conta...</> : "Criar conta grátis"}
         </button>
 
-        <p className="text-center text-xs leading-relaxed" style={{ color: "rgba(255,255,255,0.30)" }}>
+        <p className="text-center text-xs leading-relaxed flora-muted">
           Ao criar conta, você concorda com os{" "}
-          <a href="/termos" target="_blank" style={{ color: "#10b981" }} className="hover:underline">Termos de Uso</a>{" "}
+          <a href="/termos" target="_blank" className="text-flora-green dark:text-flora-fresh hover:underline">Termos de Uso</a>{" "}
           e a{" "}
-          <a href="/privacidade" target="_blank" style={{ color: "#10b981" }} className="hover:underline">Política de Privacidade</a>.
+          <a href="/privacidade" target="_blank" className="text-flora-green dark:text-flora-fresh hover:underline">Política de Privacidade</a>.
         </p>
       </form>
     </div>
