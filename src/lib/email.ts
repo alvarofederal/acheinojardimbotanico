@@ -200,6 +200,34 @@ export async function sendPlanActivatedEmail(
   if (error) console.error("Erro ao enviar email de ativação:", error)
 }
 
+/** Notifica admins de um novo evento submetido (aguardando moderação). */
+export async function sendEventSubmittedEmail(adminEmail: string, businessName: string, title: string) {
+  if (isDev) { console.log(`\n📅 [DEV] Evento submetido: "${title}" por ${businessName}`); return }
+  if (!process.env.RESEND_API_KEY) return
+  const html = emailShell("📅 Novo evento para moderar", `
+    <p style="color:#4b5563;font-size:16px"><strong>${businessName}</strong> enviou um evento que aguarda sua aprovação:</p>
+    <p style="color:#4b5563;font-size:15px"><strong>${title}</strong></p>
+    <div style="text-align:center;margin:28px 0">
+      <a href="https://acheinojardimbotanico.com.br/dashboard/admin/eventos" style="display:inline-block;background:#10b981;color:#fff;padding:14px 28px;text-decoration:none;border-radius:8px;font-weight:600">Revisar evento</a>
+    </div>`)
+  const { error } = await getResend().emails.send({ from: EMAIL_FROM, to: adminEmail, subject: `📅 Evento para moderar: ${title}`, html })
+  if (error) console.error("Erro email evento submetido:", error)
+}
+
+/** Notifica o anunciante do resultado da moderação do evento. */
+export async function sendEventModeratedEmail(email: string, title: string, approved: boolean, note?: string) {
+  if (isDev) { console.log(`\n${approved ? "✅" : "❌"} [DEV] Evento ${approved ? "aprovado" : "rejeitado"}: "${title}"${note ? ` — ${note}` : ""}`); return }
+  if (!process.env.RESEND_API_KEY) return
+  const html = approved
+    ? emailShell("✅ Seu evento foi publicado!", `<p style="color:#4b5563;font-size:16px">O evento <strong>${title}</strong> já está no ar na agenda do Jardim Botânico. 🎉</p>`)
+    : emailShell("Seu evento precisa de ajustes", `
+        <p style="color:#4b5563;font-size:16px">O evento <strong>${title}</strong> ainda não foi publicado.</p>
+        ${note ? `<p style="color:#4b5563;font-size:15px;background:#fef3c7;padding:12px;border-radius:8px"><strong>Observação:</strong> ${note}</p>` : ""}
+        <p style="color:#6b7280;font-size:14px">Ajuste no painel e reenvie — vamos revisar de novo.</p>`)
+  const { error } = await getResend().emails.send({ from: EMAIL_FROM, to: email, subject: approved ? `✅ Evento publicado: ${title}` : `Ajustes no evento: ${title}`, html })
+  if (error) console.error("Erro email moderação evento:", error)
+}
+
 export async function sendPasswordResetEmail(email: string, resetUrl: string) {
   if (isDev) {
     console.log("\n🔑 [DEV] Recuperação de Senha →", email, "\nLink:", resetUrl)

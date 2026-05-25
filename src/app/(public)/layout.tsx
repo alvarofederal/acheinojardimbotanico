@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 import { Leaf } from "lucide-react"
+import { PublicNav } from "./_components/public-nav"
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://acheinojardimbotanico.com.br"),
@@ -26,16 +27,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
       <header className="sticky top-0 z-40 border-b border-flora-green/[0.08] dark:border-white/[0.06] bg-flora-cream/80 dark:bg-flora-deep/80 backdrop-blur-xl">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <Logo />
-          <div className="flex items-center gap-2 sm:gap-3">
-            <Link href="/login"
-              className="text-sm font-medium flora-muted hover:flora-ink transition-colors px-3 py-2">
-              Entrar
-            </Link>
-            <Link href="/anuncie"
-              className="text-sm font-semibold px-4 py-2 rounded-full bg-flora-green hover:bg-flora-fresh text-white transition-all hover:shadow-lg hover:shadow-flora-green/25">
-              Anunciar
-            </Link>
-          </div>
+          <PublicNav />
         </div>
       </header>
 
