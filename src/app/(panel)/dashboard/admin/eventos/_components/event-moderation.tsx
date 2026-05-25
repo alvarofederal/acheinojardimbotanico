@@ -3,10 +3,11 @@
 import { useState } from "react"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
-import { CheckCircle, XCircle, Loader2, Calendar, MapPin, Building2 } from "lucide-react"
+import { CheckCircle, XCircle, Loader2, Calendar, MapPin, Building2, Eye } from "lucide-react"
 
 export interface ModItem {
   id: string
+  slug: string
   title: string
   excerpt: string | null
   coverUrl: string | null
@@ -75,7 +76,11 @@ export function EventModeration({ events }: { events: ModItem[] }) {
               </div>
             </div>
           ) : (
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-wrap">
+              <a href={`/eventos/${e.slug}`} target="_blank" rel="noopener noreferrer"
+                className="flex items-center gap-1.5 px-4 py-2 rounded-xl border border-gray-200 dark:border-white/10 dash-subtitle hover:bg-gray-50 dark:hover:bg-white/5 text-sm font-medium transition-colors">
+                <Eye className="w-3.5 h-3.5" /> Preview
+              </a>
               <button onClick={() => act(e.id, "approve")} disabled={!!loading} className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white text-sm font-medium transition-colors">
                 {loading === e.id + "approve" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle className="w-3.5 h-3.5" />} Aprovar e publicar
               </button>

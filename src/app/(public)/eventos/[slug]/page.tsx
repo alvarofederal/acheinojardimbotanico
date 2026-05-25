@@ -2,9 +2,10 @@ import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 import Link from "next/link"
 import { db } from "@/lib/prisma"
-import { ArrowLeft, Calendar, MapPin, ExternalLink } from "lucide-react"
+import { auth } from "@/lib/auth"
+import { ArrowLeft, Calendar, MapPin, ExternalLink, Eye } from "lucide-react"
 
-export const revalidate = 600
+export const dynamic = "force-dynamic"
 interface PageProps { params: Promise<{ slug: string }> }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -18,7 +19,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function EventArticlePage({ params }: PageProps) {
   const { slug } = await params
   const ev = await db.event.findUnique({ where: { slug } })
-  if (!ev || ev.status !== "PUBLISHED") notFound()
+  if (!ev) notFound()
+
+  // Preview: admin pode ver eventos não publicados (pendente/rejeitado)
+  let preview = false
+  if (ev.status !== "PUBLISHED") {
+    const session = await auth()
+    if (session?.user?.role === "ADMIN") preview = true
+    else notFound()
+  }
 
   const dateLabel = ev.eventDate
     ? new Date(ev.eventDate).toLocaleDateString("pt-BR", { weekday: "long", day: "2-digit", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })
@@ -36,6 +45,11 @@ export default async function EventArticlePage({ params }: PageProps) {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      {preview && (
+        <div className="bg-amber-500 text-white text-sm font-medium py-2 px-4 text-center flex items-center justify-center gap-2">
+          <Eye className="w-4 h-4" /> Pré-visualização ({ev.status === "PENDING" ? "aguardando aprovação" : "rejeitado"}) — só você (admin) vê esta página.
+        </div>
+      )}
       <article className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
         <Link href="/eventos" className="inline-flex items-center gap-1.5 text-sm flora-muted hover:text-flora-green dark:hover:text-flora-fresh transition-colors mb-5">
           <ArrowLeft className="w-4 h-4" /> Eventos
