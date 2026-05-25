@@ -102,16 +102,17 @@ export function ConfigForm({ payment, plans }: { payment: Payment | null; plans:
             const meta = PLAN_ICON[f.plan]
             const isFree = f.plan === "FREE"
             return (
-              <div key={f.plan} className={`rounded-2xl border-2 ${meta.border} bg-white dark:bg-white/[0.02] p-5 space-y-4 ${!f.active ? "opacity-60" : ""}`}>
+              <div key={f.plan} data-testid={`plan-card-${f.plan}`} className={`rounded-2xl border-2 ${meta.border} bg-white dark:bg-white/[0.02] p-5 space-y-4 ${!f.active ? "opacity-60" : ""}`}>
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
                     <meta.icon className={`w-5 h-5 ${meta.color}`} />
                     <input value={f.label} onChange={e => updatePlan(f.plan, { label: e.target.value })}
+                      data-testid={`label-${f.plan}`}
                       className="font-bold dash-title bg-transparent border-b border-transparent hover:border-gray-200 dark:hover:border-white/10 focus:border-emerald-500 focus:outline-none text-sm w-28" />
                   </div>
                   <label className="flex items-center gap-1.5 text-xs dash-subtitle cursor-pointer">
                     <input type="checkbox" checked={f.active} onChange={e => updatePlan(f.plan, { active: e.target.checked })}
-                      disabled={isFree}
+                      disabled={isFree} data-testid={`active-${f.plan}`}
                       className="w-4 h-4 rounded accent-emerald-600 disabled:opacity-40" />
                     Ativo
                   </label>
@@ -122,17 +123,20 @@ export function ConfigForm({ payment, plans }: { payment: Payment | null; plans:
                     <label className={labelCls}>R$/mês</label>
                     <input type="number" step="0.01" min="0" value={f.priceReais} disabled={isFree}
                       onChange={e => updatePlan(f.plan, { priceReais: e.target.value })}
+                      data-testid={`price-${f.plan}`}
                       className={inputCls + " disabled:opacity-50"} />
                   </div>
                   <div className="space-y-1">
                     <label className={labelCls}>Produtos</label>
                     <input type="number" min="0" value={f.productLimit}
-                      onChange={e => updatePlan(f.plan, { productLimit: e.target.value })} className={inputCls} />
+                      onChange={e => updatePlan(f.plan, { productLimit: e.target.value })}
+                      data-testid={`products-${f.plan}`} className={inputCls} />
                   </div>
                   <div className="space-y-1">
                     <label className={labelCls}>Fotos</label>
                     <input type="number" min="0" value={f.photoLimit}
-                      onChange={e => updatePlan(f.plan, { photoLimit: e.target.value })} className={inputCls} />
+                      onChange={e => updatePlan(f.plan, { photoLimit: e.target.value })}
+                      data-testid={`photos-${f.plan}`} className={inputCls} />
                   </div>
                 </div>
 
@@ -141,6 +145,7 @@ export function ConfigForm({ payment, plans }: { payment: Payment | null; plans:
                   {PLAN_FEATURES.map(feat => (
                     <label key={feat.key} className="flex items-start gap-2 cursor-pointer group" title={feat.description}>
                       <input type="checkbox" checked={f.features[feat.key]} onChange={() => toggleFeature(f.plan, feat.key)}
+                        data-testid={`feat-${f.plan}-${feat.key}`}
                         className="w-4 h-4 rounded accent-emerald-600 mt-0.5 flex-shrink-0" />
                       <span className="text-xs dash-title leading-tight group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">{feat.label}</span>
                     </label>
@@ -195,7 +200,7 @@ export function ConfigForm({ payment, plans }: { payment: Payment | null; plans:
         </div>
       </div>
 
-      <button type="submit" disabled={saving}
+      <button type="submit" disabled={saving} data-testid="save-plans"
         className="flex items-center gap-2 px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60 text-white rounded-xl text-sm font-semibold transition-colors sticky bottom-4 shadow-lg">
         {saving ? <><Loader2 className="w-4 h-4 animate-spin" />Salvando...</> : <><Save className="w-4 h-4" />Salvar tudo</>}
       </button>

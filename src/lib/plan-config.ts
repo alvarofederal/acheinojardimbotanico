@@ -19,10 +19,23 @@ export function invalidatePlanConfigCache() {
   cache = null
 }
 
-/** Carrega as 3 configs do banco; cria os registros que faltarem (seed). */
+/** Carrega as 3 configs do banco, SEM cache (sempre fresco). Semeia o que faltar.
+ *  Use no painel admin, onde é importante ver a alteração imediatamente. */
+export async function getPlanConfigsFresh(): Promise<Record<PlanId, PlanConfigData>> {
+  const data = await loadFromDb()
+  cache = { data, at: Date.now() } // aquece o cache de leitura também
+  return data
+}
+
+/** Carrega as 3 configs do banco (com cache curto); cria os que faltarem. */
 export async function getPlanConfigs(): Promise<Record<PlanId, PlanConfigData>> {
   if (cache && Date.now() - cache.at < TTL_MS) return cache.data
+  const data = await loadFromDb()
+  cache = { data, at: Date.now() }
+  return data
+}
 
+async function loadFromDb(): Promise<Record<PlanId, PlanConfigData>> {
   const rows = await db.planConfig.findMany()
   const byPlan = new Map(rows.map(r => [r.plan as PlanId, r]))
 
@@ -61,7 +74,6 @@ export async function getPlanConfigs(): Promise<Record<PlanId, PlanConfigData>> 
       : d
   }
 
-  cache = { data, at: Date.now() }
   return data
 }
 

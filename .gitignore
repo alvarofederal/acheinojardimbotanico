@@ -51,3 +51,8 @@ backups/
 
 # Segredos do Google Cloud (OAuth client)
 client_secret_*.json
+
+# Cypress
+cypress/screenshots/
+cypress/videos/
+cypress/downloads/
