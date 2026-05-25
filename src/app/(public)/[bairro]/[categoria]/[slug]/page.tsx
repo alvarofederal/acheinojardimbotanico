@@ -2,6 +2,8 @@ import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 import { db } from "@/lib/prisma"
 import { slugify, SITE_URL } from "@/lib/utils"
+import { getPlanConfig } from "@/lib/plan-config"
+import { type PlanId } from "@/lib/plans"
 import Link from "next/link"
 import { MapPin, Phone, Globe, Instagram, Facebook, Linkedin, Youtube, Star, Clock, Navigation } from "lucide-react"
 import { TrackView } from "./_components/track-view"
@@ -76,9 +78,14 @@ export default async function BusinessPage({ params }: PageProps) {
   const weekdays = getWeekdayDescriptions(business.openingHours)
   const reviews = getReviews(business.reviews)
 
+  // Recursos liberados pelo plano do negócio
+  const planCfg = await getPlanConfig(business.plan as PlanId)
+  const feat = planCfg.features
+
   const showcaseProducts = business.products.map(p => ({
     id: p.id, name: p.name, description: p.description, categoria: p.categoria,
-    priceMode: p.priceMode as "FIXED" | "FROM" | "ON_REQUEST", priceCents: p.priceCents, promoPriceCents: p.promoPriceCents,
+    priceMode: p.priceMode as "FIXED" | "FROM" | "ON_REQUEST", priceCents: p.priceCents,
+    promoPriceCents: feat.promocoes ? p.promoPriceCents : null,
     images: Array.isArray(p.images) ? (p.images as unknown as string[]) : [],
     variations: Array.isArray(p.variations) ? (p.variations as unknown as { nome: string; opcoes: string[] }[]) : [],
     soldOut: p.soldOut,
@@ -137,8 +144,8 @@ export default async function BusinessPage({ params }: PageProps) {
         <div className="mb-6 flora-rise">
           <div className="flex items-start gap-3 flex-wrap">
             <p className="text-xs font-medium uppercase tracking-wider text-flora-green dark:text-flora-fresh">{business.category.name}</p>
-            {business.plan === "PREMIUM" && (
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-flora-gold text-flora-ink uppercase tracking-wide">Premium</span>
+            {feat.selo && (
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-flora-gold text-flora-ink uppercase tracking-wide">{planCfg.label}</span>
             )}
           </div>
           <h1 className="font-serif text-3xl sm:text-4xl font-semibold flora-ink leading-tight mt-1.5">
@@ -182,7 +189,7 @@ export default async function BusinessPage({ params }: PageProps) {
         </div>
 
         {/* Redes sociais — centraliza a visão do negócio */}
-        {(business.instagram || business.facebook || business.linkedin || business.youtube) && (
+        {feat.redesSociais && (business.instagram || business.facebook || business.linkedin || business.youtube) && (
           <div className="flex flex-wrap items-center gap-2.5 mb-8">
             <span className="text-xs font-semibold uppercase tracking-wider flora-muted">Redes</span>
             {business.instagram && (
@@ -259,7 +266,7 @@ export default async function BusinessPage({ params }: PageProps) {
             whatsapp={business.whatsapp}
             storeMessage={business.storeWhatsappMessage}
             businessUrl={businessUrl}
-            storeHref={`/${bairro}/${categoria}/${slug}/loja`}
+            storeHref={feat.loja ? `/${bairro}/${categoria}/${slug}/loja` : undefined}
           />
         )}
 

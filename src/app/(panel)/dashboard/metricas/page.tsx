@@ -3,6 +3,9 @@ import Link from "next/link"
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/prisma"
 import { RoiChart } from "./_components/roi-chart"
+import { FeatureLocked } from "../_components/feature-locked"
+import { planHasFeature } from "@/lib/plan-config"
+import { type PlanId } from "@/lib/plans"
 import { Eye, MessageCircle, TrendingUp, Store, Zap, ArrowUpRight, ArrowDownRight } from "lucide-react"
 
 function dayKey(d: Date) { return d.toISOString().slice(0, 10) }
@@ -27,6 +30,9 @@ export default async function MetricasPage() {
       </div>
     </div>
   )
+
+  if (!(await planHasFeature(business.plan as PlanId, "metricas")))
+    return <FeatureLocked title="Métricas" feature="Métricas / ROI" />
 
   const now = new Date()
   const start30 = new Date(now); start30.setDate(now.getDate() - 30); start30.setHours(0, 0, 0, 0)

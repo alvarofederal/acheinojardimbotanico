@@ -3,7 +3,8 @@ import { auth } from "@/lib/auth"
 import { db } from "@/lib/prisma"
 import { BusinessEditor } from "./_components/business-editor"
 import { PhotoManager } from "./_components/photo-manager"
-import { PHOTO_LIMITS } from "@/app/api/dashboard/negocio/fotos/route"
+import { photoLimit } from "@/lib/plan-config"
+import { type PlanId } from "@/lib/plans"
 import Link from "next/link"
 import { Store, ShieldCheck } from "lucide-react"
 
@@ -39,6 +40,8 @@ export default async function NegocioPage() {
     </div>
   )
 
+  const fotoLimit = await photoLimit(business.plan as PlanId)
+
   return (
     <div className="space-y-6 max-w-2xl">
       <div>
@@ -50,7 +53,7 @@ export default async function NegocioPage() {
         <PhotoManager
           photos={business.photos}
           plan={business.plan}
-          limit={PHOTO_LIMITS[business.plan] ?? 3}
+          limit={fotoLimit}
         />
       </div>
     </div>

@@ -4,6 +4,8 @@ import { auth } from "@/lib/auth"
 import { db } from "@/lib/prisma"
 import { slugify } from "@/lib/utils"
 import { sendEventSubmittedEmail } from "@/lib/email"
+import { planHasFeature } from "@/lib/plan-config"
+import { type PlanId } from "@/lib/plans"
 import { z } from "zod"
 
 const schema = z.object({
@@ -22,6 +24,9 @@ export async function POST(req: NextRequest) {
 
   const business = await db.business.findFirst({ where: { ownerId: session.user.id } })
   if (!business) return NextResponse.json({ error: "Reivindique um negócio para criar eventos" }, { status: 404 })
+
+  if (!(await planHasFeature(business.plan as PlanId, "eventos")))
+    return NextResponse.json({ error: "Seu plano não inclui Eventos. Faça upgrade para divulgar eventos." }, { status: 403 })
 
   const body = await req.json()
   const v = schema.safeParse(body)

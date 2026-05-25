@@ -1,17 +1,36 @@
 export const runtime = "nodejs"
 import { NextRequest, NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
-import { db } from "@/lib/prisma"
+import { db, Prisma } from "@/lib/prisma"
+import { invalidatePlanConfigCache } from "@/lib/plan-config"
+import { PLAN_FEATURE_KEYS } from "@/lib/plans"
 import { z } from "zod"
 
-const schema = z.object({
+const featuresSchema = z.object(
+  Object.fromEntries(PLAN_FEATURE_KEYS.map(k => [k, z.boolean()])) as Record<string, z.ZodBoolean>
+)
+
+const planSchema = z.object({
+  plan: z.enum(["FREE", "VISIBILITY", "PREMIUM"]),
+  label: z.string().min(1).max(40),
+  active: z.boolean(),
+  priceCents: z.number().int().min(0).max(10_000_000),
+  productLimit: z.number().int().min(0).max(1000),
+  photoLimit: z.number().int().min(0).max(1000),
+  features: featuresSchema,
+})
+
+const paymentSchema = z.object({
   pixKey: z.string().max(200).optional(),
   pixHolderName: z.string().max(120).optional(),
   pixCopyPaste: z.string().max(2000).optional(),
   mercadoPagoLink: z.string().url().or(z.literal("")).optional(),
   instructions: z.string().max(2000).optional(),
-  visibilityCents: z.number().int().min(0).max(1_000_000).optional(),
-  premiumCents: z.number().int().min(0).max(1_000_000).optional(),
+})
+
+const schema = z.object({
+  payment: paymentSchema,
+  plans: z.array(planSchema).max(3),
 })
 
 export async function PATCH(req: NextRequest) {
@@ -23,21 +42,40 @@ export async function PATCH(req: NextRequest) {
   const v = schema.safeParse(body)
   if (!v.success) return NextResponse.json({ error: v.error.errors[0].message }, { status: 400 })
 
-  const data = {
-    pixKey: v.data.pixKey || null,
-    pixHolderName: v.data.pixHolderName || null,
-    pixCopyPaste: v.data.pixCopyPaste || null,
-    mercadoPagoLink: v.data.mercadoPagoLink || null,
-    instructions: v.data.instructions || null,
-    ...(v.data.visibilityCents !== undefined ? { visibilityCents: v.data.visibilityCents } : {}),
-    ...(v.data.premiumCents !== undefined ? { premiumCents: v.data.premiumCents } : {}),
+  const p = v.data.payment
+  const paymentData = {
+    pixKey: p.pixKey || null,
+    pixHolderName: p.pixHolderName || null,
+    pixCopyPaste: p.pixCopyPaste || null,
+    mercadoPagoLink: p.mercadoPagoLink || null,
+    instructions: p.instructions || null,
   }
 
-  await db.paymentConfig.upsert({
-    where: { id: "default" },
-    create: { id: "default", ...data },
-    update: data,
-  })
+  await db.$transaction([
+    db.paymentConfig.upsert({
+      where: { id: "default" },
+      create: { id: "default", ...paymentData },
+      update: paymentData,
+    }),
+    ...v.data.plans.map(pl => {
+      // Free é sempre ativo e grátis, independente do que vier
+      const isFree = pl.plan === "FREE"
+      const data = {
+        label: pl.label,
+        active: isFree ? true : pl.active,
+        priceCents: isFree ? 0 : pl.priceCents,
+        productLimit: pl.productLimit,
+        photoLimit: pl.photoLimit,
+        features: pl.features as unknown as Prisma.InputJsonValue,
+      }
+      return db.planConfig.upsert({
+        where: { plan: pl.plan },
+        create: { plan: pl.plan, order: pl.plan === "FREE" ? 0 : pl.plan === "VISIBILITY" ? 1 : 2, ...data },
+        update: data,
+      })
+    }),
+  ])
 
+  invalidatePlanConfigCache()
   return NextResponse.json({ ok: true })
 }

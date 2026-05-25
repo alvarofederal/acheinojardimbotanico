@@ -1,6 +1,8 @@
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 import { db } from "@/lib/prisma"
+import { getPlanConfigs } from "@/lib/plan-config"
+import { type PlanId } from "@/lib/plans"
 import { CategoryList } from "./_components/category-list"
 import { MapPin } from "lucide-react"
 import Link from "next/link"
@@ -32,7 +34,7 @@ export default async function CategoryPage({ params }: PageProps) {
   const category = await db.category.findUnique({ where: { slug: categoria } })
   if (!category) notFound()
 
-  const businesses = await db.business.findMany({
+  const rawBusinesses = await db.business.findMany({
     where: {
       categoryId: category.id,
       status: { in: ["IMPORTED", "CLAIMED"] },
@@ -41,11 +43,24 @@ export default async function CategoryPage({ params }: PageProps) {
       photos: { orderBy: { order: "asc" }, take: 1 },
       products: { where: { active: true }, take: 1, select: { id: true } },
     },
-    orderBy: [
-      { plan: "desc" },
-      { googleRating: "desc" },
-    ],
+    orderBy: { googleRating: "desc" },
   })
+
+  // Destaque e selo são recursos de plano — aplica por negócio e reordena
+  const cfgs = await getPlanConfigs()
+  const businesses = rawBusinesses
+    .map(b => {
+      const cfg = cfgs[b.plan as PlanId]
+      return {
+        ...b,
+        featured: cfg?.features.destaque ?? false,
+        seloLabel: cfg?.features.selo ? cfg.label : null,
+      }
+    })
+    .sort((a, b) => {
+      if (a.featured !== b.featured) return a.featured ? -1 : 1
+      return (b.googleRating ?? 0) - (a.googleRating ?? 0)
+    })
 
   const bairroLabel = bairro.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase())
 

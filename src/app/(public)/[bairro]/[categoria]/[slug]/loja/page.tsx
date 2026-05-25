@@ -3,6 +3,8 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { db } from "@/lib/prisma"
 import { slugify, SITE_URL } from "@/lib/utils"
+import { getPlanConfig } from "@/lib/plan-config"
+import { type PlanId } from "@/lib/plans"
 import { ProductShowcase } from "../_components/product-showcase"
 import { ArrowLeft, Star, MapPin, Crown, ShoppingBag } from "lucide-react"
 
@@ -36,9 +38,15 @@ export default async function StorePage({ params }: PageProps) {
 
   if (!business || business.status === "SUSPENDED") notFound()
 
+  // Loja completa é recurso de plano — sem ela, a página não existe publicamente
+  const planCfg = await getPlanConfig(business.plan as PlanId)
+  if (!planCfg.features.loja) notFound()
+  const canPromo = planCfg.features.promocoes
+
   const products = business.products.map(p => ({
     id: p.id, name: p.name, description: p.description, categoria: p.categoria,
-    priceMode: p.priceMode as "FIXED" | "FROM" | "ON_REQUEST", priceCents: p.priceCents, promoPriceCents: p.promoPriceCents,
+    priceMode: p.priceMode as "FIXED" | "FROM" | "ON_REQUEST", priceCents: p.priceCents,
+    promoPriceCents: canPromo ? p.promoPriceCents : null,
     images: Array.isArray(p.images) ? (p.images as unknown as string[]) : [],
     variations: Array.isArray(p.variations) ? (p.variations as unknown as { nome: string; opcoes: string[] }[]) : [],
     soldOut: p.soldOut,
@@ -46,7 +54,7 @@ export default async function StorePage({ params }: PageProps) {
 
   const profileUrl = `/${bairro}/${categoria}/${slug}`
   const businessUrl = `${SITE_URL}/${slugify(business.neighborhood)}/${business.category.slug}/${business.slug}/loja`
-  const isPremium = business.plan === "PREMIUM"
+  const showSelo = planCfg.features.selo
   const cover = business.photos[0]?.url
 
   return (
@@ -65,9 +73,9 @@ export default async function StorePage({ params }: PageProps) {
           <div className="flex items-center gap-2 mb-2">
             <ShoppingBag className="w-5 h-5 text-flora-gold" />
             <span className="text-xs uppercase tracking-widest text-white/70">Loja</span>
-            {isPremium && (
+            {showSelo && (
               <span className="flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-flora-gold text-flora-ink uppercase tracking-wide">
-                <Crown className="w-3 h-3" /> Premium
+                <Crown className="w-3 h-3" /> {planCfg.label}
               </span>
             )}
           </div>

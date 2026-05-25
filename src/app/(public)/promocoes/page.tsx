@@ -1,6 +1,8 @@
 import type { Metadata } from "next"
 import { db } from "@/lib/prisma"
 import { slugify, SITE_URL } from "@/lib/utils"
+import { getPlanConfigs } from "@/lib/plan-config"
+import { type PlanId } from "@/lib/plans"
 import { PromoGrid, type PromoItem } from "./_components/promo-grid"
 import { Tag } from "lucide-react"
 
@@ -20,13 +22,17 @@ export default async function PromocoesPage() {
       business: { status: { in: ["IMPORTED", "CLAIMED"] } },
     },
     include: {
-      business: { select: { id: true, name: true, slug: true, neighborhood: true, whatsapp: true, storeWhatsappMessage: true, category: { select: { slug: true } } } },
+      business: { select: { id: true, name: true, slug: true, plan: true, neighborhood: true, whatsapp: true, storeWhatsappMessage: true, category: { select: { slug: true } } } },
     },
     orderBy: { updatedAt: "desc" },
     take: 100,
   })
 
-  const items: PromoItem[] = products.map(p => {
+  // Só mostra ofertas de negócios cujo plano libera "Promoções"
+  const cfgs = await getPlanConfigs()
+  const promoProducts = products.filter(p => cfgs[p.business.plan as PlanId]?.features.promocoes)
+
+  const items: PromoItem[] = promoProducts.map(p => {
     const bairro = slugify(p.business.neighborhood)
     const storeHref = `/${bairro}/${p.business.category.slug}/${p.business.slug}/loja`
     return {
@@ -45,7 +51,7 @@ export default async function PromocoesPage() {
     }
   })
 
-  const categories = [...new Set(products.map(p => p.business.category.slug))].slice(0, 12)
+  const categories = [...new Set(promoProducts.map(p => p.business.category.slug))].slice(0, 12)
 
   return (
     <main>

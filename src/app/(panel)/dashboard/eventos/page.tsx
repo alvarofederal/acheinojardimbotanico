@@ -3,6 +3,9 @@ import Link from "next/link"
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/prisma"
 import { EventManager, type EventItem } from "./_components/event-manager"
+import { FeatureLocked } from "../_components/feature-locked"
+import { planHasFeature } from "@/lib/plan-config"
+import { type PlanId } from "@/lib/plans"
 import { Store } from "lucide-react"
 
 export default async function EventosPage() {
@@ -22,6 +25,9 @@ export default async function EventosPage() {
       </div>
     </div>
   )
+
+  if (!(await planHasFeature(business.plan as PlanId, "eventos")))
+    return <FeatureLocked title="Meus Eventos" feature="Eventos" />
 
   const events = await db.event.findMany({ where: { businessId: business.id }, orderBy: { createdAt: "desc" } })
   const items: EventItem[] = events.map(e => ({

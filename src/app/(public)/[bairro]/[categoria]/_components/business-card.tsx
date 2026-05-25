@@ -20,6 +20,8 @@ interface BusinessCardProps {
     openingHours: unknown
     hasStore?: boolean
     products?: Array<{ id: string }>
+    featured?: boolean
+    seloLabel?: string | null
   }
   bairro: string
   categoria: string
@@ -44,8 +46,8 @@ function isOpenNow(openingHours: unknown): boolean | null {
 export function BusinessCard({ business, bairro, categoria }: BusinessCardProps) {
   const photo = business.photos[0]?.url
   const open = isOpenNow(business.openingHours)
-  const isPremium = business.plan === "PREMIUM"
-  const isVisibility = business.plan === "VISIBILITY"
+  const seloLabel = business.seloLabel ?? null
+  const featured = business.featured ?? false
   const hasStore = business.hasStore ?? (business.products?.length ?? 0) > 0
 
   return (
@@ -70,12 +72,12 @@ export function BusinessCard({ business, bairro, categoria }: BusinessCardProps)
 
         {/* Badges sobre a imagem */}
         <div className="absolute top-3 left-3 flex gap-1.5">
-          {isPremium && (
+          {seloLabel && (
             <span className="text-[10px] font-bold px-2 py-1 rounded-full bg-flora-gold text-flora-ink uppercase tracking-wide shadow-sm">
-              Premium
+              {seloLabel}
             </span>
           )}
-          {isVisibility && !isPremium && (
+          {featured && !seloLabel && (
             <span className="text-[10px] font-bold px-2 py-1 rounded-full bg-flora-green text-white uppercase tracking-wide shadow-sm">
               Destaque
             </span>

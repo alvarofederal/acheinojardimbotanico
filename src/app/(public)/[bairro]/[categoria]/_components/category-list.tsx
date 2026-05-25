@@ -18,6 +18,8 @@ interface BusinessItem {
   photos: Array<{ url: string }>
   openingHours: unknown
   products?: Array<{ id: string }>
+  featured?: boolean
+  seloLabel?: string | null
 }
 
 function isOpenNow(openingHours: unknown): boolean | null {

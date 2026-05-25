@@ -26,18 +26,23 @@ export async function getPlanConfigs(): Promise<Record<PlanId, PlanConfigData>> 
   const rows = await db.planConfig.findMany()
   const byPlan = new Map(rows.map(r => [r.plan as PlanId, r]))
 
-  // Seed: garante uma linha por plano
+  // Seed: garante uma linha por plano. Idempotente e tolerante a corrida
+  // (vários workers do build podem semear ao mesmo tempo → ignora P2002).
   const missing = PLAN_IDS.filter(p => !byPlan.has(p))
   if (missing.length > 0) {
-    await Promise.all(missing.map(p => {
+    await Promise.all(missing.map(async p => {
       const d = DEFAULT_PLAN_CONFIGS[p]
-      return db.planConfig.create({
-        data: {
-          plan: p, label: d.label, active: d.active, order: d.order,
-          priceCents: d.priceCents, productLimit: d.productLimit, photoLimit: d.photoLimit,
-          features: d.features,
-        },
-      })
+      try {
+        await db.planConfig.upsert({
+          where: { plan: p },
+          create: {
+            plan: p, label: d.label, active: d.active, order: d.order,
+            priceCents: d.priceCents, productLimit: d.productLimit, photoLimit: d.photoLimit,
+            features: d.features,
+          },
+          update: {},
+        })
+      } catch { /* já criado por outro processo */ }
     }))
     const fresh = await db.planConfig.findMany()
     fresh.forEach(r => byPlan.set(r.plan as PlanId, r))

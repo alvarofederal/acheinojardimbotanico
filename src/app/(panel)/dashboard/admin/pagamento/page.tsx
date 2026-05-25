@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation"
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/prisma"
+import { getPlanConfigs } from "@/lib/plan-config"
+import { PLAN_IDS } from "@/lib/plans"
 import { ConfigForm } from "./_components/config-form"
 
 export default async function PagamentoConfigPage() {
@@ -8,15 +10,22 @@ export default async function PagamentoConfigPage() {
   if (!session?.user) redirect("/login")
   if (session.user.role !== "ADMIN") redirect("/dashboard")
 
-  const config = await db.paymentConfig.findUnique({ where: { id: "default" } })
+  const [config, cfgs] = await Promise.all([
+    db.paymentConfig.findUnique({ where: { id: "default" } }),
+    getPlanConfigs(),
+  ])
+
+  const plans = PLAN_IDS.map(id => cfgs[id])
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-xl sm:text-2xl font-bold dash-title">Configurar Cobrança</h1>
-        <p className="dash-subtitle mt-0.5 text-sm">Defina como os anunciantes vão pagar (PIX e cartão)</p>
+        <h1 className="text-xl sm:text-2xl font-bold dash-title">Planos & Cobrança</h1>
+        <p className="dash-subtitle mt-0.5 text-sm">
+          Defina preço, limites e recursos de cada plano — e como os anunciantes pagam.
+        </p>
       </div>
-      <ConfigForm config={config} />
+      <ConfigForm payment={config} plans={plans} />
     </div>
   )
 }
