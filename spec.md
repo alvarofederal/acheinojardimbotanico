@@ -1283,15 +1283,48 @@ Estes vão para `.specify/memory/constitution.md` e o Spec-Kit os lê em toda ex
 
 ### 11.9 Entregas recentes (UX/operacional)
 - **Identidade Flora** aplicada em todas as telas de auth (login/register/forgot/reset/verify) e 404.
-- **Mapa interativo** no perfil do negócio (OpenStreetMap embutido, sem chave/custo).
-- **Histórico de Ações** (admin) + busca por lojista no Log de Auditoria (coluna `AuditLog.businessId`).
+  Moldura comum em `src/components/auth-shell.tsx`.
+- **Mapa interativo** no perfil do negócio (OpenStreetMap embutido, sem chave/custo; `frame-src` liberado na CSP).
+- **Histórico de Ações** (admin, `/dashboard/admin/historico`) + busca por lojista no Log de Auditoria
+  (coluna `AuditLog.businessId`, helper `src/lib/audit.ts` com `logAudit`/`queryAudit`).
 - **Cadastro de negócio pelo anunciante** (`/dashboard/negocio/novo`) — para negócios fora do Google
   (ex.: que atendem em casa). Autocomplete de endereço via Photon/OSM (sem chave), captura coordenadas,
   entra como `PENDING_REVIEW`; admin aprova/rejeita na lista de Negócios. Proxy em `/api/geocode`.
+- **Onboarding do anunciante**: checklist "Complete seu perfil" na home do painel (descrição, WhatsApp,
+  fotos, 1º produto, plano) + banner "em análise" para `PENDING_REVIEW`.
 
-### 11.10 Pendências conhecidas / próximos passos
-- Restringir a chave Google por IP (servidor) — segurança.
+### 11.10 Loja "uau" + personalização (novidade)
+- Página da loja (`/[bairro]/[categoria]/[slug]/loja`) repaginada: **hero cinematográfico** (capa + slogan +
+  CTA WhatsApp), **produtos por seção/categoria** com bloco **Destaques**, **avaliações do Google** e
+  **botão WhatsApp flutuante**.
+- O lojista controla a cara da loja: **`Business.storeCoverUrl`** (capa), **`Business.storeTagline`** (slogan)
+  e **`Product.featured`** (destaque), editáveis no painel de Produtos.
+- **Link curto/vanity** (`Business.handle`, ex.: `/arte-e-tradicao`) — **perk de plano pago**, editor em
+  `/dashboard/negocio`, validado/único (`src/lib/handle.ts`); a rota `[bairro]/page.tsx` resolve o handle e
+  redireciona ao perfil canônico.
+
+### 11.11 Métricas reais no painel admin (novidade)
+- Model **`Presence`** (cookie anônimo `ajb_vid`, sem PII) alimentado por beacon no layout público
+  (`/api/track/visit`, ping a cada 60s).
+- Home admin mostra **online agora** (ativos < 3 min), **visitantes ativos** (hoje/7d/30d), **pagantes ativos**,
+  **reivindicados**, **total de negócios**, **MRR**, **visualizações/cliques (7d)** e **pendências** (claims,
+  pagamentos, eventos, negócios em revisão) com links de ação.
+
+### 11.12 Segurança & SEO (hardening)
+- Rate-limit anti força-bruta em `verify-email` (código 6 dígitos), `reset-password` e `geocode`
+  (além de login/register/forgot/resend que já tinham).
+- Sitemap completo (negócios, categorias, notícias, eventos, promoções, anuncie). Suporte a verificação
+  do Search Console via `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION`.
+- Runbooks: `docs/runbooks/launch-checklist.md` e `docs/runbooks/security-checklist.md`.
+- URL do site unificada em `NEXT_PUBLIC_SITE_URL`; `.env.example` alinhado às variáveis reais.
+
+### 11.13 Pendências conhecidas / próximos passos
+- **Lançar**: comprar domínio → Vercel (env vars, `CANONICAL_HOST`, `CRON_SECRET`) → Search Console.
+- Restringir a chave Google por IP/referrer (servidor) — segurança.
 - Conferência automática de pagamento (webhook PIX/MP ou Asaas) — quando o volume justificar.
+- Loops de crescimento (pós-lançamento): alerta de lead ao lojista, resumo mensal, kit de compartilhamento
+  da loja (botão compartilhar + selo "no Achei" linkando de volta + QR), rankings de SEO ("melhores X").
+- Rate-limit em memória (ADR 0006) → migrar para store compartilhado (Redis/Upstash) em escala.
 
 ---
 
