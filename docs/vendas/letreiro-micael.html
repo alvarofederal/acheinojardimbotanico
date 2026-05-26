@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Olá, Micael! 🚀</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%;overflow:hidden;background:#05060a;font-family:'Segoe UI',system-ui,sans-serif}
+  .stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+
+  /* fundo com gradiente que pulsa */
+  .bg{position:fixed;inset:0;background:radial-gradient(circle at 50% 50%, #1E5C45, #05060a 70%);animation:pulse 6s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:.5}50%{opacity:1}}
+
+  /* letreiro deslizando (estilo marquee, mas suave com CSS) */
+  .track{white-space:nowrap;position:absolute;left:0;top:50%;transform:translateY(-50%);display:flex;will-change:transform;animation:slide 12s linear infinite}
+  .name{font-size:18vh;font-weight:900;padding:0 6vw;letter-spacing:.02em;
+    background:linear-gradient(90deg,#3A8B6A,#D2B48C,#A3C4B3,#3A8B6A);
+    background-size:300% 100%;
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 50px rgba(58,139,106,.35);
+    animation:hue 4s linear infinite}
+  @keyframes slide{from{transform:translate(0,-50%)}to{transform:translate(-50%,-50%)}}
+  @keyframes hue{to{background-position:300% 0}}
+
+  /* subtítulo fixo no centro */
+  .sub{position:fixed;left:0;right:0;bottom:7vh;text-align:center;color:#A3C4B3;font-size:3.2vh;letter-spacing:.3em;text-transform:uppercase;opacity:.85;animation:blink 2s ease-in-out infinite}
+  @keyframes blink{0%,100%{opacity:.4}50%{opacity:1}}
+
+  /* estrelinhas/emoji flutuando */
+  .star{position:fixed;font-size:4vh;animation:float linear infinite;opacity:.8}
+  @keyframes float{from{transform:translateY(110vh) rotate(0)}to{transform:translateY(-20vh) rotate(360deg)}}
+</style>
+</head>
+<body>
+  <div class="bg"></div>
+  <div class="stage">
+    <!-- duas cópias do nome em sequência = loop sem buraco -->
+    <div class="track">
+      <span class="name">Micael Gomes Morais</span>
+      <span class="name">Micael Gomes Morais</span>
+    </div>
+  </div>
+  <div class="sub">✨ feito pelo Claude pro Micael ✨</div>
+
+  <script>
+    // chuva de emojis subindo, pra dar vida (puro JS)
+    const emojis = ['🚀','🌿','⭐','🎮','🟢','💚','🏆','✨'];
+    function spawn(){
+      const s = document.createElement('div');
+      s.className = 'star';
+      s.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+      s.style.left = Math.random()*100 + 'vw';
+      s.style.fontSize = (2 + Math.random()*5) + 'vh';
+      s.style.animationDuration = (4 + Math.random()*5) + 's';
+      document.body.appendChild(s);
+      setTimeout(() => s.remove(), 9000);
+    }
+    setInterval(spawn, 350);
+
+    // bônus: clica/aperta tecla e o nome dá um "pulo" colorido
+    document.addEventListener('click', () => {
+      document.querySelectorAll('.name').forEach(n => {
+        n.style.transform = 'scale(1.15)';
+        n.style.transition = 'transform .25s';
+        setTimeout(() => n.style.transform = '', 250);
+      });
+    });
+  </script>
+</body>
+</html>
