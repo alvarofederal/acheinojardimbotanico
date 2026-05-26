@@ -398,6 +398,7 @@ model PlanConfig {
   productLimit Int      @default(2)      // máximo de produtos na vitrine
   photoLimit   Int      @default(3)      // máximo de fotos do perfil
   features     Json                      // { promocoes, loja, eventos, metricas, destaque, redesSociais, selo }
+  mercadoPagoLink String? @db.Text       // link de cobrança do Mercado Pago deste plano (valor fixo mensal)
   updatedAt    DateTime @updatedAt
 }
 

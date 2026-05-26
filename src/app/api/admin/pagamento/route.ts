@@ -18,13 +18,13 @@ const planSchema = z.object({
   productLimit: z.number().int().min(0).max(1000),
   photoLimit: z.number().int().min(0).max(1000),
   features: featuresSchema,
+  mercadoPagoLink: z.string().url().or(z.literal("")).optional(),
 })
 
 const paymentSchema = z.object({
   pixKey: z.string().max(200).optional(),
   pixHolderName: z.string().max(120).optional(),
   pixCopyPaste: z.string().max(2000).optional(),
-  mercadoPagoLink: z.string().url().or(z.literal("")).optional(),
   instructions: z.string().max(2000).optional(),
 })
 
@@ -47,7 +47,6 @@ export async function PATCH(req: NextRequest) {
     pixKey: p.pixKey || null,
     pixHolderName: p.pixHolderName || null,
     pixCopyPaste: p.pixCopyPaste || null,
-    mercadoPagoLink: p.mercadoPagoLink || null,
     instructions: p.instructions || null,
   }
 
@@ -67,6 +66,7 @@ export async function PATCH(req: NextRequest) {
         productLimit: pl.productLimit,
         photoLimit: pl.photoLimit,
         features: pl.features as unknown as Prisma.InputJsonValue,
+        mercadoPagoLink: isFree ? null : (pl.mercadoPagoLink?.trim() || null),
       }
       return db.planConfig.upsert({
         where: { plan: pl.plan },

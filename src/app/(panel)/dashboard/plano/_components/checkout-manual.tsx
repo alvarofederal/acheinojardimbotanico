@@ -9,12 +9,12 @@ interface Props {
   pixKey: string | null
   pixHolderName: string | null
   qrDataUrl: string | null
-  mercadoPagoLink: string | null
+  mpLinks: { VISIBILITY: string | null; PREMIUM: string | null }
   instructions: string | null
   priceCents: { VISIBILITY: number; PREMIUM: number }
 }
 
-export function CheckoutManual({ pixKey, pixHolderName, qrDataUrl, mercadoPagoLink, instructions, priceCents }: Props) {
+export function CheckoutManual({ pixKey, pixHolderName, qrDataUrl, mpLinks, instructions, priceCents }: Props) {
   const [plan, setPlan] = useState<PlanId>("VISIBILITY")
   const [months, setMonths] = useState(1)
   const [copied, setCopied] = useState(false)
@@ -23,8 +23,9 @@ export function CheckoutManual({ pixKey, pixHolderName, qrDataUrl, mercadoPagoLi
 
   const unitCents = plan === "PREMIUM" ? priceCents.PREMIUM : priceCents.VISIBILITY
   const totalCents = unitCents * months
+  const cardLink = plan === "PREMIUM" ? mpLinks.PREMIUM : mpLinks.VISIBILITY
   const hasPix = !!qrDataUrl || !!pixKey
-  const hasCard = !!mercadoPagoLink
+  const hasCard = !!cardLink
 
   function copyPix() {
     if (!pixKey) return
@@ -132,7 +133,12 @@ export function CheckoutManual({ pixKey, pixHolderName, qrDataUrl, mercadoPagoLi
           <div className="flex items-center gap-2 text-sm font-semibold dash-title">
             <CreditCard className="w-4 h-4 text-emerald-500" /> Pagar com cartão
           </div>
-          <a href={mercadoPagoLink!} target="_blank" rel="noopener noreferrer"
+          {months > 1 && (
+            <p className="text-xs text-amber-600 dark:text-amber-400">
+              O link do cartão cobra <strong>1 mês ({formatBRL(unitCents)})</strong>. Para {months} meses, use o PIX e pague o total acima.
+            </p>
+          )}
+          <a href={cardLink!} target="_blank" rel="noopener noreferrer"
             className="w-full flex items-center justify-center py-3 rounded-xl border border-gray-200 dark:border-white/10 text-sm font-semibold dash-title hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
             Abrir pagamento (Mercado Pago)
           </a>

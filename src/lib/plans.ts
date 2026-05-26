@@ -41,6 +41,7 @@ export interface PlanConfigData {
   productLimit: number
   photoLimit: number
   features: PlanFeatures
+  mercadoPagoLink: string | null
 }
 
 const allFeatures = (v: boolean): PlanFeatures => ({
@@ -53,16 +54,19 @@ export const DEFAULT_PLAN_CONFIGS: Record<PlanId, PlanConfigData> = {
     plan: "FREE", label: "Free", active: true, order: 0,
     priceCents: 0, productLimit: 2, photoLimit: 3,
     features: { ...allFeatures(false), redesSociais: true },
+    mercadoPagoLink: null,
   },
   VISIBILITY: {
     plan: "VISIBILITY", label: "Visibilidade", active: true, order: 1,
     priceCents: 7900, productLimit: 10, photoLimit: 6,
     features: { ...allFeatures(true), destaque: false },
+    mercadoPagoLink: null,
   },
   PREMIUM: {
     plan: "PREMIUM", label: "Premium", active: true, order: 2,
     priceCents: 19700, productLimit: 50, photoLimit: 20,
     features: allFeatures(true),
+    mercadoPagoLink: null,
   },
 }
 

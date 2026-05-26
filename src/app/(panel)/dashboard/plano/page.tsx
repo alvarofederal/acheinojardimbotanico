@@ -122,7 +122,7 @@ export default async function PlanoPage() {
         pixKey={config?.pixKey ?? null}
         pixHolderName={config?.pixHolderName ?? null}
         qrDataUrl={qrDataUrl}
-        mercadoPagoLink={config?.mercadoPagoLink ?? null}
+        mpLinks={{ VISIBILITY: cfgs.VISIBILITY.mercadoPagoLink, PREMIUM: cfgs.PREMIUM.mercadoPagoLink }}
         instructions={config?.instructions ?? null}
         priceCents={{ VISIBILITY: visCents, PREMIUM: premCents }}
       />

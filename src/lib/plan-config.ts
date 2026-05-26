@@ -70,6 +70,7 @@ async function loadFromDb(): Promise<Record<PlanId, PlanConfigData>> {
           plan: p, label: r.label, active: r.active, order: r.order,
           priceCents: r.priceCents, productLimit: r.productLimit, photoLimit: r.photoLimit,
           features: normalizeFeatures(r.features),
+          mercadoPagoLink: r.mercadoPagoLink ?? null,
         }
       : d
   }
