@@ -32,7 +32,7 @@ export default async function PlanoPage() {
 
   // Expiração: se o plano pago venceu, volta ao Free automaticamente
   if (business.plan !== "FREE" && business.planExpiresAt && business.planExpiresAt < new Date()) {
-    await db.business.update({ where: { id: business.id }, data: { plan: "FREE", planExpiresAt: null } })
+    await db.business.update({ where: { id: business.id }, data: { plan: "FREE", planExpiresAt: null, planIsCourtesy: false } })
     business.plan = "FREE"
     business.planExpiresAt = null
   }

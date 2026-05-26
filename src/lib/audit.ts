@@ -43,6 +43,7 @@ export const ACTION_LABELS: Record<string, string> = {
   "event.approve": "Evento aprovado",
   "event.reject": "Evento rejeitado",
   "PLAN_EXPIRED": "Plano expirado (auto)",
+  "plan.courtesy_granted": "Cortesia concedida",
   "user.lgpd_delete": "Exclusão LGPD",
   "subscription.activated": "Assinatura ativada",
 }

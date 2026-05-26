@@ -34,7 +34,7 @@ export async function GET(req: NextRequest) {
   let downgraded = 0
   for (const b of expired) {
     await db.$transaction([
-      db.business.update({ where: { id: b.id }, data: { plan: "FREE", planExpiresAt: null } }),
+      db.business.update({ where: { id: b.id }, data: { plan: "FREE", planExpiresAt: null, planIsCourtesy: false } }),
       db.subscription.updateMany({
         where: { businessId: b.id, status: { not: "CANCELED" } },
         data: { status: "CANCELED", canceledAt: now },

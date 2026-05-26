@@ -74,7 +74,7 @@ export async function POST(req: NextRequest) {
         }),
         db.business.update({
           where: { id: subscription.businessId },
-          data: { plan: "FREE", planExpiresAt: null },
+          data: { plan: "FREE", planExpiresAt: null, planIsCourtesy: false },
         }),
       ])
       break

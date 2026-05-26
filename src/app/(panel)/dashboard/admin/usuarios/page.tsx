@@ -1,6 +1,9 @@
 import { redirect } from "next/navigation"
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/prisma"
+import { CourtesyButton } from "./_components/courtesy-button"
+
+export const dynamic = "force-dynamic"
 
 interface SearchProps {
   searchParams: Promise<{ q?: string; page?: string }>
@@ -37,6 +40,13 @@ export default async function AdminUsuariosPage({ searchParams }: SearchProps) {
     db.user.count({ where }),
   ])
 
+  // Negócios desses usuários (pra liberar cortesia ao lojista)
+  const businesses = await db.business.findMany({
+    where: { ownerId: { in: users.map(u => u.id) } },
+    select: { id: true, name: true, ownerId: true, plan: true, planIsCourtesy: true, planExpiresAt: true },
+  })
+  const bizByOwner = new Map(businesses.map(b => [b.ownerId!, b]))
+
   const totalPages = Math.ceil(total / take)
 
   return (
@@ -67,6 +77,7 @@ export default async function AdminUsuariosPage({ searchParams }: SearchProps) {
                 <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-white/40 uppercase tracking-wide hidden sm:table-cell">Role</th>
                 <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-white/40 uppercase tracking-wide hidden md:table-cell">Cadastro</th>
                 <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-white/40 uppercase tracking-wide hidden sm:table-cell">Email</th>
+                <th className="px-4 py-3" />
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50 dark:divide-white/[0.04]">
@@ -92,6 +103,12 @@ export default async function AdminUsuariosPage({ searchParams }: SearchProps) {
                     {u.emailVerified
                       ? <span className="text-xs text-emerald-600 dark:text-emerald-400">Verificado</span>
                       : <span className="text-xs text-amber-500 dark:text-amber-400">Pendente</span>}
+                  </td>
+                  <td className="px-4 py-3 text-right">
+                    {bizByOwner.has(u.id) && (() => {
+                      const b = bizByOwner.get(u.id)!
+                      return <CourtesyButton businessId={b.id} businessName={b.name} currentPlan={b.plan} isCourtesy={b.planIsCourtesy} />
+                    })()}
                   </td>
                 </tr>
               ))}

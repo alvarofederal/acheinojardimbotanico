@@ -6,7 +6,7 @@ import { PaymentsTable } from "./_components/payments-table"
 import { PaymentHistory } from "./_components/payment-history"
 import { formatBRL, type PlanId } from "@/lib/plans"
 import { getPlanConfigs } from "@/lib/plan-config"
-import { Settings, TrendingUp, Wallet, CalendarClock, Users } from "lucide-react"
+import { Settings, TrendingUp, Wallet, CalendarClock, Users, Gift } from "lucide-react"
 
 export default async function AdminPagamentosPage() {
   const session = await auth()
@@ -24,19 +24,24 @@ export default async function AdminPagamentosPage() {
       take: 100,
     }),
     getPlanConfigs(),
-    db.paymentClaim.aggregate({ where: { status: "CONFIRMED" }, _sum: { amountCents: true }, _count: true }),
+    // Receita só de pagamentos REAIS (exclui cortesia)
+    db.paymentClaim.aggregate({ where: { status: "CONFIRMED", method: { not: "COURTESY" } }, _sum: { amountCents: true }, _count: true }),
     db.paymentClaim.aggregate({
-      where: { status: "CONFIRMED", reviewedAt: { gte: monthStart } },
+      where: { status: "CONFIRMED", method: { not: "COURTESY" }, reviewedAt: { gte: monthStart } },
       _sum: { amountCents: true },
     }),
     db.business.findMany({
       where: { plan: { in: ["VISIBILITY", "PREMIUM"] }, planExpiresAt: { gt: now } },
-      select: { plan: true },
+      select: { plan: true, planIsCourtesy: true },
     }),
   ])
 
-  // MRR = soma do preço mensal de cada negócio com plano pago ativo
-  const mrrCents = activeBusinesses.reduce((sum, b) => sum + (cfgs[b.plan as PlanId]?.priceCents ?? 0), 0)
+  // MRR = só pagantes de verdade (cortesia NÃO entra; vira pipeline de potencial)
+  const payingActive = activeBusinesses.filter(b => !b.planIsCourtesy)
+  const courtesyActive = activeBusinesses.filter(b => b.planIsCourtesy)
+  const mrrCents = payingActive.reduce((sum, b) => sum + (cfgs[b.plan as PlanId]?.priceCents ?? 0), 0)
+  const courtesyPotentialCents = courtesyActive.reduce((sum, b) => sum + (cfgs[b.plan as PlanId]?.priceCents ?? 0), 0)
+  const courtesyCount = courtesyActive.length
 
   const totalReceived = confirmedAgg._sum.amountCents ?? 0
   const monthReceived = monthAgg._sum.amountCents ?? 0
@@ -66,8 +71,10 @@ export default async function AdminPagamentosPage() {
   const stats = [
     { label: "Total recebido", value: formatBRL(totalReceived), sub: `${confirmedCount} pagamento${confirmedCount === 1 ? "" : "s"}`, icon: Wallet, color: "text-emerald-600 dark:text-emerald-400" },
     { label: "Recebido este mês", value: formatBRL(monthReceived), sub: now.toLocaleDateString("pt-BR", { month: "long", year: "numeric" }), icon: CalendarClock, color: "text-flora-green dark:text-flora-fresh" },
-    { label: "Receita recorrente (MRR)", value: formatBRL(mrrCents), sub: "estimativa mensal", icon: TrendingUp, color: "text-amber-600 dark:text-amber-400" },
-    { label: "Assinantes ativos", value: String(activeBusinesses.length), sub: "planos pagos vigentes", icon: Users, color: "text-sky-600 dark:text-sky-400" },
+    { label: "Receita recorrente (MRR)", value: formatBRL(mrrCents), sub: "só pagantes de verdade", icon: TrendingUp, color: "text-amber-600 dark:text-amber-400" },
+    { label: "Assinantes pagantes", value: String(payingActive.length), sub: "planos pagos vigentes", icon: Users, color: "text-sky-600 dark:text-sky-400" },
+    { label: "Cortesias ativas", value: String(courtesyCount), sub: "grátis · não é receita", icon: Gift, color: "text-amber-500 dark:text-amber-400" },
+    { label: "Potencial das cortesias", value: formatBRL(courtesyPotentialCents), sub: "se converterem em pago", icon: TrendingUp, color: "text-purple-600 dark:text-purple-400" },
   ]
 
   return (

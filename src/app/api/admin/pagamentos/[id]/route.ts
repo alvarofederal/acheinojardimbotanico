@@ -47,7 +47,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   await db.$transaction([
     db.business.update({
       where: { id: business.id },
-      data: { plan: claim.plan, planExpiresAt: expiresAt },
+      data: { plan: claim.plan, planExpiresAt: expiresAt, planIsCourtesy: false },
     }),
     db.subscription.upsert({
       where: { businessId: business.id },

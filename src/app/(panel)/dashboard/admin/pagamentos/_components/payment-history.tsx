@@ -60,9 +60,11 @@ export function PaymentHistory({ items }: { items: HistoryItem[] }) {
         <div className="rounded-2xl border border-gray-100 dark:border-white/[0.07] bg-white dark:bg-white/[0.02] overflow-hidden divide-y divide-gray-100 dark:divide-white/[0.06]">
           {filtered.map(c => {
             const confirmed = c.status === "CONFIRMED"
+            const isCourtesy = c.method === "COURTESY"
+            const methodLabel = isCourtesy ? "Cortesia 🎁" : c.method === "PIX" ? "PIX" : "Mercado Pago"
             return (
               <div key={c.id} className="flex items-center gap-3 p-4">
-                <div className={`flex-shrink-0 ${confirmed ? "text-emerald-600 dark:text-emerald-400" : "text-red-500 dark:text-red-400"}`}>
+                <div className={`flex-shrink-0 ${isCourtesy ? "text-amber-500" : confirmed ? "text-emerald-600 dark:text-emerald-400" : "text-red-500 dark:text-red-400"}`}>
                   {confirmed ? <CheckCircle className="w-5 h-5" /> : <XCircle className="w-5 h-5" />}
                 </div>
                 <div className="min-w-0 flex-1">
@@ -70,13 +72,13 @@ export function PaymentHistory({ items }: { items: HistoryItem[] }) {
                     <Building2 className="w-3.5 h-3.5 dash-muted flex-shrink-0" /> {c.business.name}
                   </p>
                   <p className="text-xs dash-muted truncate">
-                    {PLAN_LABEL[c.plan as PlanId] ?? c.plan} · {c.months}{c.months > 1 ? " meses" : " mês"} · {c.method === "PIX" ? "PIX" : "Mercado Pago"}
+                    {PLAN_LABEL[c.plan as PlanId] ?? c.plan} · {c.months}{c.months > 1 ? " meses" : " mês"} · {methodLabel}
                     {c.user.email ? ` · ${c.user.email}` : ""}
                   </p>
                 </div>
                 <div className="text-right flex-shrink-0">
-                  <p className={`font-semibold text-sm ${confirmed ? "dash-title" : "dash-muted line-through"}`}>
-                    {formatBRL(c.amountCents)}
+                  <p className={`font-semibold text-sm ${isCourtesy ? "text-amber-600 dark:text-amber-400" : confirmed ? "dash-title" : "dash-muted line-through"}`}>
+                    {isCourtesy ? "Cortesia" : formatBRL(c.amountCents)}
                   </p>
                   <p className="text-[11px] dash-muted">
                     {c.reviewedAt

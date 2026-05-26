@@ -20,7 +20,7 @@ export async function POST() {
     // Desvincula negócios (mantém os dados públicos do Google)
     db.business.updateMany({
       where: { ownerId: userId },
-      data: { ownerId: null, status: "IMPORTED", plan: "FREE", planExpiresAt: null },
+      data: { ownerId: null, status: "IMPORTED", plan: "FREE", planExpiresAt: null, planIsCourtesy: false },
     }),
     // Remove dados pessoais e de sessão
     db.claimRequest.deleteMany({ where: { userId } }),
