@@ -1329,6 +1329,9 @@ Estes vão para `.specify/memory/constitution.md` e o Spec-Kit os lê em toda ex
 > Boas ideias que NÃO são o gargalo agora. Trazer quando o Álvaro pedir "ideias de melhoria".
 - **Slug por produto** (deep-link individual, ex.: `/arte-e-tradicao/quadro-tal`) para compartilhar
   um produto específico no WhatsApp + páginas indexáveis. Construir quando um lojista real pedir.
+- **"Perto de você" (geolocalização)**: com a permissão de localização do navegador, mostrar os negócios
+  no raio de alcance, ordenados do mais próximo ao mais distante (tipo apps de delivery). Viável: todo
+  negócio já tem lat/lng; usar fórmula de Haversine para distância. Ótimo encaixe com o guia hiperlocal.
 - **Loops de crescimento**: alerta de lead ao lojista (quando clicam no WhatsApp dele), resumo mensal
   de desempenho por email, kit de compartilhamento da loja (botão compartilhar + selo "no Achei" linkando
   de volta + QR Code), rankings de SEO ("melhores X no Jardim Botânico").
