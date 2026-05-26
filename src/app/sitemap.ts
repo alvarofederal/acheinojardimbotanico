@@ -9,6 +9,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: SITE_URL, lastModified: new Date(), changeFrequency: "daily", priority: 1 },
   ]
 
+  // Páginas estáticas relevantes para SEO
+  for (const path of ["anuncie", "promocoes", "noticias", "eventos"]) {
+    entries.push({ url: `${SITE_URL}/${path}`, lastModified: new Date(), changeFrequency: "daily", priority: 0.6 })
+  }
+
   // Negócios visíveis
   const businesses = await db.business.findMany({
     where: { status: { in: ["IMPORTED", "CLAIMED"] } },
@@ -37,6 +42,26 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "daily",
       priority: 0.8,
     })
+  }
+
+  // Notícias publicadas
+  const news = await db.news.findMany({
+    where: { status: "PUBLISHED" },
+    select: { slug: true, updatedAt: true },
+    take: 2000,
+  })
+  for (const n of news) {
+    entries.push({ url: `${SITE_URL}/noticias/${n.slug}`, lastModified: n.updatedAt, changeFrequency: "monthly", priority: 0.6 })
+  }
+
+  // Eventos publicados
+  const events = await db.event.findMany({
+    where: { status: "PUBLISHED" },
+    select: { slug: true, updatedAt: true },
+    take: 2000,
+  })
+  for (const e of events) {
+    entries.push({ url: `${SITE_URL}/eventos/${e.slug}`, lastModified: e.updatedAt, changeFrequency: "weekly", priority: 0.6 })
   }
 
   return entries

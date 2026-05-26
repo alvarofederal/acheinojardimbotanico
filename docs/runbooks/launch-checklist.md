@@ -82,8 +82,12 @@
 
 ---
 
-## Fase 6 — Pós-lançamento (entra na frente 3 — SEO)
-- [ ] Google Search Console: verificar propriedade + enviar `sitemap.xml`
+## Fase 6 — Pós-lançamento (SEO / indexação)
+- [ ] **Google Search Console** → adicionar propriedade do domínio
+- [ ] Método "tag HTML": copiar o código e setar `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` no Vercel → Redeploy → verificar
+- [ ] Enviar o **sitemap**: `https://acheinojardimbotanico.com.br/sitemap.xml` (já inclui negócios, categorias, notícias, eventos, promoções, anuncie — 1000+ URLs)
+- [ ] Conferir `robots.txt` (bloqueia /dashboard, /api, login/register; libera o resto)
+- [ ] Solicitar indexação da home e de 2-3 perfis no Search Console (acelera o primeiro crawl)
 - [ ] Conferir Analytics recebendo visitas
 - [ ] Avisar primeiros anunciantes 🎉
 

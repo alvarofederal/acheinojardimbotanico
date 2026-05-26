@@ -57,6 +57,10 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
+  // Verificação do Google Search Console (cole o código em NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION)
+  ...(process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
+    ? { verification: { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION } }
+    : {}),
 };
 
 // Script injetado no <head> — executa ANTES do React hidratar.
