@@ -3,71 +3,169 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Olá, Josué! 🧱⛏️</title>
+<title>Kit de Vendas — Achei no Jardim Botânico</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <style>
-  *{margin:0;padding:0;box-sizing:border-box}
-  html,body{height:100%;overflow:hidden;font-family:'Trebuchet MS','Segoe UI',system-ui,sans-serif}
-  /* céu do Minecraft em cima, grama embaixo */
-  body{background:linear-gradient(#79b7ff 0%, #8cc6ff 50%, #6abe30 50%, #4a8b22 74%, #6b4a2b 74%, #5a3d22 100%)}
-  .stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
-
-  /* letreiro deslizando, com letras BLOCO (3D extrudado tipo Minecraft) */
-  .track{white-space:nowrap;position:absolute;left:0;top:50%;transform:translateY(-50%);display:flex;will-change:transform;animation:slide 13s linear infinite}
-  .name{font-size:15vh;font-weight:900;padding:0 6vw;letter-spacing:.04em;color:#7ec850;
-    text-transform:uppercase;
-    text-shadow:0 .8vh 0 #3a6b1e, 0 1.6vh 0 #2b4f16, 0 2.2vh 1.2vh rgba(0,0,0,.55)}
-  @keyframes slide{from{transform:translate(0,-50%)}to{transform:translate(-50%,-50%)}}
-
-  /* "sol" pixelado girando no canto */
-  .sun{position:fixed;top:6vh;left:8vw;width:9vh;height:9vh;background:#ffd83d;
-    box-shadow:0 0 0 1vh #ffe98a, 3vh 0 #ffd83d, -3vh 0 #ffd83d, 0 3vh #ffd83d, 0 -3vh #ffd83d;
-    animation:spin 18s linear infinite;opacity:.9}
-  @keyframes spin{to{transform:rotate(360deg)}}
-
-  .sub{position:fixed;left:0;right:0;bottom:5vh;text-align:center;color:#fff;font-size:3vh;
-    letter-spacing:.25em;text-transform:uppercase;text-shadow:0 .4vh 0 #2b4f16, 0 0 1vh rgba(0,0,0,.6);
-    animation:blink 1.8s ease-in-out infinite}
-  @keyframes blink{0%,100%{opacity:.55}50%{opacity:1}}
-
-  /* blocos caindo (Lego + Minecraft) */
-  .block{position:fixed;font-size:5vh;animation:fall linear infinite;filter:drop-shadow(0 .4vh .4vh rgba(0,0,0,.4))}
-  @keyframes fall{from{transform:translateY(-15vh) rotate(0)}to{transform:translateY(115vh) rotate(200deg)}}
+  :root{
+    --green:#1E5C45; --fresh:#3A8B6A; --soft:#A3C4B3; --sand:#F4F0E8;
+    --cream:#FAF7F2; --gold:#D2B48C; --ink:#2A2A2A; --muted:#6b7d72;
+    --serif:'Playfair Display',Georgia,serif; --sans:'Inter',system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--sans);background:var(--cream);color:var(--ink);line-height:1.6;padding:0 0 80px;zoom:1.5}
+  .wrap{max-width:780px;margin:0 auto;padding:0 20px}
+  header{background:linear-gradient(135deg,var(--green),var(--fresh));color:#fff;padding:48px 0 40px;margin-bottom:32px;position:relative;overflow:hidden}
+  header .wrap{position:relative;z-index:1}
+  header .leaf{position:absolute;right:-30px;top:-30px;font-size:180px;opacity:.12;z-index:0}
+  h1{font-family:var(--serif);font-size:clamp(28px,5vw,40px);font-weight:700;line-height:1.1}
+  header p{opacity:.9;margin-top:10px;font-size:16px;max-width:560px}
+  h2{font-family:var(--serif);font-size:24px;font-weight:600;color:var(--green);margin:40px 0 14px;display:flex;align-items:center;gap:10px}
+  h2 .n{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:var(--gold);color:var(--ink);font-family:var(--sans);font-size:15px;font-weight:700;flex-shrink:0}
+  .card{background:#fff;border:1px solid rgba(30,92,69,.12);border-radius:18px;padding:22px;margin:16px 0;box-shadow:0 4px 16px rgba(30,92,69,.05)}
+  .gold-rule{background:rgba(210,180,140,.16);border:1px solid var(--gold);border-radius:18px;padding:20px 22px;margin:8px 0 8px}
+  .gold-rule strong{color:var(--green)}
+  .pitch-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+  .pitch-head h3{font-family:var(--serif);font-size:20px;color:var(--ink)}
+  .tag{font-size:12px;font-weight:600;color:var(--muted);background:var(--sand);padding:3px 10px;border-radius:999px}
+  .script{white-space:pre-wrap;background:var(--sand);border-radius:12px;padding:16px;margin-top:12px;font-size:15px;color:#33413a}
+  .copy{cursor:pointer;border:none;background:var(--green);color:#fff;font-family:var(--sans);font-weight:600;font-size:13px;padding:8px 16px;border-radius:999px;transition:.2s;flex-shrink:0}
+  .copy:hover{background:var(--fresh)}
+  .copy.ok{background:var(--gold);color:var(--ink)}
+  .demo{font-size:13px;color:var(--muted);margin-top:10px}
+  .demo a{color:var(--green);font-weight:600}
+  ul{margin:8px 0 8px 4px;list-style:none}
+  li{padding:7px 0;padding-left:26px;position:relative}
+  li::before{content:"🌿";position:absolute;left:0;top:7px;font-size:13px}
+  .obj li::before{content:"❓"}
+  .err li::before{content:"⚠️"}
+  .obj b,.err b{color:var(--green)}
+  .check li{padding-left:0}
+  .check li::before{content:none}
+  .check label{display:flex;align-items:flex-start;gap:10px;cursor:pointer;padding:8px 0}
+  .check input{width:20px;height:20px;accent-color:var(--green);margin-top:1px;flex-shrink:0}
+  .check input:checked + span{text-decoration:line-through;color:var(--muted)}
+  .meta{background:linear-gradient(135deg,rgba(30,92,69,.06),rgba(210,180,140,.1));border-radius:18px;padding:22px;border:1px solid rgba(30,92,69,.1)}
+  .status{font-size:14px;color:var(--muted);background:#fff;border-radius:12px;padding:12px 16px;border:1px solid rgba(30,92,69,.1)}
+  .status code{background:var(--sand);padding:2px 7px;border-radius:6px;color:var(--green);font-weight:600}
+  footer{text-align:center;color:var(--muted);font-size:13px;margin-top:48px}
+  .small{font-size:13px;color:var(--muted)}
 </style>
 </head>
 <body>
-  <div class="sun"></div>
-  <div class="stage">
-    <div class="track">
-      <span class="name">Josué Gomes Morais</span>
-      <span class="name">Josué Gomes Morais</span>
-    </div>
+<header>
+  <div class="leaf">🌿</div>
+  <div class="wrap">
+    <h1>Kit de Vendas</h1>
+    <p>Achei no Jardim Botânico — munição pronta pras primeiras conversas. Use junto da planilha <strong>prospeccao.csv</strong>.</p>
   </div>
-  <div class="sub">🧱 construído bloco a bloco pelo Claude pro Josué ⛏️</div>
+</header>
 
-  <script>
-    const blocks = ['🧱','🟩','🟫','⛏️','💎','🌳','🐷','🗡️','🔶','🟢','🧟','🪓'];
-    function spawn(){
-      const b = document.createElement('div');
-      b.className = 'block';
-      b.textContent = blocks[Math.floor(Math.random()*blocks.length)];
-      b.style.left = Math.random()*100 + 'vw';
-      b.style.fontSize = (3 + Math.random()*5) + 'vh';
-      b.style.animationDuration = (4 + Math.random()*4) + 's';
-      document.body.appendChild(b);
-      setTimeout(() => b.remove(), 8000);
-    }
-    setInterval(spawn, 300);
+<div class="wrap">
 
-    // minera! clica e o nome "explode" um pouco como bloco quebrando
-    document.addEventListener('click', () => {
-      document.querySelectorAll('.name').forEach(n => {
-        n.style.transform = 'scale(1.12) rotate(-1deg)';
-        n.style.transition = 'transform .15s';
-        setTimeout(() => n.style.transform = '', 160);
+  <div class="gold-rule">
+    <strong>A regra de ouro:</strong> você <strong>não vende site</strong> — você oferece <strong>mais clientes no WhatsApp</strong>, e a entrada é <strong>grátis</strong>.
+    O 1º objetivo de toda conversa NÃO é dinheiro: é o lojista <strong>reivindicar o perfil</strong> (sim fácil) e sentir o "uau". A cobrança vem depois.
+    <br><br>
+    Sua arma secreta: <strong>"eu também moro aqui, no Jardins Mangueiral."</strong> Derruba a guarda. Use sempre.
+  </div>
+
+  <p class="small" style="margin-top:14px">⚠️ Antes de usar: confirme seu link de demonstração (sua URL do Vercel) e troque nos textos se for diferente. Sua vitrine-demo é o <strong>Arte e Tradição</strong>.</p>
+
+  <h2><span class="n">1</span> Pitch presencial <span class="tag">o mais forte</span></h2>
+  <div class="card">
+    <div class="pitch-head">
+      <h3>Cara a cara (você mora no bairro)</h3>
+      <button class="copy" data-target="p1">Copiar</button>
+    </div>
+    <div class="script" id="p1">Oi, tudo bem? Meu nome é Álvaro, eu moro aqui no Jardins Mangueiral. Eu toco um projeto novo, o Achei no Jardim Botânico — um guia só dos negócios daqui do bairro.
+
+Olha só — o seu já está lá. (mostra o perfil dele no celular)
+
+A ideia é que quando o pessoal do bairro procurar por [seu ramo] aqui perto, ache você e já fale no seu WhatsApp. Deixa eu te perguntar: hoje, como o pessoal novo costuma te achar?
+
+Posso te liberar pra você deixar seu perfil do jeito que quiser? É grátis pra começar. E se quiser, te mostro como fica uma loja completa — olha esse exemplo aqui. (mostra Arte e Tradição)</div>
+    <p class="demo">➡️ Se curtir: "Quem quer aparecer em destaque e ter essa loja paga R$47,90/mês, sem fidelidade. Quer que eu deixe 30 dias ativo por minha conta pra você sentir?"</p>
+  </div>
+
+  <h2><span class="n">2</span> Pitch WhatsApp <span class="tag">copia e cola</span></h2>
+  <div class="card">
+    <div class="pitch-head">
+      <h3>Texto frio (SOS Faz Tudo, Aloizo, Fonte de Vida...)</h3>
+      <button class="copy" data-target="p2">Copiar</button>
+    </div>
+    <div class="script" id="p2">Oi! Tudo bem? 🌿 Aqui é o Álvaro, sou morador do Jardim Botânico (Jardins Mangueiral).
+
+Montei o Achei no Jardim Botânico, um guia só dos negócios do bairro — e o [Nome] já está lá. Olha: [link do perfil dele]
+
+A proposta é simples: quem mora aqui te acha e fala direto no seu WhatsApp. Posso te liberar pra deixar do seu jeito? É grátis pra começar. 🙂</div>
+    <p class="demo">Se responder bem: "Show! Olha como fica uma loja completa: [link Arte e Tradição]. Quer que eu já deixe a sua nesse nível por 30 dias, sem custo, pra testar?"</p>
+  </div>
+
+  <h2><span class="n">3</span> Pitch Instagram DM <span class="tag">negócio visual</span></h2>
+  <div class="card">
+    <div class="pitch-head">
+      <h3>Direct (Reffine Decorações e afins)</h3>
+      <button class="copy" data-target="p3">Copiar</button>
+    </div>
+    <div class="script" id="p3">Oi! Adorei o trabalho de vocês 👏 Sou morador do Jardim Botânico e criei o Achei no Jardim Botânico, um guia dos negócios do bairro. Já coloquei vocês lá: [link]. Dá pra montar uma loja com as peças de vocês e receber pedidos no WhatsApp — tipo essa aqui ó: [link Arte e Tradição]. Posso te liberar pra deixar do seu jeito? É grátis. 🌿</div>
+  </div>
+
+  <h2><span class="n">?</span> Objeções (respostas curtas)</h2>
+  <div class="card obj">
+    <ul>
+      <li><b>"Não tenho interesse."</b> → "Tranquilo! Deixo o link pra você ver com calma. Se cair um cliente por ali, já valeu. 🙂"</li>
+      <li><b>"Não tenho tempo."</b> → "Por isso eu já montei pra você. Leva 2 minutinhos só pra conferir."</li>
+      <li><b>"Já tenho Instagram/Google."</b> → "Massa, isso soma! A diferença é que aqui é só do bairro — quem busca já está pertinho e quer agora."</li>
+      <li><b>"Tá caro."</b> → "Quanto vale um cliente novo por mês pra você? O plano custa menos que [um corte / uma troca de óleo]."</li>
+    </ul>
+  </div>
+
+  <h2><span class="n">✕</span> Erros pra NÃO cometer</h2>
+  <div class="card err">
+    <ul>
+      <li><b>Falar demais.</b> Quem pergunta e escuta, vende. Quem tagarela, assusta.</li>
+      <li><b>Jogar o preço cedo.</b> Preço antes de valor = "não".</li>
+      <li><b>Tentar convencer.</b> Você não convence — você qualifica. Ache os "sim" rápido.</li>
+      <li><b>Levar o "não" pro coração.</b> É dado, não rejeição.</li>
+    </ul>
+  </div>
+
+  <h2><span class="n">✓</span> Meta da semana <span class="tag">até 8 de junho</span></h2>
+  <div class="meta">
+    <ul class="check" id="meta">
+      <li><label><input type="checkbox" data-k="m1"><span>Falar com <b>5</b> lojistas (comece pelos mais perto de você)</span></label></li>
+      <li><label><input type="checkbox" data-k="m2"><span><b>3 conversas reais</b> registradas na planilha</span></label></li>
+      <li><label><input type="checkbox" data-k="m3"><span><b>1 pré-interesse</b> (reivindicou ou topou o trial de 30 dias)</span></label></li>
+    </ul>
+    <p class="small" style="margin-top:6px">Nessa fase, <strong>aprender &gt; faturar</strong>. Cada "não" te dá o próximo pitch melhor.</p>
+  </div>
+
+  <h2 style="font-size:20px"><span class="n" style="background:var(--soft)">i</span> Status na planilha</h2>
+  <p class="status"><code>A contatar</code> → <code>Contatado</code> → <code>Reivindicou</code> → <code>Em trial</code> → <code>Pagante</code> &nbsp;(ou <code>Sem interesse</code> / <code>Recontatar</code>)</p>
+
+  <footer>Achei no Jardim Botânico · Kit de Vendas · feito pra você fechar o primeiro 🌿</footer>
+</div>
+
+<script>
+  // Copiar pitch
+  document.querySelectorAll('.copy').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const txt = document.getElementById(btn.dataset.target).innerText;
+      navigator.clipboard.writeText(txt).then(()=>{
+        const old = btn.textContent;
+        btn.textContent = '✓ Copiado!'; btn.classList.add('ok');
+        setTimeout(()=>{ btn.textContent = old; btn.classList.remove('ok'); }, 1800);
       });
-      // estilha uns blocos no clique
-      for(let i=0;i<6;i++) spawn();
     });
-  </script>
+  });
+  // Checklist persistente (localStorage)
+  document.querySelectorAll('#meta input').forEach(inp=>{
+    const k = 'ajb_'+inp.dataset.k;
+    inp.checked = localStorage.getItem(k) === '1';
+    inp.addEventListener('change',()=> localStorage.setItem(k, inp.checked ? '1':'0'));
+  });
+</script>
 </body>
 </html>
