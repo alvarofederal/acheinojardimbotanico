@@ -8,7 +8,11 @@ import { formatBRL, type PlanId } from "@/lib/plans"
 import { getPlanConfigs } from "@/lib/plan-config"
 import { Settings, TrendingUp, Wallet, CalendarClock, Users, Gift } from "lucide-react"
 
-export default async function AdminPagamentosPage() {
+export const dynamic = "force-dynamic"
+
+interface PageProps { searchParams: Promise<{ p?: string }> }
+
+export default async function AdminPagamentosPage({ searchParams }: PageProps) {
   const session = await auth()
   if (!session?.user) redirect("/login")
   if (session.user.role !== "ADMIN") redirect("/dashboard")
@@ -16,18 +20,28 @@ export default async function AdminPagamentosPage() {
   const now = new Date()
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
 
+  // Filtro de período (só pagadores reais): semana | mes | tudo
+  const { p } = await searchParams
+  const periodo = (["semana", "mes", "tudo"].includes(p ?? "") ? p : "mes") as "semana" | "mes" | "tudo"
+  const periodStart =
+    periodo === "semana" ? new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
+    : periodo === "tudo" ? new Date(0)
+    : monthStart
+  const periodLabel = periodo === "semana" ? "últimos 7 dias" : periodo === "tudo" ? "desde sempre" : "este mês"
+
   const [pending, history, cfgs, confirmedAgg, monthAgg, activeBusinesses] = await Promise.all([
     db.paymentClaim.findMany({ where: { status: "PENDING" }, orderBy: { createdAt: "asc" } }),
     db.paymentClaim.findMany({
-      where: { status: { in: ["CONFIRMED", "REJECTED"] } },
+      where: { status: { in: ["CONFIRMED", "REJECTED"] }, reviewedAt: { gte: periodStart } },
       orderBy: { reviewedAt: "desc" },
       take: 100,
     }),
     getPlanConfigs(),
-    // Receita só de pagamentos REAIS (exclui cortesia)
+    // Total desde sempre — só pagamentos REAIS (exclui cortesia)
     db.paymentClaim.aggregate({ where: { status: "CONFIRMED", method: { not: "COURTESY" } }, _sum: { amountCents: true }, _count: true }),
+    // Recebido no período selecionado — só reais
     db.paymentClaim.aggregate({
-      where: { status: "CONFIRMED", method: { not: "COURTESY" }, reviewedAt: { gte: monthStart } },
+      where: { status: "CONFIRMED", method: { not: "COURTESY" }, reviewedAt: { gte: periodStart } },
       _sum: { amountCents: true },
     }),
     db.business.findMany({
@@ -44,7 +58,7 @@ export default async function AdminPagamentosPage() {
   const courtesyCount = courtesyActive.length
 
   const totalReceived = confirmedAgg._sum.amountCents ?? 0
-  const monthReceived = monthAgg._sum.amountCents ?? 0
+  const periodReceived = monthAgg._sum.amountCents ?? 0
   const confirmedCount = confirmedAgg._count
 
   // ---- enriquecimento de nomes (negócio/usuário) para pendentes + histórico ----
@@ -69,8 +83,8 @@ export default async function AdminPagamentosPage() {
   const historyItems = history.map(enrich)
 
   const stats = [
-    { label: "Total recebido", value: formatBRL(totalReceived), sub: `${confirmedCount} pagamento${confirmedCount === 1 ? "" : "s"}`, icon: Wallet, color: "text-emerald-600 dark:text-emerald-400" },
-    { label: "Recebido este mês", value: formatBRL(monthReceived), sub: now.toLocaleDateString("pt-BR", { month: "long", year: "numeric" }), icon: CalendarClock, color: "text-flora-green dark:text-flora-fresh" },
+    { label: "Recebido no período", value: formatBRL(periodReceived), sub: periodLabel, icon: CalendarClock, color: "text-flora-green dark:text-flora-fresh" },
+    { label: "Total recebido (sempre)", value: formatBRL(totalReceived), sub: `${confirmedCount} pagamento${confirmedCount === 1 ? "" : "s"} reais`, icon: Wallet, color: "text-emerald-600 dark:text-emerald-400" },
     { label: "Receita recorrente (MRR)", value: formatBRL(mrrCents), sub: "só pagantes de verdade", icon: TrendingUp, color: "text-amber-600 dark:text-amber-400" },
     { label: "Assinantes pagantes", value: String(payingActive.length), sub: "planos pagos vigentes", icon: Users, color: "text-sky-600 dark:text-sky-400" },
     { label: "Cortesias ativas", value: String(courtesyCount), sub: "grátis · não é receita", icon: Gift, color: "text-amber-500 dark:text-amber-400" },
@@ -88,6 +102,19 @@ export default async function AdminPagamentosPage() {
           className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-gray-200 dark:border-white/10 text-xs dash-subtitle hover:bg-gray-50 dark:hover:bg-white/5 transition-colors flex-shrink-0">
           <Settings className="w-3.5 h-3.5" /> Planos & cobrança
         </Link>
+      </div>
+
+      {/* Filtro de período (afeta "Recebido no período" e o histórico abaixo) */}
+      <div className="flex items-center gap-2 flex-wrap">
+        <span className="text-xs dash-muted">Período:</span>
+        {([["semana", "Esta semana"], ["mes", "Este mês"], ["tudo", "Tudo"]] as const).map(([val, label]) => (
+          <Link key={val} href={`/dashboard/admin/pagamentos?p=${val}`}
+            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+              periodo === val ? "bg-flora-green text-white" : "border border-gray-200 dark:border-white/10 dash-subtitle hover:bg-gray-50 dark:hover:bg-white/5"
+            }`}>
+            {label}
+          </Link>
+        ))}
       </div>
 
       {/* Dashboard de receita */}
