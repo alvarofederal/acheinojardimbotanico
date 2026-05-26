@@ -1,8 +1,9 @@
 import { redirect } from "next/navigation"
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/prisma"
-import { Eye, MessageCircle, TrendingUp, Store } from "lucide-react"
+import { Eye, MessageCircle, TrendingUp, Store, Clock } from "lucide-react"
 import Link from "next/link"
+import { OnboardingChecklist, type OnboardingStep } from "./_components/onboarding-checklist"
 
 export default async function DashboardPage() {
   const session = await auth()
@@ -12,13 +13,16 @@ export default async function DashboardPage() {
 
   const business = !isAdmin ? await db.business.findFirst({
     where: { ownerId: session.user.id },
-    select: { id: true, name: true, slug: true, plan: true, status: true, category: { select: { slug: true } } },
+    select: {
+      id: true, name: true, slug: true, plan: true, status: true, description: true, whatsapp: true,
+      category: { select: { slug: true } },
+    },
   }) : null
 
   const sevenDaysAgo = new Date()
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
 
-  const [views7d, clicks7d] = business ? await Promise.all([
+  const [views7d, clicks7d, ownerPhotos, productCount] = business ? await Promise.all([
     db.businessView.aggregate({
       where: { businessId: business.id, date: { gte: sevenDaysAgo } },
       _sum: { count: true },
@@ -27,7 +31,18 @@ export default async function DashboardPage() {
       where: { businessId: business.id, date: { gte: sevenDaysAgo } },
       _sum: { count: true },
     }),
-  ]) : [{ _sum: { count: 0 } }, { _sum: { count: 0 } }]
+    db.photo.count({ where: { businessId: business.id, source: "OWNER_UPLOAD" } }),
+    db.product.count({ where: { businessId: business.id } }),
+  ]) : [{ _sum: { count: 0 } }, { _sum: { count: 0 } }, 0, 0]
+
+  // Passos de onboarding (só para anunciante com negócio)
+  const onboardingSteps: OnboardingStep[] = business ? [
+    { label: "Adicione uma descrição", hint: "Conte o que seu negócio oferece", done: !!business.description, href: "/dashboard/negocio" },
+    { label: "Informe seu WhatsApp", hint: "O canal nº1 de contato dos clientes", done: !!business.whatsapp, href: "/dashboard/negocio" },
+    { label: "Envie fotos do seu negócio", hint: "Perfis com foto recebem mais cliques", done: (ownerPhotos as number) > 0, href: "/dashboard/negocio" },
+    { label: "Cadastre seu primeiro produto", hint: "Monte sua vitrine e venda pelo WhatsApp", done: (productCount as number) > 0, href: "/dashboard/produtos" },
+    { label: "Escolha um plano", hint: "Apareça em destaque e libere mais recursos", done: business.plan !== "FREE", href: "/dashboard/plano" },
+  ] : []
 
   const firstName = session.user.name?.split(" ")[0] ?? "Usuário"
 
@@ -69,6 +84,17 @@ export default async function DashboardPage() {
 
       {!isAdmin && business && (
         <>
+          {business.status === "PENDING_REVIEW" && (
+            <div className="rounded-2xl border border-amber-200 dark:border-amber-500/20 bg-amber-50/60 dark:bg-amber-500/[0.06] p-4 flex items-center gap-3">
+              <Clock className="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0" />
+              <p className="text-sm text-amber-800 dark:text-amber-300">
+                <strong>{business.name}</strong> está <strong>em análise</strong>. Assim que aprovarmos, ele aparece no guia. Aproveite para já completar o perfil abaixo. 👇
+              </p>
+            </div>
+          )}
+
+          <OnboardingChecklist steps={onboardingSteps} />
+
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
             {[
               { label: "Visualizações (7d)",    value: views7d._sum.count  ?? 0, icon: Eye,            color: "text-blue-500 dark:text-blue-400",    bg: "bg-blue-50 dark:bg-blue-500/10" },
