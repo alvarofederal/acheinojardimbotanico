@@ -1319,12 +1319,19 @@ Estes vão para `.specify/memory/constitution.md` e o Spec-Kit os lê em toda ex
 - URL do site unificada em `NEXT_PUBLIC_SITE_URL`; `.env.example` alinhado às variáveis reais.
 
 ### 11.13 Pendências conhecidas / próximos passos
-- **Lançar**: comprar domínio → Vercel (env vars, `CANONICAL_HOST`, `CRON_SECRET`) → Search Console.
+- **Lançar (foco até 08/jun)**: comprar domínio → Vercel (env vars, `CANONICAL_HOST`, `CRON_SECRET`) →
+  Search Console. Antes disso, o trabalho de maior valor é **vendas** (ver `docs/vendas/`), não código.
 - Restringir a chave Google por IP/referrer (servidor) — segurança.
 - Conferência automática de pagamento (webhook PIX/MP ou Asaas) — quando o volume justificar.
-- Loops de crescimento (pós-lançamento): alerta de lead ao lojista, resumo mensal, kit de compartilhamento
-  da loja (botão compartilhar + selo "no Achei" linkando de volta + QR), rankings de SEO ("melhores X").
 - Rate-limit em memória (ADR 0006) → migrar para store compartilhado (Redis/Upstash) em escala.
+
+### 11.14 Backlog de ideias (pós-validação — só construir quando cliente pedir/validar)
+> Boas ideias que NÃO são o gargalo agora. Trazer quando o Álvaro pedir "ideias de melhoria".
+- **Slug por produto** (deep-link individual, ex.: `/arte-e-tradicao/quadro-tal`) para compartilhar
+  um produto específico no WhatsApp + páginas indexáveis. Construir quando um lojista real pedir.
+- **Loops de crescimento**: alerta de lead ao lojista (quando clicam no WhatsApp dele), resumo mensal
+  de desempenho por email, kit de compartilhamento da loja (botão compartilhar + selo "no Achei" linkando
+  de volta + QR Code), rankings de SEO ("melhores X no Jardim Botânico").
 
 ---
 
