@@ -51,10 +51,12 @@ export default async function CategoryPage({ params }: PageProps) {
   const businesses = rawBusinesses
     .map(b => {
       const cfg = cfgs[b.plan as PlanId]
+      const hasStore = !!cfg?.features.loja && (b.products?.length ?? 0) > 0
       return {
         ...b,
         featured: cfg?.features.destaque ?? false,
         seloLabel: cfg?.features.selo ? cfg.label : null,
+        storeHref: hasStore ? `/${bairro}/${categoria}/${b.slug}/loja` : null,
       }
     })
     .sort((a, b) => {

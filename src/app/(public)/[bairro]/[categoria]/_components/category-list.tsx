@@ -20,6 +20,7 @@ interface BusinessItem {
   products?: Array<{ id: string }>
   featured?: boolean
   seloLabel?: string | null
+  storeHref?: string | null
 }
 
 function isOpenNow(openingHours: unknown): boolean | null {
