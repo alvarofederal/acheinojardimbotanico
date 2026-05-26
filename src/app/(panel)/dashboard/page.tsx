@@ -5,8 +5,10 @@ import { Eye, MessageCircle, TrendingUp, Store, Clock } from "lucide-react"
 import Link from "next/link"
 import { OnboardingChecklist, type OnboardingStep } from "./_components/onboarding-checklist"
 import { AdminOverview, type AdminStats } from "./_components/admin-overview"
+import { AdminTopProfiles, type TopRow } from "./_components/admin-top-profiles"
 import { getPlanConfigs } from "@/lib/plan-config"
 import { type PlanId } from "@/lib/plans"
+import { slugify } from "@/lib/utils"
 
 export const dynamic = "force-dynamic"
 
@@ -18,6 +20,8 @@ export default async function DashboardPage() {
 
   // ── Métricas do painel admin (dados reais) ──
   let adminStats: AdminStats | null = null
+  let topViews: TopRow[] = []
+  let topClicks: TopRow[] = []
   if (isAdmin) {
     const now = new Date()
     const min3 = new Date(now.getTime() - 3 * 60 * 1000)
@@ -55,6 +59,24 @@ export default async function DashboardPage() {
       pendingReview, pendingClaims, pendingPayments, pendingEvents,
       views7d: views7._sum.count ?? 0, clicks7d: clicks7._sum.count ?? 0, mrrCents,
     }
+
+    // Atividade por negócio (follow-up): mais vistos e mais contatados em 7 dias
+    const [vAgg, cAgg] = await Promise.all([
+      db.businessView.groupBy({ by: ["businessId"], where: { date: { gte: d7 } }, _sum: { count: true }, orderBy: { _sum: { count: "desc" } }, take: 8 }),
+      db.whatsappClick.groupBy({ by: ["businessId"], where: { date: { gte: d7 } }, _sum: { count: true }, orderBy: { _sum: { count: "desc" } }, take: 8 }),
+    ])
+    const actIds = [...new Set([...vAgg, ...cAgg].map(x => x.businessId))]
+    const actBiz = actIds.length
+      ? await db.business.findMany({ where: { id: { in: actIds } }, select: { id: true, name: true, slug: true, neighborhood: true, category: { select: { slug: true } } } })
+      : []
+    const bizMap = new Map(actBiz.map(b => [b.id, b]))
+    const toRow = (x: { businessId: string; _sum: { count: number | null } }): TopRow | null => {
+      const b = bizMap.get(x.businessId)
+      if (!b) return null
+      return { name: b.name, href: `/${slugify(b.neighborhood)}/${b.category.slug}/${b.slug}`, count: x._sum.count ?? 0 }
+    }
+    topViews = vAgg.map(toRow).filter((r): r is TopRow => r !== null)
+    topClicks = cAgg.map(toRow).filter((r): r is TopRow => r !== null)
   }
 
   const business = !isAdmin ? await db.business.findFirst({
@@ -102,6 +124,7 @@ export default async function DashboardPage() {
       </div>
 
       {isAdmin && adminStats && <AdminOverview s={adminStats} />}
+      {isAdmin && <AdminTopProfiles views={topViews} clicks={topClicks} />}
 
       {!isAdmin && !business && (
         <div className="rounded-2xl border border-dashed border-gray-200 dark:border-white/10 p-8 text-center">
