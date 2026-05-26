@@ -20,7 +20,7 @@ export default async function MetricasPage() {
   })
 
   if (!business) return (
-    <div className="space-y-6 max-w-2xl">
+    <div className="space-y-6">
       <h1 className="text-xl sm:text-2xl font-bold dash-title">Métricas</h1>
       <div className="rounded-2xl border border-dashed border-gray-200 dark:border-white/10 p-8 text-center">
         <Store className="w-10 h-10 text-gray-300 dark:text-white/20 mx-auto mb-3" />
@@ -74,7 +74,7 @@ export default async function MetricasPage() {
   ]
 
   return (
-    <div className="space-y-6 max-w-3xl">
+    <div className="space-y-6">
       <div>
         <h1 className="text-xl sm:text-2xl font-bold dash-title">Métricas</h1>
         <p className="dash-subtitle mt-0.5 text-sm">Desempenho de <strong className="dash-title">{business.name}</strong> nos últimos 30 dias</p>

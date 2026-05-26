@@ -16,7 +16,7 @@ export default async function NovoNegocioPage() {
   const categories = await db.category.findMany({ orderBy: { name: "asc" }, select: { id: true, name: true } })
 
   return (
-    <div className="space-y-6 max-w-xl">
+    <div className="space-y-6">
       <div>
         <Link href="/dashboard/negocio" className="inline-flex items-center gap-1.5 text-sm dash-subtitle hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors mb-3">
           <ArrowLeft className="w-4 h-4" /> Voltar

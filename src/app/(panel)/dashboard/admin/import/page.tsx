@@ -78,7 +78,7 @@ export default function ImportPage() {
   }
 
   return (
-    <div className="space-y-6 max-w-3xl">
+    <div className="space-y-6">
       <div>
         <h1 className="text-xl sm:text-2xl font-bold dash-title">Importar Negócios</h1>
         <p className="dash-subtitle mt-0.5 text-sm">

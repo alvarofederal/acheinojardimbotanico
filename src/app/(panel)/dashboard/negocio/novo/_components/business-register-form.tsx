@@ -85,7 +85,7 @@ export function BusinessRegisterForm({ categories }: { categories: Category[] })
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5 max-w-xl">
+    <form onSubmit={handleSubmit} className="space-y-5">
       <div className="rounded-2xl border border-gray-100 dark:border-white/[0.07] bg-white dark:bg-white/[0.02] p-5 space-y-4">
         <div>
           <label className={labelCls}>Nome do negócio *</label>

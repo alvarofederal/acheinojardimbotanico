@@ -4,7 +4,7 @@ import { Lock, Zap } from "lucide-react"
 /** Card de upsell exibido quando o plano atual não libera um recurso. */
 export function FeatureLocked({ title, feature }: { title: string; feature: string }) {
   return (
-    <div className="space-y-6 max-w-2xl">
+    <div className="space-y-6">
       <div>
         <h1 className="text-xl sm:text-2xl font-bold dash-title">{title}</h1>
       </div>

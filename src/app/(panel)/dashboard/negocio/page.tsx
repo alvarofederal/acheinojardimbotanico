@@ -21,7 +21,7 @@ export default async function NegocioPage() {
 
   // Sem negócio reivindicado
   if (!business) return (
-    <div className="space-y-6 max-w-2xl">
+    <div className="space-y-6">
       <div>
         <h1 className="text-xl sm:text-2xl font-bold dash-title">Meu Negócio</h1>
         <p className="dash-subtitle mt-0.5 text-sm">Gerencie as informações do seu estabelecimento</p>
@@ -49,7 +49,7 @@ export default async function NegocioPage() {
   const fotoLimit = await photoLimit(business.plan as PlanId)
 
   return (
-    <div className="space-y-6 max-w-2xl">
+    <div className="space-y-6">
       <div>
         <h1 className="text-xl sm:text-2xl font-bold dash-title">Meu Negócio</h1>
         <p className="dash-subtitle mt-0.5 text-sm">Informações de <strong className="dash-title">{business.name}</strong></p>
