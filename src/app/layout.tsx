@@ -70,14 +70,14 @@ const themeScript = `
 (function(){
   try {
     var t = localStorage.getItem('cfy-theme');
-    if (t === 'light') {
-      document.documentElement.classList.remove('dark');
-    } else {
-      // padrão é escuro
+    if (t === 'dark') {
       document.documentElement.classList.add('dark');
+    } else {
+      // padrão é CLARO (primeiro acesso); usuário escolhe depois
+      document.documentElement.classList.remove('dark');
     }
   } catch(e) {
-    document.documentElement.classList.add('dark');
+    document.documentElement.classList.remove('dark');
   }
 })();
 `.trim();
