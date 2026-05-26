@@ -26,6 +26,7 @@
     "seed:test-admin": "tsx scripts/seed-test-admin.mjs",
     "test:plans": "tsx scripts/test-plans.ts",
     "test:expire": "tsx scripts/test-expire-plans.ts",
+    "test:cortesia": "tsx scripts/test-cortesia.ts",
     "cy:open": "cypress open",
     "cy:run": "cypress run",
     "test:e2e": "cypress run --spec cypress/e2e/planos.cy.ts",

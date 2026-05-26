@@ -1,6 +1,8 @@
 # Spec — Cortesia / Trial (ativação sem receita)
 
-> Status: **proposta** (aguardando OK do Álvaro). Não implementar até aprovação.
+> Status: ✅ **IMPLEMENTADO** (mai/2026). Decisões: botão na lista de **Usuários** (modal),
+> lojista vê **"Premium"** (não revela cortesia), meses **1/3/6/12/personalizado** + **motivo**,
+> painel com **"Cortesias ativas"** + **"Potencial"**. Teste: `npm run test:cortesia` (6/6).
 > Princípio: cortesia dá o **mesmo acesso** de um plano pago, mas **R$0** e **fora da receita**.
 
 ---
