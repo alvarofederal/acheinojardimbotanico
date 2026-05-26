@@ -5,7 +5,7 @@ import { slugify, SITE_URL } from "@/lib/utils"
 import { getPlanConfig } from "@/lib/plan-config"
 import { type PlanId } from "@/lib/plans"
 import Link from "next/link"
-import { MapPin, Phone, Globe, Instagram, Facebook, Linkedin, Youtube, Star, Clock, Navigation } from "lucide-react"
+import { MapPin, Phone, Globe, Instagram, Facebook, Linkedin, Youtube, Star, Clock, Navigation, Store } from "lucide-react"
 import { TrackView } from "./_components/track-view"
 import { WhatsAppButton } from "./_components/whatsapp-button"
 import { ClaimBanner } from "./_components/claim-banner"
@@ -167,6 +167,12 @@ export default async function BusinessPage({ params }: PageProps) {
         <div className="flex flex-wrap gap-3 mb-6">
           {business.whatsapp && (
             <WhatsAppButton businessId={business.id} whatsapp={business.whatsapp} name={business.name} />
+          )}
+          {feat.loja && (
+            <Link href={`/${bairro}/${categoria}/${slug}/loja`}
+              className="flex items-center gap-2 px-5 py-3 rounded-full bg-flora-gold hover:brightness-105 text-flora-ink text-sm font-semibold transition-all shadow-lg shadow-flora-gold/25">
+              <Store className="w-4 h-4" /> Ver loja completa
+            </Link>
           )}
           {business.phone && (
             <a href={`tel:${business.phone}`}

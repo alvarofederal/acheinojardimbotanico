@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { ShoppingBag, X, ChevronRight } from "lucide-react"
+import { ShoppingBag, X } from "lucide-react"
 import { WhatsappIcon } from "@/components/whatsapp-icon"
 
 interface Variation { nome: string; opcoes: string[] }
@@ -69,14 +69,6 @@ export function ProductShowcase({
           <option value="price_desc">Maior preço</option>
         </select>
       </div>
-
-      {/* Link para a loja completa — sempre que o plano tem loja (storeHref definido) */}
-      {storeHref && (
-        <a href={storeHref} className="inline-flex items-center gap-1.5 text-sm font-semibold text-flora-green dark:text-flora-fresh hover:gap-2.5 transition-all mb-4">
-          Ver loja completa{products.length > 0 ? ` (${products.length} ${products.length === 1 ? "produto" : "produtos"})` : ""}
-          <ChevronRight className="w-4 h-4" />
-        </a>
-      )}
 
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
         {(storeHref ? sorted.slice(0, 6) : sorted).map(p => (
