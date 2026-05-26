@@ -1,16 +1,17 @@
 // src/emails/verification-template.tsx
 import * as React from 'react';
+import { SITE_URL } from '@/lib/utils';
 
 interface VerificationEmailTemplateProps {
   firstName: string;
   verificationCode: string;
 }
 
-export function VerificationEmailTemplate({ 
-  firstName, 
+export function VerificationEmailTemplate({
+  firstName,
   verificationCode
 }: VerificationEmailTemplateProps) {
-  const verifyUrl = `${process.env.NEXT_PUBLIC_URL}/verify-email?code=${verificationCode}`;
+  const verifyUrl = `${SITE_URL}/verify-email?code=${verificationCode}`;
   
   return (
     <html>

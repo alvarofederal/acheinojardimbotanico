@@ -4,6 +4,7 @@ import { db } from "@/lib/prisma"
 import { forgotPasswordSchema } from "@/lib/validators/auth"
 import { sendPasswordResetEmail } from "@/lib/email"
 import { checkRateLimit } from "@/lib/rate-limit"
+import { SITE_URL } from "@/lib/utils"
 import crypto from "crypto"
 
 export async function POST(req: NextRequest) {
@@ -32,7 +33,7 @@ export async function POST(req: NextRequest) {
       data: { userId: user.id, token, type: "PASSWORD_RESET", expiresAt },
     })
 
-    const resetUrl = `${process.env.NEXT_PUBLIC_URL ?? "http://localhost:3000"}/reset-password?token=${token}`
+    const resetUrl = `${SITE_URL}/reset-password?token=${token}`
     try {
       await sendPasswordResetEmail(email, resetUrl)
     } catch (e) {
