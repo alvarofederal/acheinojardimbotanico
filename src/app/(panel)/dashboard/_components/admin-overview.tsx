@@ -50,7 +50,7 @@ export function AdminOverview({ s }: { s: AdminStats }) {
             <p className="text-xs dash-muted flex items-center gap-1"><Radio className="w-3.5 h-3.5" /> Online agora</p>
           </div>
           <p className="font-serif text-4xl font-bold dash-title leading-none">{s.online.toLocaleString("pt-BR")}</p>
-          <p className="text-[11px] dash-muted mt-1">visitantes ativos nos últimos 3 minutos</p>
+          <p className="text-[11px] dash-muted mt-1">ativos agora · sai em ~30s ao fechar</p>
         </div>
 
         {/* Visitantes hoje / 7d / 30d */}

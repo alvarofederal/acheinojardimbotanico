@@ -24,7 +24,7 @@ export default async function DashboardPage() {
   let topClicks: TopRow[] = []
   if (isAdmin) {
     const now = new Date()
-    const min3 = new Date(now.getTime() - 3 * 60 * 1000)
+    const onlineWindow = new Date(now.getTime() - 30 * 1000) // "online agora" ≈ ativos nos últimos 30s
     const startToday = new Date(now); startToday.setHours(0, 0, 0, 0)
     const d7 = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
     const d30 = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
@@ -35,7 +35,7 @@ export default async function DashboardPage() {
       pendingReview, pendingClaims, pendingPayments, pendingEvents,
       views7, clicks7, cfgs,
     ] = await Promise.all([
-      db.presence.count({ where: { lastSeen: { gte: min3 } } }),
+      db.presence.count({ where: { lastSeen: { gte: onlineWindow } } }),
       db.presence.count({ where: { lastSeen: { gte: startToday } } }),
       db.presence.count({ where: { lastSeen: { gte: d7 } } }),
       db.presence.count({ where: { lastSeen: { gte: d30 } } }),
