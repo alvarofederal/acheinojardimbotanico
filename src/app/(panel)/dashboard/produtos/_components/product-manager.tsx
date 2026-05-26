@@ -3,7 +3,7 @@
 import { useState, useRef } from "react"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
-import { Plus, Trash2, Loader2, Upload, X, Pencil, ImageIcon } from "lucide-react"
+import { Plus, Trash2, Loader2, Upload, X, Pencil, ImageIcon, Sparkles } from "lucide-react"
 import { formatBRL } from "@/lib/plans"
 
 type PriceMode = "FIXED" | "FROM" | "ON_REQUEST"
@@ -19,6 +19,7 @@ export interface Product {
   images: string[]
   variations: Variation[]
   soldOut: boolean
+  featured: boolean
 }
 
 const inputCls = "w-full px-3 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 bg-transparent text-sm dash-title placeholder:text-gray-300 dark:placeholder:text-white/20 focus:outline-none focus:border-emerald-500 transition-colors"
@@ -31,9 +32,9 @@ function priceLabel(p: Product) {
   return p.priceMode === "FROM" ? `A partir de ${v}` : v
 }
 
-const empty: Product = { id: "", name: "", description: "", categoria: "", priceMode: "FIXED", priceCents: 0, promoPriceCents: null, images: [], variations: [], soldOut: false }
+const empty: Product = { id: "", name: "", description: "", categoria: "", priceMode: "FIXED", priceCents: 0, promoPriceCents: null, images: [], variations: [], soldOut: false, featured: false }
 
-export function ProductManager({ products, limit, plan }: { products: Product[]; limit: number; plan: string }) {
+export function ProductManager({ products, limit, plan, hasLoja }: { products: Product[]; limit: number; plan: string; hasLoja: boolean }) {
   const router = useRouter()
   const [editing, setEditing] = useState<Product | null>(null)
   const [open, setOpen] = useState(false)
@@ -80,6 +81,7 @@ export function ProductManager({ products, limit, plan }: { products: Product[];
                   ? <img src={p.images[0]} alt={p.name} className="w-full h-full object-cover" />
                   : <div className="w-full h-full flex items-center justify-center text-gray-300 dark:text-white/20"><ImageIcon className="w-8 h-8" /></div>}
                 {p.soldOut && <span className="absolute top-2 left-2 text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-500 text-white">Esgotado</span>}
+                {p.featured && hasLoja && <span className="absolute top-2 right-2 flex items-center gap-0.5 text-[10px] font-bold px-2 py-0.5 rounded-full bg-flora-gold text-flora-ink"><Sparkles className="w-2.5 h-2.5" />Destaque</span>}
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-colors flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
                   <button onClick={() => startEdit(p)} className="p-2 rounded-lg bg-white text-gray-700"><Pencil className="w-4 h-4" /></button>
                   <button onClick={() => remove(p.id)} className="p-2 rounded-lg bg-white text-red-600"><Trash2 className="w-4 h-4" /></button>
@@ -95,13 +97,13 @@ export function ProductManager({ products, limit, plan }: { products: Product[];
       )}
 
       {open && editing && (
-        <ProductForm product={editing} onClose={() => setOpen(false)} onSaved={() => { setOpen(false); router.refresh() }} />
+        <ProductForm product={editing} hasLoja={hasLoja} onClose={() => setOpen(false)} onSaved={() => { setOpen(false); router.refresh() }} />
       )}
     </div>
   )
 }
 
-function ProductForm({ product, onClose, onSaved }: { product: Product; onClose: () => void; onSaved: () => void }) {
+function ProductForm({ product, hasLoja, onClose, onSaved }: { product: Product; hasLoja: boolean; onClose: () => void; onSaved: () => void }) {
   const [form, setForm] = useState<Product>(product)
   const [saving, setSaving] = useState(false)
   const [uploading, setUploading] = useState(false)
@@ -133,6 +135,7 @@ function ProductForm({ product, onClose, onSaved }: { product: Product; onClose:
       priceMode: form.priceMode, priceCents: form.priceCents ?? 0,
       promoPriceCents: form.priceMode !== "ON_REQUEST" && form.promoPriceCents ? form.promoPriceCents : null,
       images: form.images, variations: form.variations.filter(v => v.nome && v.opcoes.length), soldOut: form.soldOut,
+      featured: form.featured,
     }
     try {
       const res = await fetch(isEdit ? `/api/dashboard/produtos/${form.id}` : "/api/dashboard/produtos", {
@@ -225,6 +228,14 @@ function ProductForm({ product, onClose, onSaved }: { product: Product; onClose:
           <input type="checkbox" checked={form.soldOut} onChange={e => setForm(f => ({ ...f, soldOut: e.target.checked }))} className="w-4 h-4 accent-emerald-600" />
           Marcar como esgotado
         </label>
+
+        {/* Destaque na loja — só faz sentido se o plano tem loja */}
+        {hasLoja && (
+          <label className="flex items-center gap-2 text-sm dash-subtitle cursor-pointer">
+            <input type="checkbox" checked={form.featured} onChange={e => setForm(f => ({ ...f, featured: e.target.checked }))} className="w-4 h-4 accent-flora-gold" />
+            <Sparkles className="w-3.5 h-3.5 text-flora-gold" /> Destacar este produto na loja
+          </label>
+        )}
 
         <div className="flex gap-2 pt-2">
           <button type="submit" disabled={saving} className="flex-1 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60 text-white text-sm font-semibold transition-colors flex items-center justify-center gap-2">

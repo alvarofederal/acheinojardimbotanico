@@ -132,6 +132,8 @@ model Business {
   planExpiresAt     DateTime?
   ownerId           String?
   storeWhatsappMessage String?     @db.Text  // mensagem padrão da vitrine (WhatsApp)
+  storeCoverUrl     String?        @db.Text   // foto de capa da loja (hero) — escolhida pelo lojista
+  storeTagline      String?                   // slogan/frase de destaque da loja
 
   category       Category        @relation(fields: [categoryId], references: [id])
   owner          User?           @relation(fields: [ownerId], references: [id])
@@ -338,6 +340,7 @@ model Product {
   variations  Json?            // ex: [{ "nome": "Tamanho", "opcoes": ["P","M","G"] }]
   soldOut     Boolean          @default(false)
   active      Boolean          @default(true)
+  featured    Boolean          @default(false)  // produto em destaque na loja
   order       Int              @default(0)
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt

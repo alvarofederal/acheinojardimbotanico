@@ -3,9 +3,10 @@ import Link from "next/link"
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/prisma"
 import { type PlanId } from "@/lib/plans"
-import { productLimit } from "@/lib/plan-config"
+import { productLimit, planHasFeature } from "@/lib/plan-config"
 import { ProductManager, type Product } from "./_components/product-manager"
 import { StoreMessage } from "./_components/store-message"
+import { StoreCustomizer } from "./_components/store-customizer"
 import { Store } from "lucide-react"
 
 export default async function ProdutosPage() {
@@ -40,9 +41,11 @@ export default async function ProdutosPage() {
     images: Array.isArray(p.images) ? (p.images as unknown as string[]) : [],
     variations: Array.isArray(p.variations) ? (p.variations as unknown as Product["variations"]) : [],
     soldOut: p.soldOut,
+    featured: p.featured,
   }))
 
   const limit = await productLimit(business.plan as PlanId)
+  const hasLoja = await planHasFeature(business.plan as PlanId, "loja")
 
   return (
     <div className="space-y-6 max-w-3xl">
@@ -51,8 +54,11 @@ export default async function ProdutosPage() {
         <p className="dash-subtitle mt-0.5 text-sm">Monte sua vitrine e venda pelo WhatsApp — {business.name}</p>
       </div>
 
+      {hasLoja && (
+        <StoreCustomizer initialCover={business.storeCoverUrl} initialTagline={business.storeTagline} />
+      )}
       <StoreMessage initial={business.storeWhatsappMessage ?? ""} />
-      <ProductManager products={products} limit={limit} plan={business.plan} />
+      <ProductManager products={products} limit={limit} plan={business.plan} hasLoja={hasLoja} />
     </div>
   )
 }

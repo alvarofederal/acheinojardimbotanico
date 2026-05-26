@@ -18,6 +18,7 @@ const schema = z.object({
   images: z.array(z.string().url()).max(4).default([]),
   variations: z.array(variationSchema).max(6).default([]),
   soldOut: z.boolean().default(false),
+  featured: z.boolean().default(false),
 })
 
 export async function POST(req: NextRequest) {
@@ -55,6 +56,7 @@ export async function POST(req: NextRequest) {
       images: d.images as unknown as Prisma.InputJsonValue,
       variations: d.variations.length ? (d.variations as unknown as Prisma.InputJsonValue) : Prisma.DbNull,
       soldOut: d.soldOut,
+      featured: d.featured,
       order: (maxOrder._max.order ?? -1) + 1,
     },
   })

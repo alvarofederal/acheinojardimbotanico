@@ -17,6 +17,7 @@ const schema = z.object({
   variations: z.array(variationSchema).max(6).optional(),
   soldOut: z.boolean().optional(),
   active: z.boolean().optional(),
+  featured: z.boolean().optional(),
 })
 
 async function ownerProduct(userId: string, id: string) {
@@ -52,6 +53,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       ...(d.variations !== undefined ? { variations: d.variations.length ? (d.variations as unknown as Prisma.InputJsonValue) : Prisma.DbNull } : {}),
       ...(d.soldOut !== undefined ? { soldOut: d.soldOut } : {}),
       ...(d.active !== undefined ? { active: d.active } : {}),
+      ...(d.featured !== undefined ? { featured: d.featured } : {}),
     },
   })
 

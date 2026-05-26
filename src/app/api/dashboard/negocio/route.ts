@@ -16,6 +16,8 @@ const schema = z.object({
   linkedin: urlOrEmpty,
   youtube: urlOrEmpty,
   storeWhatsappMessage: z.string().max(400).optional(),
+  storeCoverUrl: urlOrEmpty,
+  storeTagline: z.string().max(140).optional(),
 })
 
 export async function PATCH(req: NextRequest) {
@@ -42,6 +44,8 @@ export async function PATCH(req: NextRequest) {
       linkedin: data.linkedin || business.linkedin,
       youtube: data.youtube || business.youtube,
       storeWhatsappMessage: data.storeWhatsappMessage ?? business.storeWhatsappMessage,
+      storeCoverUrl: data.storeCoverUrl !== undefined ? (data.storeCoverUrl || null) : business.storeCoverUrl,
+      storeTagline: data.storeTagline !== undefined ? (data.storeTagline || null) : business.storeTagline,
     },
   })
 
