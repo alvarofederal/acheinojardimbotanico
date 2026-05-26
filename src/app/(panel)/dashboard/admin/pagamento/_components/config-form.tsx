@@ -100,8 +100,8 @@ export function ConfigForm({ payment, plans }: { payment: Payment | null; plans:
           {planForms.map(f => {
             const meta = PLAN_ICON[f.plan]
             const isFree = f.plan === "FREE"
-            return (
-              <div key={f.plan} data-testid={`plan-card-${f.plan}`} className={`rounded-2xl border-2 ${meta.border} bg-white dark:bg-white/[0.02] p-5 space-y-4 ${!f.active ? "opacity-60" : ""}`}>
+            const planCard = (
+              <div data-testid={`plan-card-${f.plan}`} className={`rounded-2xl border-2 ${meta.border} bg-white dark:bg-white/[0.02] p-5 space-y-4 ${!f.active ? "opacity-60" : ""}`}>
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
                     <meta.icon className={`w-5 h-5 ${meta.color}`} />
@@ -151,28 +151,8 @@ export function ConfigForm({ payment, plans }: { payment: Payment | null; plans:
                   ))}
                 </div>
 
-                {/* Cobrança específica do plano */}
-                {isFree ? (
-                  <div className="space-y-3 pt-3 border-t border-gray-100 dark:border-white/[0.07]">
-                    <p className="flex items-center gap-1.5 text-xs font-semibold dash-title">
-                      <QrCode className="w-3.5 h-3.5 text-emerald-500" /> PIX (vale para todos os planos)
-                    </p>
-                    <div className="space-y-1">
-                      <label className={labelCls}>Chave PIX</label>
-                      <input value={pay.pixKey} onChange={setPayField("pixKey")} placeholder="email, telefone, CNPJ..." className={inputCls} data-testid="pix-key" />
-                    </div>
-                    <div className="space-y-1">
-                      <label className={labelCls}>Recebedor</label>
-                      <input value={pay.pixHolderName} onChange={setPayField("pixHolderName")} placeholder="Álvaro / Achei JBT" className={inputCls} data-testid="pix-holder" />
-                    </div>
-                    <div className="space-y-1">
-                      <label className={labelCls}>Copia e cola (QR)</label>
-                      <textarea value={pay.pixCopyPaste} onChange={setPayField("pixCopyPaste")} rows={3}
-                        placeholder="Cole o código do banco" className={inputCls + " resize-none font-mono text-xs"} data-testid="pix-copypaste" />
-                      <p className="text-[11px] dash-muted">Gere <strong>sem valor fixo</strong> — o anunciante paga o total mostrado na tela (serve para qualquer plano/período).</p>
-                    </div>
-                  </div>
-                ) : (
+                {/* Link de cartão — só dos planos pagos */}
+                {!isFree && (
                   <div className="space-y-1.5 pt-3 border-t border-gray-100 dark:border-white/[0.07]">
                     <label className="flex items-center gap-1.5 text-xs font-semibold dash-title">
                       <CreditCard className="w-3.5 h-3.5 text-emerald-500" /> Link Mercado Pago
@@ -184,9 +164,38 @@ export function ConfigForm({ payment, plans }: { payment: Payment | null; plans:
                 )}
               </div>
             )
+
+            // PIX é um método GERAL (não pertence ao Free) — fica na coluna do
+            // Free só para aproveitar o espaço, mas como um box separado.
+            const pixBox = (
+              <div className="rounded-2xl border border-emerald-200 dark:border-emerald-500/25 bg-emerald-50/40 dark:bg-emerald-500/[0.05] p-5 space-y-3">
+                <p className="flex items-center gap-1.5 text-sm font-semibold dash-title">
+                  <QrCode className="w-4 h-4 text-emerald-500" /> Pagamento via PIX
+                </p>
+                <p className="text-[11px] dash-muted -mt-1">Método geral — libera qualquer plano pago (Visibilidade e Premium).</p>
+                <div className="space-y-1">
+                  <label className={labelCls}>Chave PIX</label>
+                  <input value={pay.pixKey} onChange={setPayField("pixKey")} placeholder="email, telefone, CNPJ..." className={inputCls} data-testid="pix-key" />
+                </div>
+                <div className="space-y-1">
+                  <label className={labelCls}>Recebedor</label>
+                  <input value={pay.pixHolderName} onChange={setPayField("pixHolderName")} placeholder="Álvaro / Achei JBT" className={inputCls} data-testid="pix-holder" />
+                </div>
+                <div className="space-y-1">
+                  <label className={labelCls}>Copia e cola (QR)</label>
+                  <textarea value={pay.pixCopyPaste} onChange={setPayField("pixCopyPaste")} rows={3}
+                    placeholder="Cole o código do banco" className={inputCls + " resize-none font-mono text-xs"} data-testid="pix-copypaste" />
+                  <p className="text-[11px] dash-muted">Gere <strong>sem valor fixo</strong> — o anunciante paga o total mostrado na tela (serve para qualquer plano/período).</p>
+                </div>
+              </div>
+            )
+
+            return isFree
+              ? <div key={f.plan} className="space-y-4">{planCard}{pixBox}</div>
+              : <div key={f.plan}>{planCard}</div>
           })}
         </div>
-        <p className="text-xs dash-muted mt-2">O plano Free não pode ser desativado nem ter preço — é o piso de todo anunciante.</p>
+        <p className="text-xs dash-muted mt-2">O plano Free não pode ser desativado nem ter preço — é o piso de todo anunciante. O PIX é um método geral, não faz parte do Free.</p>
       </div>
 
       {/* Instruções — abaixo de tudo, largo */}
