@@ -2,9 +2,14 @@ export const runtime = "nodejs"
 import { NextRequest, NextResponse } from "next/server"
 import { db } from "@/lib/prisma"
 import { resetPasswordSchema } from "@/lib/validators/auth"
+import { checkRateLimit } from "@/lib/rate-limit"
 import bcrypt from "bcryptjs"
 
 export async function POST(req: NextRequest) {
+  const ip = req.headers.get("x-forwarded-for") || req.headers.get("x-real-ip") || "unknown"
+  const { allowed } = await checkRateLimit(`reset:${ip}`, 10, 15 * 60 * 1000)
+  if (!allowed) return NextResponse.json({ error: "Muitas tentativas. Aguarde 15 minutos." }, { status: 429 })
+
   const body = await req.json()
   const v = resetPasswordSchema.safeParse(body)
   if (!v.success) return NextResponse.json({ error: v.error.errors[0].message }, { status: 400 })

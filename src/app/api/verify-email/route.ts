@@ -4,6 +4,7 @@ export const runtime = 'nodejs'
 import { NextRequest, NextResponse } from "next/server"
 import prisma from "@/lib/prisma"
 import { verifyEmailSchema } from "@/lib/validators/auth"
+import { checkRateLimit } from "@/lib/rate-limit"
 
 export async function POST(request: NextRequest) {
   try {
@@ -18,6 +19,16 @@ export async function POST(request: NextRequest) {
     }
 
     const { email, code } = validation.data
+
+    // Anti força-bruta do código de 6 dígitos: 10 tentativas / 15 min por email+IP
+    const ip = request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip") || "unknown"
+    const { allowed } = await checkRateLimit(`verify:${email}:${ip}`, 10, 15 * 60 * 1000)
+    if (!allowed) {
+      return NextResponse.json(
+        { error: "Muitas tentativas. Aguarde 15 minutos e tente de novo." },
+        { status: 429 }
+      )
+    }
 
     const user = await prisma.user.findUnique({
       where: { email }

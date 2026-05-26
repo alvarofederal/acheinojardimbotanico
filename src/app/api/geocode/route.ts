@@ -1,6 +1,7 @@
 export const runtime = "nodejs"
 import { NextRequest, NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
+import { checkRateLimit } from "@/lib/rate-limit"
 
 /**
  * Proxy de autocomplete de endereço usando Photon (OpenStreetMap) — gratuito,
@@ -22,6 +23,10 @@ export async function GET(req: NextRequest) {
   // Apenas usuários logados (uso interno do formulário de cadastro)
   const session = await auth()
   if (!session?.user) return NextResponse.json({ error: "Não autorizado" }, { status: 401 })
+
+  // Limita o uso do proxy externo (Photon) por usuário
+  const { allowed } = await checkRateLimit(`geocode:${session.user.id}`, 60, 60 * 1000)
+  if (!allowed) return NextResponse.json({ suggestions: [] }, { status: 429 })
 
   const q = (req.nextUrl.searchParams.get("q") ?? "").trim()
   if (q.length < 3) return NextResponse.json({ suggestions: [] })
