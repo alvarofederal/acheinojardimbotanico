@@ -70,10 +70,10 @@ export function ProductShowcase({
         </select>
       </div>
 
-      {/* Link para a loja completa (mostrado no perfil quando há mais produtos) */}
-      {storeHref && products.length > 6 && (
+      {/* Link para a loja completa — sempre que o plano tem loja (storeHref definido) */}
+      {storeHref && (
         <a href={storeHref} className="inline-flex items-center gap-1.5 text-sm font-semibold text-flora-green dark:text-flora-fresh hover:gap-2.5 transition-all mb-4">
-          Ver loja completa ({products.length} produtos)
+          Ver loja completa{products.length > 0 ? ` (${products.length} ${products.length === 1 ? "produto" : "produtos"})` : ""}
           <ChevronRight className="w-4 h-4" />
         </a>
       )}
