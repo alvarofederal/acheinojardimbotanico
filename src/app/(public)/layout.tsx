@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { Leaf } from "lucide-react"
 import { PublicNav } from "./_components/public-nav"
+import { VisitTracker } from "./_components/visit-tracker"
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://acheinojardimbotanico.com.br"),
@@ -23,6 +24,7 @@ function Logo() {
 export default function PublicLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen flora-bg flex flex-col">
+      <VisitTracker />
       {/* Header */}
       <header className="sticky top-0 z-40 border-b border-flora-green/[0.08] dark:border-white/[0.06] bg-flora-cream/80 dark:bg-flora-deep/80 backdrop-blur-xl">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">

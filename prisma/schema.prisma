@@ -107,6 +107,7 @@ model Business {
   id                String         @id @default(cuid())
   placeId           String?        @unique
   slug              String         @unique
+  handle            String?        @unique   // slug curto/vanity (ex.: /arte-e-tradicao) — perk de plano pago
   name              String
   categoryId        String
   description       String?        @db.Text
@@ -290,6 +291,17 @@ enum SubStatus {
 // ===================================================
 // AUDIT LOG
 // ===================================================
+
+// Presença/analytics leve do site — 1 linha por visitante (cookie anônimo).
+// Permite "online agora" e "visitantes ativos hoje/7d/30d" sem depender de terceiros.
+model Presence {
+  visitorId String   @id
+  firstSeen DateTime @default(now())
+  lastSeen  DateTime @updatedAt
+  hits      Int      @default(1)
+
+  @@index([lastSeen])
+}
 
 model AuditLog {
   id         String   @id @default(cuid())

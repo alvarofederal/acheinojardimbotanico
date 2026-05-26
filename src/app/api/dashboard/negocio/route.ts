@@ -2,6 +2,7 @@ export const runtime = "nodejs"
 import { NextRequest, NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/prisma"
+import { validateHandle, normalizeHandle } from "@/lib/handle"
 import { z } from "zod"
 
 const urlOrEmpty = z.string().url().or(z.literal("")).optional()
@@ -18,6 +19,7 @@ const schema = z.object({
   storeWhatsappMessage: z.string().max(400).optional(),
   storeCoverUrl: urlOrEmpty,
   storeTagline: z.string().max(140).optional(),
+  handle: z.string().max(40).optional(),
 })
 
 export async function PATCH(req: NextRequest) {
@@ -32,6 +34,27 @@ export async function PATCH(req: NextRequest) {
   if (!business) return NextResponse.json({ error: "Nenhum negócio vinculado" }, { status: 404 })
 
   const data = v.data
+
+  // Handle (slug curto) — perk de plano pago, único e em formato válido
+  let handleUpdate: string | null | undefined = undefined
+  if (data.handle !== undefined) {
+    const raw = data.handle.trim()
+    if (raw === "") {
+      handleUpdate = null // limpar
+    } else {
+      if (business.plan === "FREE") {
+        return NextResponse.json({ error: "O link personalizado é um recurso de plano pago." }, { status: 403 })
+      }
+      const err = validateHandle(raw)
+      if (err) return NextResponse.json({ error: err }, { status: 400 })
+      const norm = normalizeHandle(raw)
+      const taken = await db.business.findUnique({ where: { handle: norm }, select: { id: true } })
+      if (taken && taken.id !== business.id) {
+        return NextResponse.json({ error: "Esse link já está em uso. Tente outro." }, { status: 409 })
+      }
+      handleUpdate = norm
+    }
+  }
   await db.business.update({
     where: { id: business.id },
     data: {
@@ -46,6 +69,7 @@ export async function PATCH(req: NextRequest) {
       storeWhatsappMessage: data.storeWhatsappMessage ?? business.storeWhatsappMessage,
       storeCoverUrl: data.storeCoverUrl !== undefined ? (data.storeCoverUrl || null) : business.storeCoverUrl,
       storeTagline: data.storeTagline !== undefined ? (data.storeTagline || null) : business.storeTagline,
+      ...(handleUpdate !== undefined ? { handle: handleUpdate } : {}),
     },
   })
 

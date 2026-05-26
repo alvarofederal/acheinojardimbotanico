@@ -4,12 +4,58 @@ import { db } from "@/lib/prisma"
 import { Eye, MessageCircle, TrendingUp, Store, Clock } from "lucide-react"
 import Link from "next/link"
 import { OnboardingChecklist, type OnboardingStep } from "./_components/onboarding-checklist"
+import { AdminOverview, type AdminStats } from "./_components/admin-overview"
+import { getPlanConfigs } from "@/lib/plan-config"
+import { type PlanId } from "@/lib/plans"
+
+export const dynamic = "force-dynamic"
 
 export default async function DashboardPage() {
   const session = await auth()
   if (!session?.user) redirect("/login")
 
   const isAdmin = session.user.role === "ADMIN"
+
+  // ── Métricas do painel admin (dados reais) ──
+  let adminStats: AdminStats | null = null
+  if (isAdmin) {
+    const now = new Date()
+    const min3 = new Date(now.getTime() - 3 * 60 * 1000)
+    const startToday = new Date(now); startToday.setHours(0, 0, 0, 0)
+    const d7 = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
+    const d30 = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
+
+    const [
+      online, vToday, v7, v30,
+      totalBusinesses, claimed, payingList,
+      pendingReview, pendingClaims, pendingPayments, pendingEvents,
+      views7, clicks7, cfgs,
+    ] = await Promise.all([
+      db.presence.count({ where: { lastSeen: { gte: min3 } } }),
+      db.presence.count({ where: { lastSeen: { gte: startToday } } }),
+      db.presence.count({ where: { lastSeen: { gte: d7 } } }),
+      db.presence.count({ where: { lastSeen: { gte: d30 } } }),
+      db.business.count(),
+      db.business.count({ where: { ownerId: { not: null } } }),
+      db.business.findMany({ where: { plan: { in: ["VISIBILITY", "PREMIUM"] }, planExpiresAt: { gt: now } }, select: { plan: true } }),
+      db.business.count({ where: { status: "PENDING_REVIEW" } }),
+      db.claimRequest.count({ where: { status: "PENDING" } }),
+      db.paymentClaim.count({ where: { status: "PENDING" } }),
+      db.event.count({ where: { status: "PENDING" } }),
+      db.businessView.aggregate({ where: { date: { gte: d7 } }, _sum: { count: true } }),
+      db.whatsappClick.aggregate({ where: { date: { gte: d7 } }, _sum: { count: true } }),
+      getPlanConfigs(),
+    ])
+
+    const mrrCents = payingList.reduce((sum, b) => sum + (cfgs[b.plan as PlanId]?.priceCents ?? 0), 0)
+
+    adminStats = {
+      online, visitorsToday: vToday, visitors7d: v7, visitors30d: v30,
+      totalBusinesses, claimed, paying: payingList.length,
+      pendingReview, pendingClaims, pendingPayments, pendingEvents,
+      views7d: views7._sum.count ?? 0, clicks7d: clicks7._sum.count ?? 0, mrrCents,
+    }
+  }
 
   const business = !isAdmin ? await db.business.findFirst({
     where: { ownerId: session.user.id },
@@ -55,21 +101,7 @@ export default async function DashboardPage() {
         </p>
       </div>
 
-      {isAdmin && (
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          {[
-            { label: "Ver negócios",    href: "/dashboard/admin/negocios", color: "text-blue-600 dark:text-blue-400" },
-            { label: "Importar",        href: "/dashboard/admin/import",   color: "text-emerald-600 dark:text-emerald-400" },
-            { label: "Reivindicações",  href: "/dashboard/admin/claims",   color: "text-amber-600 dark:text-amber-400" },
-            { label: "Usuários",        href: "/dashboard/admin/usuarios", color: "text-purple-600 dark:text-purple-400" },
-          ].map(a => (
-            <Link key={a.href} href={a.href}
-              className="p-4 rounded-2xl border border-gray-100 dark:border-white/[0.07] bg-white dark:bg-white/[0.02] hover:border-gray-200 dark:hover:border-white/[0.12] transition-colors text-center">
-              <p className={`text-sm font-semibold ${a.color}`}>{a.label}</p>
-            </Link>
-          ))}
-        </div>
-      )}
+      {isAdmin && adminStats && <AdminOverview s={adminStats} />}
 
       {!isAdmin && !business && (
         <div className="rounded-2xl border border-dashed border-gray-200 dark:border-white/10 p-8 text-center">
