@@ -3,14 +3,24 @@
 import { useState } from "react"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
-import { CheckCircle, XCircle, Loader2, User, Building2 } from "lucide-react"
+import { CheckCircle, XCircle, Loader2, User, Building2, Phone, ShieldQuestion } from "lucide-react"
+import { WhatsappIcon } from "@/components/whatsapp-icon"
 
 interface Claim {
   id: string
   message: string | null
   createdAt: Date
-  business: { id: string; name: string; slug: string; neighborhood: string }
+  business: { id: string; name: string; slug: string; neighborhood: string; phone: string | null; whatsapp: string | null }
   user: { id: string; name: string | null; email: string | null }
+}
+
+/** Monta o link do WhatsApp pro número OFICIAL do negócio (verificação). */
+function confirmWaUrl(phone: string, businessName: string): string {
+  let d = phone.replace(/\D/g, "")
+  if (d.length < 10) return ""
+  if (!d.startsWith("55")) d = "55" + d
+  const msg = `Olá! Aqui é do *Achei no Jardim Botânico* 🌿 Recebemos um pedido para reivindicar o perfil de *${businessName}*. Foi você ou alguém da equipe? Pode confirmar, por favor? Assim a gente libera o acesso com segurança.`
+  return `https://wa.me/${d}?text=${encodeURIComponent(msg)}`
 }
 
 export function ClaimsTable({ claims }: { claims: Claim[] }) {
@@ -71,6 +81,32 @@ export function ClaimsTable({ claims }: { claims: Claim[] }) {
             <div className="p-3 rounded-xl bg-gray-50 dark:bg-white/[0.02] border border-gray-100 dark:border-white/[0.06] text-sm dash-subtitle whitespace-pre-line">
               {claim.message}
             </div>
+          )}
+
+          {/* Verificação de propriedade — confirme pelo telefone OFICIAL do negócio */}
+          {(claim.business.whatsapp || claim.business.phone) ? (
+            <div className="p-3 rounded-xl bg-amber-50/70 dark:bg-amber-500/[0.07] border border-amber-200 dark:border-amber-500/25 space-y-2">
+              <p className="text-xs font-semibold text-amber-800 dark:text-amber-300 flex items-center gap-1.5">
+                <ShieldQuestion className="w-3.5 h-3.5" /> Confirme a propriedade antes de aprovar
+              </p>
+              <p className="text-xs text-amber-700/90 dark:text-amber-300/80">
+                Telefone oficial do negócio (Google): <strong>{claim.business.whatsapp ?? claim.business.phone}</strong>. Confirme com esse número que foi mesmo o dono.
+              </p>
+              <div className="flex gap-2 flex-wrap">
+                {confirmWaUrl(claim.business.whatsapp ?? claim.business.phone ?? "", claim.business.name) && (
+                  <a href={confirmWaUrl(claim.business.whatsapp ?? claim.business.phone ?? "", claim.business.name)} target="_blank" rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold transition-colors">
+                    <WhatsappIcon className="w-3.5 h-3.5" /> Confirmar no WhatsApp
+                  </a>
+                )}
+                <a href={`tel:${(claim.business.phone ?? claim.business.whatsapp ?? "").replace(/\s/g, "")}`}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-amber-200 dark:border-amber-500/30 text-amber-700 dark:text-amber-300 text-xs font-semibold hover:bg-amber-100/60 dark:hover:bg-amber-500/10 transition-colors">
+                  <Phone className="w-3.5 h-3.5" /> Ligar
+                </a>
+              </div>
+            </div>
+          ) : (
+            <p className="text-xs text-amber-600 dark:text-amber-400">⚠️ Este negócio não tem telefone listado — confirme a propriedade por outro meio antes de aprovar.</p>
           )}
 
           <p className="text-xs dash-muted">

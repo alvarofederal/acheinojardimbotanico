@@ -11,7 +11,7 @@ export default async function AdminClaimsPage() {
   const claims = await db.claimRequest.findMany({
     where: { status: "PENDING" },
     include: {
-      business: { select: { id: true, name: true, slug: true, neighborhood: true } },
+      business: { select: { id: true, name: true, slug: true, neighborhood: true, phone: true, whatsapp: true } },
       user: { select: { id: true, name: true, email: true } },
     },
     orderBy: { createdAt: "asc" },
