@@ -333,6 +333,21 @@ export function getGooglePhotoUrl(photoName: string, maxWidth = 1600, skipRedire
 }
 
 /**
+ * Resolve a URL real (CDN) de uma foto do Google — SERVER-SIDE.
+ * ⚠️ Esta é a chamada COBRÁVEL (Place Photo). Use com parcimônia (cache/migração).
+ */
+export async function resolveGooglePhotoUri(photoName: string, maxWidth = 1600): Promise<string | null> {
+  try {
+    const res = await fetch(getGooglePhotoUrl(photoName, maxWidth, true), { next: { revalidate: 60 * 60 * 24 } })
+    if (!res.ok) return null
+    const data = (await res.json()) as { photoUri?: string }
+    return data.photoUri ?? null
+  } catch {
+    return null
+  }
+}
+
+/**
  * Extrai o bairro/cidade a partir do endereço formatado do Google
  * Ex: "CLN 408 Bl D, Asa Norte, Brasília - DF, 70856-540, Brazil" → "Asa Norte"
  */

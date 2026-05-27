@@ -1,16 +1,18 @@
 /**
  * GET /api/photo/{photoName}  (catch-all: places/X/photos/Y)
- * Proxy de fotos do Google Places:
- *  - esconde a chave (a chamada ao Google é server-side)
- *  - busca a URL real do CDN uma vez (skipHttpRedirect) e cacheia
- *  - redireciona o navegador para o CDN do Google (lh3.googleusercontent.com),
- *    que serve a imagem de graça
- *  - cache HTTP (browser + CDN da Vercel) evita rechamar o Google a cada view
+ * Proxy de fotos do Google Places com AUTO-CURA:
+ *  - resolve a URL real do CDN (1 chamada cobrável ao Google) e cacheia
+ *  - redireciona o navegador imediatamente (sem travar)
+ *  - em segundo plano (after), sobe a foto pro Cloudinary e troca a Photo.url
+ *    → da próxima vez a página serve direto do Cloudinary (Google nunca mais é chamado)
+ *  Assim cada foto custa Google no MÁXIMO 1x na vida (só as realmente vistas).
  */
 export const runtime = "nodejs"
 
-import { NextRequest, NextResponse } from "next/server"
-import { getGooglePhotoUrl } from "@/lib/places"
+import { NextRequest, NextResponse, after } from "next/server"
+import { resolveGooglePhotoUri } from "@/lib/places"
+import { uploadToCloudinary, publicIdFromPhotoName } from "@/lib/cloudinary"
+import { db } from "@/lib/prisma"
 
 // Cache em memória (por instância) do photoName → URL do CDN
 const cache = new Map<string, { uri: string; at: number }>()
@@ -23,7 +25,6 @@ export async function GET(
   const { ref } = await params
   const photoName = ref.join("/") // "places/X/photos/Y"
 
-  // valida formato esperado
   if (!photoName.startsWith("places/") || !photoName.includes("/photos/")) {
     return NextResponse.json({ error: "Foto inválida" }, { status: 400 })
   }
@@ -31,33 +32,23 @@ export async function GET(
   const width = Number(req.nextUrl.searchParams.get("w") ?? 1600)
   const cacheKey = `${photoName}@${width}`
 
-  // cache em memória
   const hit = cache.get(cacheKey)
-  if (hit && Date.now() - hit.at < TTL) {
-    return redirectTo(hit.uri)
-  }
+  const uri = hit && Date.now() - hit.at < TTL ? hit.uri : await resolveGooglePhotoUri(photoName, width)
 
-  try {
-    // skipHttpRedirect=true → Google devolve JSON { photoUri }
-    const res = await fetch(getGooglePhotoUrl(photoName, width, true), {
-      // cache do fetch no edge/Node da Vercel
-      next: { revalidate: 60 * 60 * 24 },
-    })
+  if (!uri) return NextResponse.json({ error: "Foto indisponível" }, { status: 502 })
+  cache.set(cacheKey, { uri, at: Date.now() })
 
-    if (!res.ok) {
-      return NextResponse.json({ error: "Foto indisponível" }, { status: res.status })
+  // Migra pro Cloudinary em segundo plano (não trava o carregamento da imagem).
+  after(async () => {
+    try {
+      const secureUrl = await uploadToCloudinary(uri, publicIdFromPhotoName(photoName))
+      await db.photo.updateMany({ where: { url: `/api/photo/${photoName}` }, data: { url: secureUrl } })
+    } catch (e) {
+      console.error("Falha ao migrar foto p/ Cloudinary:", e)
     }
+  })
 
-    const data = (await res.json()) as { photoUri?: string }
-    if (!data.photoUri) {
-      return NextResponse.json({ error: "Sem URL de foto" }, { status: 502 })
-    }
-
-    cache.set(cacheKey, { uri: data.photoUri, at: Date.now() })
-    return redirectTo(data.photoUri)
-  } catch {
-    return NextResponse.json({ error: "Erro ao buscar foto" }, { status: 500 })
-  }
+  return redirectTo(uri)
 }
 
 function redirectTo(uri: string) {

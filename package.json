@@ -27,6 +27,7 @@
     "test:plans": "tsx scripts/test-plans.ts",
     "test:expire": "tsx scripts/test-expire-plans.ts",
     "test:cortesia": "tsx scripts/test-cortesia.ts",
+    "migrate:fotos": "tsx scripts/migrate-photos-cloudinary.ts",
     "cy:open": "cypress open",
     "cy:run": "cypress run",
     "test:e2e": "cypress run --spec cypress/e2e/planos.cy.ts",
