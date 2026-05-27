@@ -54,16 +54,21 @@ const adminNav: { href: string; label: string; icon: LucideIcon }[] = [
 
 /* ─── Sidebar — sempre dark (identidade de marca) ──────────────── */
 
+export interface AdminNotif {
+  claims?: number; payments?: number; events?: number; pendingBusinesses?: number; total?: number
+}
+
 interface SidebarContentProps {
   navItems: typeof anuncianteNav
   initial: string
   displayName: string
   isAdmin: boolean
   isActive: (href: string) => boolean
+  counts?: Record<string, number>
   onClose?: () => void
 }
 
-function SidebarContent({ navItems, initial, displayName, isAdmin, isActive, onClose }: SidebarContentProps) {
+function SidebarContent({ navItems, initial, displayName, isAdmin, isActive, counts, onClose }: SidebarContentProps) {
   return (
     <>
       {/* Logo */}
@@ -116,9 +121,13 @@ function SidebarContent({ navItems, initial, displayName, isAdmin, isActive, onC
                   : "text-gray-400 dark:text-white/30"
               }`} />
               {item.label}
-              {active && (
+              {counts?.[item.href] ? (
+                <span className="ml-auto min-w-[1.25rem] h-5 px-1.5 rounded-full bg-red-500 text-white text-[11px] font-bold flex items-center justify-center flex-shrink-0">
+                  {counts[item.href]}
+                </span>
+              ) : active ? (
                 <span className="ml-auto w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 flex-shrink-0" />
-              )}
+              ) : null}
             </Link>
           )
         })}
@@ -167,11 +176,29 @@ export function AppShell({ role, userName, userEmail, children }: AppShellProps)
   const initial     = (userName ?? userEmail ?? "?")[0].toUpperCase()
   const displayName = userName ?? userEmail ?? "Usuário"
 
+  // Pendências do admin (sininho + badges do menu), com polling leve
+  const [notif, setNotif] = useState<AdminNotif | null>(null)
+  useEffect(() => {
+    if (!isAdmin) return
+    let alive = true
+    const load = () => fetch("/api/admin/notifications").then(r => r.json()).then(d => { if (alive) setNotif(d) }).catch(() => {})
+    load()
+    const id = setInterval(load, 60_000)
+    return () => { alive = false; clearInterval(id) }
+  }, [isAdmin])
+
+  const navCounts: Record<string, number> = notif ? {
+    "/dashboard/admin/claims": notif.claims ?? 0,
+    "/dashboard/admin/pagamentos": notif.payments ?? 0,
+    "/dashboard/admin/eventos": notif.events ?? 0,
+    "/dashboard/admin/negocios": notif.pendingBusinesses ?? 0,
+  } : {}
+
   function isActive(href: string) {
     return href === "/dashboard" ? pathname === "/dashboard" : pathname.startsWith(href)
   }
 
-  const sharedProps: SidebarContentProps = { navItems, initial, displayName, isAdmin, isActive }
+  const sharedProps: SidebarContentProps = { navItems, initial, displayName, isAdmin, isActive, counts: navCounts }
 
   return (
     /* Wrapper principal — bg responsivo via CSS (dark/light) */
@@ -205,7 +232,7 @@ export function AppShell({ role, userName, userEmail, children }: AppShellProps)
 
       {/* ── Área principal ── */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        <TopNavbar userName={userName} userEmail={userEmail} role={role} onMenuClick={() => setOpen(true)} />
+        <TopNavbar userName={userName} userEmail={userEmail} role={role} notif={notif} onMenuClick={() => setOpen(true)} />
 
         {/* Grid overlay — visível no dark, quase invisível no light */}
         <div aria-hidden className="fixed inset-0 pointer-events-none z-0"

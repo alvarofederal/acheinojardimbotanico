@@ -3,28 +3,40 @@
 import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import { signOut } from "next-auth/react"
-import { Settings, LogOut, Menu, ChevronDown } from "lucide-react"
+import { Settings, LogOut, Menu, ChevronDown, Bell, ShieldCheck, CreditCard, CalendarDays, Building2 } from "lucide-react"
 import { ThemeToggle } from "@/components/theme-toggle"
+import type { AdminNotif } from "./app-shell"
 
 interface TopNavbarProps {
   userName: string | null
   userEmail: string | null
   role: string
+  notif?: AdminNotif | null
   onMenuClick: () => void
 }
 
-export function TopNavbar({ userName, userEmail, role, onMenuClick }: TopNavbarProps) {
+export function TopNavbar({ userName, userEmail, role, notif, onMenuClick }: TopNavbarProps) {
   const [profileOpen, setProfileOpen] = useState(false)
+  const [bellOpen, setBellOpen] = useState(false)
   const profileRef = useRef<HTMLDivElement>(null)
+  const bellRef = useRef<HTMLDivElement>(null)
 
   const isAdmin     = role === "ADMIN"
   const initial     = (userName ?? userEmail ?? "?")[0].toUpperCase()
   const displayName = userName ?? userEmail ?? "Usuário"
 
+  const total = notif?.total ?? 0
+  const bellItems = [
+    { label: "Reivindicações", count: notif?.claims ?? 0, href: "/dashboard/admin/claims", icon: ShieldCheck },
+    { label: "Pagamentos", count: notif?.payments ?? 0, href: "/dashboard/admin/pagamentos", icon: CreditCard },
+    { label: "Eventos", count: notif?.events ?? 0, href: "/dashboard/admin/eventos", icon: CalendarDays },
+    { label: "Negócios em revisão", count: notif?.pendingBusinesses ?? 0, href: "/dashboard/admin/negocios?status=PENDING_REVIEW", icon: Building2 },
+  ].filter(i => i.count > 0)
+
   useEffect(() => {
     function handler(e: MouseEvent) {
-      if (profileRef.current && !profileRef.current.contains(e.target as Node))
-        setProfileOpen(false)
+      if (profileRef.current && !profileRef.current.contains(e.target as Node)) setProfileOpen(false)
+      if (bellRef.current && !bellRef.current.contains(e.target as Node)) setBellOpen(false)
     }
     document.addEventListener("mousedown", handler)
     return () => document.removeEventListener("mousedown", handler)
@@ -46,6 +58,42 @@ export function TopNavbar({ userName, userEmail, role, onMenuClick }: TopNavbarP
       </Link>
 
       <div className="flex-1" />
+
+      {isAdmin && (
+        <div className="relative" ref={bellRef}>
+          <button onClick={() => setBellOpen(v => !v)}
+            className="relative p-2 rounded-lg text-gray-500 dark:text-white/50 hover:text-gray-700 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
+            aria-label="Notificações">
+            <Bell className="w-5 h-5" />
+            {total > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 min-w-[1.1rem] h-[1.1rem] px-1 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center">
+                {total}
+              </span>
+            )}
+          </button>
+
+          {bellOpen && (
+            <div className="absolute right-0 top-full mt-2 w-72 dash-dropdown overflow-hidden z-50">
+              <div className="px-4 py-3 border-b border-gray-100 dark:border-white/[0.06]">
+                <p className="text-sm font-semibold dash-title">Pendências</p>
+                <p className="text-xs dash-muted">{total > 0 ? `${total} item${total === 1 ? "" : "s"} aguardando você` : "Tudo em dia ✨"}</p>
+              </div>
+              <div className="py-1.5">
+                {bellItems.length === 0 ? (
+                  <p className="px-4 py-3 text-sm dash-muted text-center">Nenhuma pendência 🌿</p>
+                ) : bellItems.map(i => (
+                  <Link key={i.href} href={i.href} onClick={() => setBellOpen(false)}
+                    className="flex items-center gap-3 px-4 py-2.5 text-sm dash-subtitle hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
+                    <i.icon className="w-4 h-4 text-gray-400 dark:text-white/35 flex-shrink-0" />
+                    <span className="flex-1">{i.label}</span>
+                    <span className="min-w-[1.25rem] h-5 px-1.5 rounded-full bg-red-500 text-white text-[11px] font-bold flex items-center justify-center">{i.count}</span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       <ThemeToggle />
 
