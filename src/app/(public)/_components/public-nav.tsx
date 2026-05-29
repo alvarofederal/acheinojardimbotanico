@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { createPortal } from "react-dom"
 import Link from "next/link"
 import { Menu, X } from "lucide-react"
+import { useSession } from "next-auth/react"
 
 const CONTENT_LINKS = [
   { href: "/promocoes", label: "Promoções" },
@@ -14,6 +15,8 @@ const CONTENT_LINKS = [
 export function PublicNav() {
   const [open, setOpen] = useState(false)
   const [mounted, setMounted] = useState(false)
+  const { data: session } = useSession()
+  const isLoggedIn = !!session?.user
 
   useEffect(() => setMounted(true), [])
 
@@ -36,7 +39,10 @@ export function PublicNav() {
             {l.label}
           </Link>
         ))}
-        <Link href="/login" onClick={() => setOpen(false)} className="font-medium flora-ink py-3">Entrar</Link>
+        <Link href={isLoggedIn ? "/dashboard" : "/login"} onClick={() => setOpen(false)}
+          className={`font-medium py-3 ${isLoggedIn ? "text-flora-green dark:text-flora-fresh" : "flora-ink"}`}>
+          {isLoggedIn ? "Acessar painel" : "Entrar"}
+        </Link>
         <Link href="/anuncie" onClick={() => setOpen(false)} className="mt-3 text-center font-semibold px-4 py-3 rounded-full bg-flora-green text-white">Anunciar</Link>
       </div>
     </div>
@@ -55,7 +61,10 @@ export function PublicNav() {
           ))}
         </nav>
         <div className="flex items-center gap-2">
-          <Link href="/login" className="text-sm font-medium flora-muted hover:text-flora-green dark:hover:text-flora-fresh transition-colors px-3 py-2">Entrar</Link>
+          <Link href={isLoggedIn ? "/dashboard" : "/login"}
+            className={`text-sm font-medium transition-colors px-3 py-2 ${isLoggedIn ? "text-flora-green dark:text-flora-fresh hover:text-flora-fresh" : "flora-muted hover:text-flora-green dark:hover:text-flora-fresh"}`}>
+            {isLoggedIn ? "Acessar" : "Entrar"}
+          </Link>
           <Link href="/anuncie" className="text-sm font-semibold px-4 py-2 rounded-full bg-flora-green hover:bg-flora-fresh text-white transition-all hover:shadow-lg hover:shadow-flora-green/25">Anunciar</Link>
         </div>
       </div>

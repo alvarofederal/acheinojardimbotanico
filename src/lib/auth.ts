@@ -197,11 +197,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           where: { email: user.email! },
         })
 
-        if (existingUser && !existingUser.emailVerified) {
-          await prisma.user.update({
-            where: { id: existingUser.id },
-            data: { emailVerified: new Date() },
-          })
+        if (existingUser) {
+          const updates: Record<string, unknown> = {}
+          if (!existingUser.emailVerified) updates.emailVerified = new Date()
+          if (!existingUser.name && user.name) updates.name = user.name
+          if (!existingUser.image && user.image) updates.image = user.image
+          if (Object.keys(updates).length > 0) {
+            await prisma.user.update({ where: { id: existingUser.id }, data: updates })
+          }
         }
       }
 

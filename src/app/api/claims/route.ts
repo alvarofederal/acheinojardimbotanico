@@ -9,6 +9,7 @@ const schema = z.object({
   businessId: z.string().min(1),
   message: z.string().min(10, "Descreva como verificar que o negócio é seu (mín. 10 caracteres)"),
   cnpj: z.string().optional(),
+  verificationCode: z.string().length(6, "Código inválido"),
 })
 
 export async function POST(req: NextRequest) {
@@ -19,17 +20,31 @@ export async function POST(req: NextRequest) {
   const v = schema.safeParse(body)
   if (!v.success) return NextResponse.json({ error: v.error.errors[0].message }, { status: 400 })
 
-  const { businessId, message, cnpj } = v.data
+  const { businessId, message, cnpj, verificationCode } = v.data
+
+  // Valida o código de verificação por email
+  const token = await db.authToken.findFirst({
+    where: {
+      userId: session.user.id,
+      token: verificationCode,
+      type: "CLAIM_VERIFICATION",
+      usedAt: null,
+      expiresAt: { gte: new Date() },
+    },
+  })
+  if (!token) return NextResponse.json({ error: "Código inválido ou expirado. Solicite um novo." }, { status: 400 })
 
   const business = await db.business.findUnique({ where: { id: businessId } })
   if (!business) return NextResponse.json({ error: "Negócio não encontrado" }, { status: 404 })
   if (business.ownerId) return NextResponse.json({ error: "Este negócio já foi reivindicado" }, { status: 409 })
 
-  // Verifica se já tem claim pendente deste usuário
   const existing = await db.claimRequest.findFirst({
     where: { businessId, userId: session.user.id, status: "PENDING" },
   })
   if (existing) return NextResponse.json({ error: "Você já tem uma solicitação pendente para este negócio" }, { status: 409 })
+
+  // Marca o token como usado
+  await db.authToken.update({ where: { id: token.id }, data: { usedAt: new Date() } })
 
   await db.claimRequest.create({
     data: {
@@ -51,23 +66,12 @@ export async function POST(req: NextRequest) {
     },
   })
 
-  // Notifica admins (não bloqueia a resposta em caso de falha)
   try {
-    const admins = await db.user.findMany({
-      where: { role: "ADMIN" },
-      select: { email: true },
-    })
+    const admins = await db.user.findMany({ where: { role: "ADMIN" }, select: { email: true } })
     await Promise.all(
       admins
         .filter(a => a.email)
-        .map(a =>
-          sendClaimReceivedEmail(
-            a.email!,
-            business.name,
-            session.user.name ?? "Usuário",
-            session.user.email ?? ""
-          )
-        )
+        .map(a => sendClaimReceivedEmail(a.email!, business.name, session.user.name ?? "Usuário", session.user.email ?? ""))
     )
   } catch (e) {
     console.error("Falha ao notificar admins:", e)

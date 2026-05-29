@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { email, password } = validation.data
+    const { name, email, password } = validation.data
 
     const existingUser = await prisma.user.findUnique({ where: { email } })
 
@@ -48,9 +48,9 @@ export async function POST(request: NextRequest) {
 
     const user = await prisma.user.create({
       data: {
+        name,
         email,
         passwordHash: hashedPassword,
-        // Em dev, pula verificação de email automaticamente
         emailVerified: isDev ? new Date() : null,
       },
     })

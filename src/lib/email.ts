@@ -3,9 +3,9 @@ import { render } from "@react-email/render"
 import { VerificationEmailTemplate } from "@/components/emails/verification-email-template"
 
 const EMAIL_FROM =
-  process.env.EMAIL_FROM ?? "Achei JBT <noreply@acheinojardimbotanico.com.br>"
+  process.env.EMAIL_FROM ?? "Achei JBT <noreply@karollynemorais.com.br>"
 
-const isDev = process.env.NODE_ENV === "development"
+const isDev = false
 
 function getResend() {
   const apiKey = process.env.RESEND_API_KEY
@@ -265,6 +265,36 @@ export async function sendEventModeratedEmail(email: string, title: string, appr
         <p style="color:#6b7280;font-size:14px">Ajuste no painel e reenvie — vamos revisar de novo.</p>`)
   const { error } = await getResend().emails.send({ from: EMAIL_FROM, to: email, subject: approved ? `✅ Evento publicado: ${title}` : `Ajustes no evento: ${title}`, html })
   if (error) console.error("Erro email moderação evento:", error)
+}
+
+/** Código de verificação para reivindicação de negócio. */
+export async function sendClaimVerificationEmail(email: string, code: string, name?: string) {
+  if (isDev) {
+    console.log(`\n🔑 [DEV] Código de reivindicação: ${code} → ${email}`)
+    return
+  }
+  if (!process.env.RESEND_API_KEY) return
+
+  const html = emailShell("🔑 Confirme sua identidade", `
+    <p style="color:#4b5563;font-size:16px">Olá${name ? `, ${name.split(" ")[0]}` : ""}! Use o código abaixo para confirmar que você é o responsável pelo negócio que está reivindicando:</p>
+    <div style="text-align:center;margin:28px 0">
+      <div style="display:inline-block;background:#f0fdf4;border:2px dashed #10b981;border-radius:12px;padding:20px 40px">
+        <span style="font-size:36px;font-weight:700;letter-spacing:8px;color:#065f46">${code}</span>
+      </div>
+    </div>
+    <p style="color:#d97706;font-size:14px;background:#fef3c7;padding:12px;border-radius:6px"><strong>⚠️ Este código expira em 15 minutos.</strong></p>
+    <p style="color:#6b7280;font-size:14px">Se não foi você quem solicitou, ignore este email.</p>`)
+
+  const { error } = await getResend().emails.send({
+    from: EMAIL_FROM,
+    to: email,
+    subject: `🔑 Código de verificação: ${code} — Achei no Jardim Botânico`,
+    html,
+  })
+  if (error) {
+    console.error("Erro ao enviar código de reivindicação:", error)
+    throw new Error(`Erro ao enviar email: ${error.message}`)
+  }
 }
 
 export async function sendPasswordResetEmail(email: string, resetUrl: string) {

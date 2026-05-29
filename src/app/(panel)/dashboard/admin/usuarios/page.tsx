@@ -2,6 +2,7 @@ import { redirect } from "next/navigation"
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/prisma"
 import { CourtesyButton } from "./_components/courtesy-button"
+import { Store, MessageCircle } from "lucide-react"
 
 export const dynamic = "force-dynamic"
 
@@ -43,7 +44,7 @@ export default async function AdminUsuariosPage({ searchParams }: SearchProps) {
   // Negócios desses usuários (pra liberar cortesia ao lojista)
   const businesses = await db.business.findMany({
     where: { ownerId: { in: users.map(u => u.id) } },
-    select: { id: true, name: true, ownerId: true, plan: true, planIsCourtesy: true, planExpiresAt: true },
+    select: { id: true, name: true, ownerId: true, plan: true, planIsCourtesy: true, planExpiresAt: true, whatsapp: true, phone: true },
   })
   const bizByOwner = new Map(businesses.map(b => [b.ownerId!, b]))
 
@@ -74,6 +75,7 @@ export default async function AdminUsuariosPage({ searchParams }: SearchProps) {
             <thead>
               <tr className="border-b border-gray-100 dark:border-white/[0.07] bg-gray-50 dark:bg-white/[0.02]">
                 <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-white/40 uppercase tracking-wide">Usuário</th>
+                <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-white/40 uppercase tracking-wide hidden lg:table-cell">Negócio</th>
                 <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-white/40 uppercase tracking-wide hidden sm:table-cell">Role</th>
                 <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-white/40 uppercase tracking-wide hidden md:table-cell">Cadastro</th>
                 <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 dark:text-white/40 uppercase tracking-wide hidden sm:table-cell">Email</th>
@@ -84,9 +86,31 @@ export default async function AdminUsuariosPage({ searchParams }: SearchProps) {
               {users.map(u => (
                 <tr key={u.id} className="hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors">
                   <td className="px-4 py-3">
-                    <p className="font-medium dash-title">{u.name ?? "—"}</p>
+                    <p className="font-medium dash-title">{u.name ?? u.email?.split("@")[0] ?? "—"}</p>
                     <p className="text-xs dash-muted">{u.email}</p>
                   </td>
+                  <td className="px-4 py-3 hidden lg:table-cell">
+                    {bizByOwner.has(u.id) ? (() => {
+                      const b = bizByOwner.get(u.id)!
+                      const contact = b.whatsapp || b.phone
+                      return (
+                        <div>
+                          <div className="flex items-center gap-1.5">
+                            <Store className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" />
+                            <span className="text-sm font-medium dash-title truncate max-w-[180px]">{b.name}</span>
+                          </div>
+                          {contact && (
+                            <a href={`https://wa.me/${contact.replace(/\D/g, "")}`} target="_blank"
+                              className="flex items-center gap-1 mt-0.5 text-xs text-emerald-600 dark:text-emerald-400 hover:underline">
+                              <MessageCircle className="w-3 h-3" />
+                              {contact}
+                            </a>
+                          )}
+                        </div>
+                      )
+                    })() : <span className="text-xs dash-muted">—</span>}
+                  </td>
+
                   <td className="px-4 py-3 hidden sm:table-cell">
                     <span className={`text-xs font-medium px-2 py-0.5 rounded-md ${
                       u.role === "ADMIN" ? "bg-purple-100 dark:bg-purple-500/15 text-purple-700 dark:text-purple-400" :
@@ -107,7 +131,7 @@ export default async function AdminUsuariosPage({ searchParams }: SearchProps) {
                   <td className="px-4 py-3 text-right">
                     {bizByOwner.has(u.id) && (() => {
                       const b = bizByOwner.get(u.id)!
-                      return <CourtesyButton businessId={b.id} businessName={b.name} currentPlan={b.plan} isCourtesy={b.planIsCourtesy} />
+                      return <CourtesyButton businessId={b.id} businessName={b.name} currentPlan={b.plan} isCourtesy={b.planIsCourtesy ?? false} />
                     })()}
                   </td>
                 </tr>
