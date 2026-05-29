@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation"
 import { auth } from "@/lib/auth"
 import { DeleteAccount } from "./_components/delete-account"
+import { EditName } from "./_components/edit-name"
 
 export default async function ContaPage() {
   const session = await auth()
@@ -17,10 +18,7 @@ export default async function ContaPage() {
       <div className="rounded-2xl border border-gray-100 dark:border-white/[0.07] bg-white dark:bg-white/[0.02] p-5 space-y-3">
         <h2 className="font-semibold dash-title text-sm uppercase tracking-wide">Dados da conta</h2>
         <div className="space-y-2 text-sm">
-          <div className="flex justify-between">
-            <span className="dash-muted">Nome</span>
-            <span className="dash-subtitle">{session.user.name ?? "—"}</span>
-          </div>
+          <EditName currentName={session.user.name ?? null} />
           <div className="flex justify-between">
             <span className="dash-muted">Email</span>
             <span className="dash-subtitle">{session.user.email}</span>

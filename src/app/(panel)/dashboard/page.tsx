@@ -127,12 +127,35 @@ export default async function DashboardPage() {
       {isAdmin && <AdminTopProfiles views={topViews} clicks={topClicks} />}
 
       {!isAdmin && !business && (
-        <div className="rounded-2xl border border-dashed border-gray-200 dark:border-white/10 p-8 text-center">
-          <Store className="w-10 h-10 text-gray-300 dark:text-white/20 mx-auto mb-3" />
-          <h2 className="font-semibold dash-title mb-1">Nenhum negócio vinculado</h2>
-          <p className="text-sm dash-subtitle mb-4">Encontre seu negócio no guia e reivindique o perfil.</p>
-          <Link href="/" className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-medium transition-colors">
-            Buscar meu negócio
+        <div className="rounded-2xl border border-dashed border-gray-200 dark:border-white/10 p-6 space-y-5">
+          <div className="flex items-start gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-500/10 flex items-center justify-center flex-shrink-0">
+              <Store className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+            </div>
+            <div>
+              <h2 className="font-semibold dash-title mb-1">Nenhum negócio vinculado ainda</h2>
+              <p className="text-sm dash-subtitle">
+                Reivindique o perfil do seu negócio para começar a receber clientes pelo guia.
+              </p>
+            </div>
+          </div>
+          <ul className="space-y-2.5 text-sm dash-subtitle">
+            {[
+              { icon: Eye, text: "Veja quantas pessoas visualizaram seu perfil" },
+              { icon: MessageCircle, text: "Receba contatos diretos pelo WhatsApp" },
+              { icon: TrendingUp, text: "Apareça em destaque nas buscas da região" },
+            ].map(({ icon: Icon, text }) => (
+              <li key={text} className="flex items-center gap-2.5">
+                <Icon className="w-4 h-4 text-emerald-500 flex-shrink-0" />
+                <span>{text}</span>
+              </li>
+            ))}
+          </ul>
+          <p className="text-xs dash-muted border-t border-gray-100 dark:border-white/[0.06] pt-4">
+            Primeiro mês gratuito, sem cartão, sem compromisso.
+          </p>
+          <Link href="/" className="inline-flex px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-medium transition-colors">
+            Buscar meu negócio no guia
           </Link>
         </div>
       )}

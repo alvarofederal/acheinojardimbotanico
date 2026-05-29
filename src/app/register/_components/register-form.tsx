@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { Loader2, Mail, Lock, Chrome } from "lucide-react"
+import { Loader2, Mail, Lock, Chrome, User } from "lucide-react"
 import { toast } from "sonner"
 import { signIn } from "next-auth/react"
 import { authInputCls, authLabelCls } from "@/components/auth-shell"
@@ -16,7 +16,7 @@ export function RegisterForm() {
   const [googleLoading, setGoogleLoading] = useState(false)
   const [focused, setFocused]             = useState<string | null>(null)
   const [formData, setFormData]           = useState({
-    email: "", password: "", confirmPassword: "",
+    name: "", email: "", password: "", confirmPassword: "",
   })
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -34,7 +34,7 @@ export function RegisterForm() {
       const res  = await fetch("/api/register", {
         method:  "POST",
         headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify(formData),
+        body:    JSON.stringify({ name: formData.name, email: formData.email, password: formData.password }),
       })
       const data = await res.json()
       if (!res.ok) {
@@ -92,6 +92,17 @@ export function RegisterForm() {
 
       {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label className={authLabelCls}>Nome</label>
+          <div className="relative">
+            <User className={iconCls(focused === "name")} />
+            <input type="text" required placeholder="Seu nome completo"
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              {...field("name")} />
+          </div>
+        </div>
+
         <div>
           <label className={authLabelCls}>Email</label>
           <div className="relative">

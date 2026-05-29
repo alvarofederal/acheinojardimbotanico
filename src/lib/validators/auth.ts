@@ -19,6 +19,7 @@ const emailSchema = z
 
 // ✅ Schema simplificado para API (confirmPassword validado no frontend)
 export const registerSchema = z.object({
+  name: z.string().min(2, "Nome deve ter no mínimo 2 caracteres").max(100, "Nome muito longo").trim(),
   email: emailSchema,
   password: passwordSchema,
 })

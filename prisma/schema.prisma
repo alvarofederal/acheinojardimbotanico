@@ -97,6 +97,7 @@ model AuthToken {
 enum TokenType {
   EMAIL_VERIFICATION
   PASSWORD_RESET
+  CLAIM_VERIFICATION
 }
 
 // ===================================================
