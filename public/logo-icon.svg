@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+
+  <!-- Fundo areia suave -->
+  <rect width="512" height="512" fill="#FAF7F2"/>
+
+  <!-- Quadrado verde principal com bordas arredondadas -->
+  <rect x="56" y="56" width="400" height="400" rx="72" fill="#1E5C45"/>
+
+  <!-- Linha divisória horizontal (dourada, suave) -->
+  <line x1="96" y1="256" x2="416" y2="256" stroke="#D2B48C" stroke-width="1.5" opacity="0.5"/>
+
+  <!-- Linha divisória vertical (dourada, suave) -->
+  <line x1="256" y1="96" x2="256" y2="416" stroke="#D2B48C" stroke-width="1.5" opacity="0.5"/>
+
+  <!-- A — quadrante superior esquerdo -->
+  <text
+    x="176" y="210"
+    text-anchor="middle"
+    font-family="'Playfair Display', Georgia, 'Times New Roman', serif"
+    font-size="120"
+    font-weight="700"
+    fill="#F4F0E8"
+  >A</text>
+
+  <!-- J — quadrante superior direito -->
+  <text
+    x="336" y="210"
+    text-anchor="middle"
+    font-family="'Playfair Display', Georgia, 'Times New Roman', serif"
+    font-size="120"
+    font-weight="700"
+    fill="#F4F0E8"
+  >J</text>
+
+  <!-- B — quadrante inferior esquerdo -->
+  <text
+    x="176" y="378"
+    text-anchor="middle"
+    font-family="'Playfair Display', Georgia, 'Times New Roman', serif"
+    font-size="120"
+    font-weight="700"
+    fill="#D2B48C"
+  >B</text>
+
+  <!-- T — quadrante inferior direito -->
+  <text
+    x="336" y="378"
+    text-anchor="middle"
+    font-family="'Playfair Display', Georgia, 'Times New Roman', serif"
+    font-size="120"
+    font-weight="700"
+    fill="#D2B48C"
+  >T</text>
+
+  <!-- Ponto dourado central (detalhe de marca) -->
+  <circle cx="256" cy="256" r="6" fill="#D2B48C" opacity="0.8"/>
+
+</svg>
