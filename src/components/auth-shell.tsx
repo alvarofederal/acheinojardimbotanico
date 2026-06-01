@@ -1,6 +1,5 @@
-import Link from "next/link"
-import { Leaf } from "lucide-react"
 import { MonsteraLeaf, FernFrond } from "@/app/(public)/_components/botanicals"
+import { SiteLogo } from "@/components/ui/site-logo"
 
 /** Moldura visual Flora compartilhada pelas telas de autenticação. */
 export function AuthShell({
@@ -21,14 +20,7 @@ export function AuthShell({
       <div className="relative w-full max-w-md flora-card rounded-3xl p-8 z-10">
         {/* Logo */}
         <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-2">
-            <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-flora-green/10 dark:bg-flora-fresh/15">
-              <Leaf className="w-5 h-5 text-flora-green dark:text-flora-fresh" strokeWidth={2.2} />
-            </span>
-            <span className="font-serif text-xl font-semibold flora-ink leading-none">
-              Achei no <span className="text-flora-green dark:text-flora-fresh italic">Jardim Botânico</span>
-            </span>
-          </Link>
+          <SiteLogo href="/" size="lg" />
           <p className="text-sm mt-3 flora-muted">{subtitle}</p>
         </div>
 
