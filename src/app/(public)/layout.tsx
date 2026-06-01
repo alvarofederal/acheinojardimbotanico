@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import Link from "next/link"
+import { Instagram } from "lucide-react"
 import { PublicNav } from "./_components/public-nav"
 import { VisitTracker } from "./_components/visit-tracker"
 import { ThemeToggle } from "@/components/theme-toggle"
@@ -29,13 +30,29 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
       {/* Footer */}
       <footer className="mt-20 border-t border-flora-green/[0.08] dark:border-white/[0.06]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
             <SiteLogo href="/" />
-            <nav className="flex items-center gap-5 text-sm flora-muted">
-              <Link href="/termos" className="hover:text-flora-green dark:hover:text-flora-fresh transition-colors">Termos</Link>
-              <Link href="/privacidade" className="hover:text-flora-green dark:hover:text-flora-fresh transition-colors">Privacidade</Link>
-              <Link href="/register" className="hover:text-flora-green dark:hover:text-flora-fresh transition-colors">Anunciar</Link>
-            </nav>
+            <div className="flex flex-col sm:flex-row items-center gap-5">
+              {/* Instagram */}
+              <Link
+                href="https://www.instagram.com/acheinojardimbotanico"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 text-sm flora-muted hover:text-flora-green dark:hover:text-flora-fresh transition-colors group"
+              >
+                <span className="flex items-center justify-center w-8 h-8 rounded-xl bg-flora-green/10 dark:bg-flora-fresh/10 group-hover:bg-flora-green/20 dark:group-hover:bg-flora-fresh/20 transition-colors">
+                  <Instagram className="w-4 h-4 text-flora-green dark:text-flora-fresh" strokeWidth={1.8} />
+                </span>
+                <span className="font-medium">@acheinojardimbotanico</span>
+              </Link>
+
+              {/* Links */}
+              <nav className="flex items-center gap-5 text-sm flora-muted">
+                <Link href="/termos" className="hover:text-flora-green dark:hover:text-flora-fresh transition-colors">Termos</Link>
+                <Link href="/privacidade" className="hover:text-flora-green dark:hover:text-flora-fresh transition-colors">Privacidade</Link>
+                <Link href="/register" className="hover:text-flora-green dark:hover:text-flora-fresh transition-colors">Anunciar</Link>
+              </nav>
+            </div>
           </div>
           <p className="mt-6 text-xs flora-muted/70 text-center sm:text-left">
             © 2026 Achei no Jardim Botânico · Guia hiperlocal do Jardim Botânico (DF). Algumas informações fornecidas por Google.
