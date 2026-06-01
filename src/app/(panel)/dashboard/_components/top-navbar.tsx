@@ -5,6 +5,7 @@ import Link from "next/link"
 import { signOut } from "next-auth/react"
 import { Settings, LogOut, Menu, ChevronDown, Bell, ShieldCheck, CreditCard, CalendarDays, Building2 } from "lucide-react"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { SiteLogo } from "@/components/ui/site-logo"
 import type { AdminNotif } from "./app-shell"
 
 interface TopNavbarProps {
@@ -51,11 +52,9 @@ export function TopNavbar({ userName, userEmail, role, notif, onMenuClick }: Top
         <Menu className="w-5 h-5" />
       </button>
 
-      <Link href="/dashboard" className="lg:hidden logo-shine flex items-center">
-        <span className="text-gray-900 dark:text-white font-extrabold text-base tracking-tight">
-          Achei<span style={{ color: "#10b981" }}> JBT</span>
-        </span>
-      </Link>
+      <div className="lg:hidden">
+        <SiteLogo href="/dashboard" size="sm" />
+      </div>
 
       <div className="flex-1" />
 

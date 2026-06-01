@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- Fundo verde arredondado -->
+  <rect width="32" height="32" rx="7" fill="#1E5C45"/>
+
+  <!-- Linha superior: "AJ" em creme -->
+  <text
+    x="16" y="14"
+    text-anchor="middle"
+    font-family="Inter, 'Helvetica Neue', Arial, sans-serif"
+    font-size="12"
+    font-weight="800"
+    fill="#F4F0E8"
+    letter-spacing="1"
+  >AJ</text>
+
+  <!-- Linha inferior: "BT" em dourado -->
+  <text
+    x="16" y="27"
+    text-anchor="middle"
+    font-family="Inter, 'Helvetica Neue', Arial, sans-serif"
+    font-size="12"
+    font-weight="800"
+    fill="#D2B48C"
+    letter-spacing="1"
+  >BT</text>
+
+  <!-- Separador dourado fino no meio -->
+  <line x1="6" y1="17" x2="26" y2="17" stroke="#D2B48C" stroke-width="0.7" opacity="0.5"/>
+</svg>

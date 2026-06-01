@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
+import { SiteLogo } from "@/components/ui/site-logo"
 import { usePathname } from "next/navigation"
 import { signOut } from "next-auth/react"
 import {
@@ -73,12 +74,7 @@ function SidebarContent({ navItems, initial, displayName, isAdmin, isActive, cou
     <>
       {/* Logo */}
       <div className="px-5 py-5 flex items-center justify-between border-b border-gray-200 dark:border-white/[0.07]">
-        <Link href="/dashboard" onClick={onClose} className="logo-shine flex items-center">
-          <span className="text-gray-900 dark:text-white font-extrabold text-lg tracking-tight select-none"
-            style={{ fontFamily: "var(--font-open-sans), 'Open Sans', sans-serif", letterSpacing: "-0.02em" }}>
-            Achei<span className="logo-fy-pulse" style={{ color: "#10b981" }}> JBT</span>
-          </span>
-        </Link>
+        <SiteLogo href="/dashboard" size="sm" />
         {onClose && (
           <button onClick={onClose}
             className="p-1.5 rounded-lg transition-colors text-gray-400 dark:text-white/35 hover:text-gray-700 dark:hover:text-white"
