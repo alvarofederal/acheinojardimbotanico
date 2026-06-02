@@ -15,8 +15,9 @@ export default async function DisplayPrintPage({ params }: { params: Promise<{ b
   const business = await db.business.findUnique({
     where: { id: businessId },
     select: {
-      id: true, name: true, handle: true, slug: true, neighborhood: true, ownerId: true,
+      id: true, name: true, handle: true, slug: true, neighborhood: true, ownerId: true, storeCoverUrl: true,
       category: { select: { name: true, slug: true } },
+      photos: { take: 1, orderBy: { order: "asc" }, select: { url: true } },
     },
   })
 

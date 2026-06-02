@@ -15,8 +15,9 @@ export default async function DisplayPage() {
   const business = await db.business.findFirst({
     where: { ownerId: session.user.id },
     select: {
-      id: true, name: true, handle: true, slug: true, neighborhood: true,
+      id: true, name: true, handle: true, slug: true, neighborhood: true, storeCoverUrl: true,
       category: { select: { name: true, slug: true } },
+      photos: { take: 1, orderBy: { order: "asc" }, select: { url: true } },
     },
   })
 
