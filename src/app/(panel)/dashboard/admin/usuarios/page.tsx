@@ -2,6 +2,9 @@ import { redirect } from "next/navigation"
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/prisma"
 import { CourtesyButton } from "./_components/courtesy-button"
+import { DisplayButton } from "./_components/display-button"
+import { NewUserButton, UserRowActions } from "./_components/user-admin"
+import { buildDisplayData } from "@/lib/display"
 import { Store, MessageCircle } from "lucide-react"
 
 export const dynamic = "force-dynamic"
@@ -44,7 +47,11 @@ export default async function AdminUsuariosPage({ searchParams }: SearchProps) {
   // Negócios desses usuários (pra liberar cortesia ao lojista)
   const businesses = await db.business.findMany({
     where: { ownerId: { in: users.map(u => u.id) } },
-    select: { id: true, name: true, ownerId: true, plan: true, planIsCourtesy: true, planExpiresAt: true, whatsapp: true, phone: true },
+    select: {
+      id: true, name: true, ownerId: true, plan: true, planIsCourtesy: true, planExpiresAt: true,
+      whatsapp: true, phone: true, handle: true, slug: true, neighborhood: true,
+      category: { select: { name: true, slug: true } },
+    },
   })
   const bizByOwner = new Map(businesses.map(b => [b.ownerId!, b]))
 
@@ -52,9 +59,12 @@ export default async function AdminUsuariosPage({ searchParams }: SearchProps) {
 
   return (
     <div className="space-y-5">
-      <div>
-        <h1 className="text-xl sm:text-2xl font-bold dash-title">Usuários</h1>
-        <p className="dash-subtitle mt-0.5 text-sm">{total.toLocaleString("pt-BR")} cadastrados</p>
+      <div className="flex items-start justify-between gap-3 flex-wrap">
+        <div>
+          <h1 className="text-xl sm:text-2xl font-bold dash-title">Usuários</h1>
+          <p className="dash-subtitle mt-0.5 text-sm">{total.toLocaleString("pt-BR")} cadastrados</p>
+        </div>
+        <NewUserButton />
       </div>
 
       <form className="flex gap-3">
@@ -128,11 +138,19 @@ export default async function AdminUsuariosPage({ searchParams }: SearchProps) {
                       ? <span className="text-xs text-emerald-600 dark:text-emerald-400">Verificado</span>
                       : <span className="text-xs text-amber-500 dark:text-amber-400">Pendente</span>}
                   </td>
-                  <td className="px-4 py-3 text-right">
-                    {bizByOwner.has(u.id) && (() => {
-                      const b = bizByOwner.get(u.id)!
-                      return <CourtesyButton businessId={b.id} businessName={b.name} currentPlan={b.plan} isCourtesy={b.planIsCourtesy ?? false} />
-                    })()}
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-1.5 justify-end flex-wrap">
+                      {bizByOwner.has(u.id) && (() => {
+                        const b = bizByOwner.get(u.id)!
+                        return (
+                          <>
+                            <DisplayButton businessId={b.id} data={buildDisplayData(b)} />
+                            <CourtesyButton businessId={b.id} businessName={b.name} currentPlan={b.plan} isCourtesy={b.planIsCourtesy ?? false} />
+                          </>
+                        )
+                      })()}
+                      <UserRowActions id={u.id} name={u.name} role={u.role} isSelf={u.id === session.user.id} />
+                    </div>
                   </td>
                 </tr>
               ))}

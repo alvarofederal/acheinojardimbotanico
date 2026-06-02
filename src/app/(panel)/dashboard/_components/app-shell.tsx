@@ -24,6 +24,7 @@ import {
   Tag,
   CalendarDays,
   Newspaper,
+  QrCode,
 } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
 import { TopNavbar } from "./top-navbar"
@@ -34,6 +35,7 @@ const anuncianteNav: { href: string; label: string; icon: LucideIcon }[] = [
   { href: "/dashboard/negocio",   label: "Meu Negócio",  icon: Store           },
   { href: "/dashboard/produtos",  label: "Produtos",     icon: Tag             },
   { href: "/dashboard/eventos",   label: "Eventos",      icon: CalendarDays    },
+  { href: "/dashboard/display",   label: "Display",      icon: QrCode          },
   { href: "/dashboard/plano",     label: "Meu Plano",    icon: ShieldCheck     },
   { href: "/dashboard/conta",     label: "Minha Conta",  icon: UserCog         },
 ]
