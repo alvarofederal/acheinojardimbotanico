@@ -4,12 +4,15 @@ import { useEffect } from "react"
 import { Printer } from "lucide-react"
 import { DisplayCard, type DisplayCardData } from "@/components/display-card"
 
-export function PrintView({ data }: { data: DisplayCardData }) {
+export function PrintView({ data, filename }: { data: DisplayCardData; filename: string }) {
   useEffect(() => {
+    // O navegador usa document.title como nome sugerido no "Salvar como PDF"
+    const prev = document.title
+    document.title = filename
     // dá tempo das fontes e do QR renderizarem antes de abrir a impressão
     const t = setTimeout(() => window.print(), 700)
-    return () => clearTimeout(t)
-  }, [])
+    return () => { clearTimeout(t); document.title = prev }
+  }, [filename])
 
   return (
     <div

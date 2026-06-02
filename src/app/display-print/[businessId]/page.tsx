@@ -27,5 +27,8 @@ export default async function DisplayPrintPage({ params }: { params: Promise<{ b
   const isAdmin = session.user.role === "ADMIN"
   if (!isAdmin && business.ownerId !== session.user.id) redirect("/dashboard")
 
-  return <PrintView data={buildDisplayData(business)} />
+  // Nome do arquivo no "Salvar como PDF" = slug/handle da loja
+  const filename = `display-${business.handle ?? business.slug}`
+
+  return <PrintView data={buildDisplayData(business)} filename={filename} />
 }
