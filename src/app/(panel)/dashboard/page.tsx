@@ -6,9 +6,10 @@ import Link from "next/link"
 import { OnboardingChecklist, type OnboardingStep } from "./_components/onboarding-checklist"
 import { AdminOverview, type AdminStats } from "./_components/admin-overview"
 import { AdminTopProfiles, type TopRow } from "./_components/admin-top-profiles"
+import { FindabilityCard } from "./_components/findability-card"
 import { getPlanConfigs } from "@/lib/plan-config"
 import { type PlanId } from "@/lib/plans"
-import { slugify } from "@/lib/utils"
+import { slugify, SITE_URL } from "@/lib/utils"
 
 export const dynamic = "force-dynamic"
 
@@ -83,7 +84,8 @@ export default async function DashboardPage() {
     where: { ownerId: session.user.id },
     select: {
       id: true, name: true, slug: true, plan: true, status: true, description: true, whatsapp: true,
-      category: { select: { slug: true } },
+      neighborhood: true, handle: true,
+      category: { select: { slug: true, name: true } },
     },
   }) : null
 
@@ -113,6 +115,21 @@ export default async function DashboardPage() {
   ] : []
 
   const firstName = session.user.name?.split(" ")[0] ?? "Usuário"
+
+  // Dados do card "onde te encontram" (presença concreta no guia)
+  const findability = business ? (() => {
+    const bairroSlug = slugify(business.neighborhood)
+    const categoryHref = `/${bairroSlug}/${business.category.slug}`
+    const profilePath = business.handle ? `/${business.handle}` : `${categoryHref}/${business.slug}`
+    return {
+      categoryName: business.category.name,
+      neighborhood: business.neighborhood,
+      businessName: business.name,
+      categoryHref,
+      nameSearchHref: `/busca?q=${encodeURIComponent(business.name)}`,
+      shareUrl: `${SITE_URL}${profilePath}`,
+    }
+  })() : null
 
   return (
     <div className="space-y-6">
@@ -170,6 +187,8 @@ export default async function DashboardPage() {
               </p>
             </div>
           )}
+
+          {business.status !== "PENDING_REVIEW" && findability && <FindabilityCard {...findability} />}
 
           <OnboardingChecklist steps={onboardingSteps} />
 
