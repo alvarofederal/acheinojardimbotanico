@@ -25,6 +25,7 @@ export function PrintView({ data }: { data: DisplayCardData }) {
       }}
     >
       <style>{`
+        * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
         @page { size: A6; margin: 0; }
         @media print {
           .no-print { display: none !important; }
