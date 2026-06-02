@@ -18,10 +18,14 @@ interface AsaasWebhookEvent {
 }
 
 export async function POST(req: NextRequest) {
-  // Valida o token do webhook
-  const token = req.headers.get("asaas-access-token")
+  // Valida o token do webhook — FAIL CLOSED: sem secret configurado, ninguém entra.
+  // (Asaas está dormente; quando ativar, defina ASAAS_WEBHOOK_SECRET no ambiente.)
   const secret = process.env.ASAAS_WEBHOOK_SECRET
-  if (secret && token !== secret) {
+  if (!secret) {
+    return NextResponse.json({ error: "Webhook não configurado" }, { status: 503 })
+  }
+  const token = req.headers.get("asaas-access-token")
+  if (token !== secret) {
     return NextResponse.json({ error: "Token inválido" }, { status: 401 })
   }
 
