@@ -152,6 +152,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         if (!user || !user.passwordHash) return null
 
+        if (!user.active) {
+          throw new Error("ACCOUNT_DISABLED")
+        }
+
         if (!user.emailVerified) {
           throw new Error("EMAIL_NOT_VERIFIED")
         }
@@ -196,6 +200,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         })
 
         if (existingUser) {
+          if (!existingUser.active) return false // conta desativada não loga via OAuth
           const updates: Record<string, unknown> = {}
           if (!existingUser.emailVerified) updates.emailVerified = new Date()
           if (!existingUser.name && user.name) updates.name = user.name

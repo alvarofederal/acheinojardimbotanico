@@ -4,6 +4,7 @@ import { db } from "@/lib/prisma"
 import { CourtesyButton } from "./_components/courtesy-button"
 import { DisplayButton } from "./_components/display-button"
 import { NewUserButton, UserRowActions } from "./_components/user-admin"
+import { ActiveToggle } from "../negocios/_components/active-toggle"
 import { buildDisplayData } from "@/lib/display"
 import { Store, MessageCircle } from "lucide-react"
 
@@ -37,7 +38,7 @@ export default async function AdminUsuariosPage({ searchParams }: SearchProps) {
   const [users, total] = await Promise.all([
     db.user.findMany({
       where,
-      select: { id: true, name: true, email: true, role: true, createdAt: true, emailVerified: true },
+      select: { id: true, name: true, email: true, role: true, createdAt: true, emailVerified: true, active: true },
       orderBy: { createdAt: "desc" },
       take, skip,
     }),
@@ -49,7 +50,7 @@ export default async function AdminUsuariosPage({ searchParams }: SearchProps) {
     where: { ownerId: { in: users.map(u => u.id) } },
     select: {
       id: true, name: true, ownerId: true, plan: true, planIsCourtesy: true, planExpiresAt: true,
-      whatsapp: true, phone: true, handle: true, slug: true, neighborhood: true, storeCoverUrl: true,
+      whatsapp: true, phone: true, handle: true, slug: true, neighborhood: true, storeCoverUrl: true, status: true,
       category: { select: { name: true, slug: true } },
       photos: { take: 1, orderBy: { order: "asc" }, select: { url: true } },
     },
@@ -97,7 +98,10 @@ export default async function AdminUsuariosPage({ searchParams }: SearchProps) {
               {users.map(u => (
                 <tr key={u.id} className="hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors">
                   <td className="px-4 py-3">
-                    <p className="font-medium dash-title">{u.name ?? u.email?.split("@")[0] ?? "—"}</p>
+                    <div className="flex items-center gap-1.5">
+                      <p className="font-medium dash-title">{u.name ?? u.email?.split("@")[0] ?? "—"}</p>
+                      {!u.active && <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-red-100 dark:bg-red-500/15 text-red-600 dark:text-red-400">INATIVO</span>}
+                    </div>
                     <p className="text-xs dash-muted">{u.email}</p>
                   </td>
                   <td className="px-4 py-3 hidden lg:table-cell">
@@ -145,6 +149,7 @@ export default async function AdminUsuariosPage({ searchParams }: SearchProps) {
                         const b = bizByOwner.get(u.id)!
                         return (
                           <>
+                            <ActiveToggle businessId={b.id} businessName={b.name} active={b.status !== "SUSPENDED"} hasOwner={true} />
                             <DisplayButton businessId={b.id} data={buildDisplayData(b)} />
                             <CourtesyButton businessId={b.id} businessName={b.name} currentPlan={b.plan} isCourtesy={b.planIsCourtesy ?? false} />
                           </>

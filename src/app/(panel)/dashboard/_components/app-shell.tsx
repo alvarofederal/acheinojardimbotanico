@@ -42,13 +42,13 @@ const anuncianteNav: { href: string; label: string; icon: LucideIcon }[] = [
 
 const adminNav: { href: string; label: string; icon: LucideIcon }[] = [
   { href: "/dashboard",              label: "Visão Geral",  icon: LayoutDashboard },
+  { href: "/dashboard/admin/usuarios", label: "Usuários",   icon: Users           },
   { href: "/dashboard/admin/negocios", label: "Negócios",   icon: Building2       },
   { href: "/dashboard/admin/import",   label: "Importar",   icon: Download        },
   { href: "/dashboard/admin/custos",   label: "Custos API", icon: DollarSign      },
   { href: "/dashboard/admin/pagamentos", label: "Pagamentos", icon: CreditCard    },
   { href: "/dashboard/admin/claims",   label: "Reivind.",   icon: ShieldCheck     },
   { href: "/dashboard/admin/prospeccao", label: "Prospecção", icon: Target         },
-  { href: "/dashboard/admin/usuarios", label: "Usuários",   icon: Users           },
   { href: "/dashboard/admin/noticias", label: "Notícias",   icon: Newspaper       },
   { href: "/dashboard/admin/eventos",  label: "Eventos",    icon: CalendarDays    },
   { href: "/dashboard/admin/historico", label: "Histórico", icon: History         },
@@ -134,7 +134,7 @@ function SidebarContent({ navItems, initial, displayName, isAdmin, isActive, cou
       {/* Footer */}
       <div className="px-3 py-4 border-t border-gray-200 dark:border-white/[0.07]">
         <button
-          onClick={() => signOut({ callbackUrl: "/login" })}
+          onClick={() => signOut({ callbackUrl: "/" })}
           className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm w-full transition-all text-gray-500 dark:text-white/35 hover:bg-gray-100 dark:hover:bg-white/[0.05] hover:text-gray-900 dark:hover:text-white/75">
           <LogOut className="w-4 h-4 flex-shrink-0" />
           Sair
