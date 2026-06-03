@@ -22,4 +22,6 @@ export function slugify(text: string): string {
 
 /** URL base canônica do site (produção ou local). */
 export const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://acheinojardimbotanico.com.br"
+  process.env.NEXT_PUBLIC_URL ??
+  process.env.NEXT_PUBLIC_SITE_URL ??
+  "https://acheinojardimbotanico.com.br"

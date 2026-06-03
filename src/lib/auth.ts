@@ -3,7 +3,6 @@ import type { JWT } from "next-auth/jwt"
 import prisma from "./prisma"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import type { Adapter, AdapterUser } from "next-auth/adapters"
-import GitHub from "next-auth/providers/github"
 import Google from "next-auth/providers/google"
 import Credentials from "next-auth/providers/credentials"
 import bcrypt from "bcryptjs"
@@ -138,7 +137,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
   providers: [
     Google({ allowDangerousEmailAccountLinking: true }),
-    GitHub({ allowDangerousEmailAccountLinking: true }),
     Credentials({
       name: "credentials",
       credentials: {

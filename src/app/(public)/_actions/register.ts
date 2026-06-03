@@ -2,7 +2,7 @@
 
 import { signIn } from '@/lib/auth'
 
-type LoginType = 'google' | 'github'
+type LoginType = 'google'
 
 export async function handleRegister(provider: LoginType) {
   // ✅ Redireciona para página intermediária que vai verificar o perfil
