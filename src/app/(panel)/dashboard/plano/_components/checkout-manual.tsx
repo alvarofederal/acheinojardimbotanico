@@ -3,18 +3,19 @@
 import { useState } from "react"
 import { toast } from "sonner"
 import { Loader2, Copy, Check, QrCode, CreditCard, CheckCircle } from "lucide-react"
+import { QRCodeSVG } from "qrcode.react"
 import { PLAN_LABEL, PLAN_MONTHS, formatBRL, type PlanId } from "@/lib/plans"
+import { buildPixPayload } from "@/lib/pix"
 
 interface Props {
   pixKey: string | null
   pixHolderName: string | null
-  qrDataUrl: string | null
   mpLinks: { VISIBILITY: string | null; PREMIUM: string | null }
   instructions: string | null
   priceCents: { VISIBILITY: number; PREMIUM: number }
 }
 
-export function CheckoutManual({ pixKey, pixHolderName, qrDataUrl, mpLinks, instructions, priceCents }: Props) {
+export function CheckoutManual({ pixKey, pixHolderName, mpLinks, instructions, priceCents }: Props) {
   const [plan, setPlan] = useState<PlanId>("VISIBILITY")
   const [months, setMonths] = useState(1)
   const [copied, setCopied] = useState(false)
@@ -23,13 +24,15 @@ export function CheckoutManual({ pixKey, pixHolderName, qrDataUrl, mpLinks, inst
 
   const unitCents = plan === "PREMIUM" ? priceCents.PREMIUM : priceCents.VISIBILITY
   const totalCents = unitCents * months
+  // PIX copia-e-cola gerado com o VALOR exato do total — o QR sempre bate com a tela.
+  const pixPayload = pixKey ? buildPixPayload({ key: pixKey, name: pixHolderName, amountCents: totalCents }) : null
   const cardLink = plan === "PREMIUM" ? mpLinks.PREMIUM : mpLinks.VISIBILITY
-  const hasPix = !!qrDataUrl || !!pixKey
+  const hasPix = !!pixPayload
   const hasCard = !!cardLink
 
   function copyPix() {
-    if (!pixKey) return
-    navigator.clipboard.writeText(pixKey)
+    if (!pixPayload) return
+    navigator.clipboard.writeText(pixPayload)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
   }
@@ -99,27 +102,24 @@ export function CheckoutManual({ pixKey, pixHolderName, qrDataUrl, mpLinks, inst
         <span className="font-serif text-2xl font-bold dash-title">{formatBRL(totalCents)}</span>
       </div>
 
-      {/* PIX */}
+      {/* PIX — QR e copia-e-cola gerados com o valor exato do total */}
       {hasPix && (
         <div className="space-y-3 pt-2">
           <div className="flex items-center gap-2 text-sm font-semibold dash-title">
-            <QrCode className="w-4 h-4 text-emerald-500" /> Pagar com PIX
+            <QrCode className="w-4 h-4 text-emerald-500" /> Pagar com PIX · <span className="text-emerald-600 dark:text-emerald-400">{formatBRL(totalCents)}</span>
           </div>
-          {qrDataUrl && (
-            <div className="flex justify-center">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={qrDataUrl} alt="QR Code PIX" className="w-44 h-44 rounded-xl border border-gray-100 dark:border-white/10" />
+          <div className="flex justify-center">
+            <div className="bg-white p-3 rounded-xl border border-gray-100 dark:border-white/10">
+              <QRCodeSVG value={pixPayload!} size={196} level="M" fgColor="#15281e" bgColor="#ffffff" />
             </div>
-          )}
-          {pixKey && (
-            <div>
-              <p className="text-xs dash-muted mb-1">Chave PIX{pixHolderName ? ` · ${pixHolderName}` : ""}</p>
-              <button onClick={copyPix} className="w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 text-sm dash-title hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
-                <span className="truncate font-mono text-xs">{pixKey}</span>
-                {copied ? <Check className="w-4 h-4 text-emerald-500 flex-shrink-0" /> : <Copy className="w-4 h-4 dash-muted flex-shrink-0" />}
-              </button>
-            </div>
-          )}
+          </div>
+          <div>
+            <p className="text-xs dash-muted mb-1">PIX copia e cola{pixHolderName ? ` · ${pixHolderName}` : ""} · valor já incluso</p>
+            <button onClick={copyPix} className="w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 text-sm dash-title hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
+              <span className="truncate font-mono text-xs">{pixPayload}</span>
+              {copied ? <Check className="w-4 h-4 text-emerald-500 flex-shrink-0" /> : <Copy className="w-4 h-4 dash-muted flex-shrink-0" />}
+            </button>
+          </div>
           <button onClick={() => informarPagamento("PIX")} disabled={!!loading}
             className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60 text-white text-sm font-semibold transition-colors flex items-center justify-center gap-2">
             {loading === "PIX" ? <Loader2 className="w-4 h-4 animate-spin" /> : "Já paguei com PIX"}

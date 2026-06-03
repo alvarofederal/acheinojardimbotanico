@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation"
 import Link from "next/link"
-import QRCode from "qrcode"
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/prisma"
 import { ShieldCheck, Zap, Crown, Store } from "lucide-react"
@@ -40,14 +39,6 @@ export default async function PlanoPage() {
   const plan = business.plan
   const expiresLabel = business.planExpiresAt ? new Date(business.planExpiresAt).toLocaleDateString("pt-BR") : null
   const config = await db.paymentConfig.findUnique({ where: { id: "default" } })
-
-  // Gera o QR Code do PIX copia-e-cola (server-side)
-  let qrDataUrl: string | null = null
-  if (config?.pixCopyPaste) {
-    try {
-      qrDataUrl = await QRCode.toDataURL(config.pixCopyPaste, { width: 320, margin: 1 })
-    } catch { qrDataUrl = null }
-  }
 
   const cfgs = await getPlanConfigs()
   const visCents = cfgs.VISIBILITY.priceCents
@@ -121,7 +112,6 @@ export default async function PlanoPage() {
       <CheckoutManual
         pixKey={config?.pixKey ?? null}
         pixHolderName={config?.pixHolderName ?? null}
-        qrDataUrl={qrDataUrl}
         mpLinks={{ VISIBILITY: cfgs.VISIBILITY.mercadoPagoLink, PREMIUM: cfgs.PREMIUM.mercadoPagoLink }}
         instructions={config?.instructions ?? null}
         priceCents={{ VISIBILITY: visCents, PREMIUM: premCents }}
