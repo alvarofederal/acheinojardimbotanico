@@ -13,12 +13,14 @@ import { sendPlanExpiredEmail } from "@/lib/email"
  * Idempotente: rodar duas vezes não causa efeito colateral.
  */
 export async function GET(req: NextRequest) {
+  // FAIL CLOSED: sem CRON_SECRET configurado, ninguém dispara o cron.
   const secret = process.env.CRON_SECRET
-  if (secret) {
-    const auth = req.headers.get("authorization")
-    if (auth !== `Bearer ${secret}`) {
-      return NextResponse.json({ error: "Não autorizado" }, { status: 401 })
-    }
+  if (!secret) {
+    return NextResponse.json({ error: "Cron não configurado" }, { status: 503 })
+  }
+  const authz = req.headers.get("authorization")
+  if (authz !== `Bearer ${secret}`) {
+    return NextResponse.json({ error: "Não autorizado" }, { status: 401 })
   }
 
   const now = new Date()

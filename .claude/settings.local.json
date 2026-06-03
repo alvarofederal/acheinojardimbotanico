@@ -29,7 +29,8 @@
       "PowerShell(cd \"C:\\\\Users\\\\alvar\\\\Documents\\\\PROJETOS\\\\workspace\\\\acheinojardimbotanico\"; node_modules/.bin/prisma studio 2>&1 &)",
       "Bash(ls ~/.claude/projects/ | head -20)",
       "Bash(awk '{print $2}')",
-      "Bash(xargs '-I{}' sh -c 'python3 -c \" *)"
+      "Bash(xargs '-I{}' sh -c 'python3 -c \" *)",
+      "WebFetch(domain:www.acheinojardimbotanico.com.br)"
     ]
   }
 }
