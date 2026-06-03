@@ -1,5 +1,6 @@
 export const runtime = "nodejs"
 import { NextRequest, NextResponse } from "next/server"
+import { revalidatePath } from "next/cache"
 import { auth } from "@/lib/auth"
 import { db, Prisma } from "@/lib/prisma"
 import { invalidatePlanConfigCache } from "@/lib/plan-config"
@@ -77,5 +78,8 @@ export async function PATCH(req: NextRequest) {
   ])
 
   invalidatePlanConfigCache()
+  // Reflete imediatamente nas páginas públicas (senão a /anuncie só atualiza em ~1h pelo ISR)
+  revalidatePath("/anuncie")
+  revalidatePath("/dashboard/plano")
   return NextResponse.json({ ok: true })
 }
