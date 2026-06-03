@@ -57,12 +57,14 @@ async function main() {
   console.log(CONFIRM ? "\n  MODO: GRAVAÇÃO (--confirm)\n" : "\n  MODO: SIMULAÇÃO (dry-run) — nada será gravado.\n")
 
   // 1) Lê da ORIGEM
-  const [categories, keepUsers, businessesRaw, photos, products] = await Promise.all([
+  const [categories, keepUsers, businessesRaw, photos, products, planConfigs, paymentConfigs] = await Promise.all([
     src.category.findMany(),
     src.user.findMany({ where: { email: { in: KEEP_EMAILS } } }),
     src.business.findMany(),
     src.photo.findMany(),
     src.product.findMany(),
+    src.planConfig.findMany(),
+    src.paymentConfig.findMany(),
   ])
 
   const keepIds = new Set(keepUsers.map((u) => u.id))
@@ -78,6 +80,8 @@ async function main() {
   console.log(`    Negócios   : ${businesses.length} (${orphaned} ficarão sem dono)`)
   console.log(`    Fotos      : ${photos.length}`)
   console.log(`    Produtos   : ${products.length}`)
+  console.log(`    Config planos    : ${planConfigs.length}`)
+  console.log(`    Config pagamento : ${paymentConfigs.length}`)
 
   if (!CONFIRM) {
     await src.$disconnect()
@@ -93,6 +97,8 @@ async function main() {
   await copyChunked("Negócios", businesses, (c) => dst.business.createMany({ data: c as never, skipDuplicates: true }))
   await copyChunked("Fotos", photos, (c) => dst.photo.createMany({ data: c as never, skipDuplicates: true }))
   await copyChunked("Produtos", products, (c) => dst.product.createMany({ data: c as never, skipDuplicates: true }))
+  await copyChunked("Config planos", planConfigs, (c) => dst.planConfig.createMany({ data: c as never, skipDuplicates: true }))
+  await copyChunked("Config pagamento", paymentConfigs, (c) => dst.paymentConfig.createMany({ data: c as never, skipDuplicates: true }))
 
   await src.$disconnect()
   await dst.$disconnect()
