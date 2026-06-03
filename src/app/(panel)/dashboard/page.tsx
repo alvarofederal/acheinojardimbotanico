@@ -31,7 +31,7 @@ export default async function DashboardPage() {
     const d30 = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
 
     const [
-      online, vToday, v7, v30,
+      online, vToday, v7, v30, vTotal,
       totalBusinesses, claimed, payingList,
       pendingReview, pendingClaims, pendingPayments, pendingEvents,
       views7, clicks7, cfgs,
@@ -40,6 +40,7 @@ export default async function DashboardPage() {
       db.presence.count({ where: { lastSeen: { gte: startToday } } }),
       db.presence.count({ where: { lastSeen: { gte: d7 } } }),
       db.presence.count({ where: { lastSeen: { gte: d30 } } }),
+      db.presence.count(),
       db.business.count(),
       db.business.count({ where: { ownerId: { not: null } } }),
       db.business.findMany({ where: { plan: { in: ["VISIBILITY", "PREMIUM"] }, planExpiresAt: { gt: now } }, select: { plan: true } }),
@@ -55,7 +56,7 @@ export default async function DashboardPage() {
     const mrrCents = payingList.reduce((sum, b) => sum + (cfgs[b.plan as PlanId]?.priceCents ?? 0), 0)
 
     adminStats = {
-      online, visitorsToday: vToday, visitors7d: v7, visitors30d: v30,
+      online, visitorsToday: vToday, visitors7d: v7, visitors30d: v30, visitorsTotal: vTotal,
       totalBusinesses, claimed, paying: payingList.length,
       pendingReview, pendingClaims, pendingPayments, pendingEvents,
       views7d: views7._sum.count ?? 0, clicks7d: clicks7._sum.count ?? 0, mrrCents,

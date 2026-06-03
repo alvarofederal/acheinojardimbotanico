@@ -3,6 +3,7 @@ import { Radio, Users, CreditCard, ShieldCheck, Building2, Eye, MessageCircle, C
 
 export interface AdminStats {
   online: number
+  visitorsTotal: number
   visitorsToday: number
   visitors7d: number
   visitors30d: number
@@ -53,17 +54,22 @@ export function AdminOverview({ s }: { s: AdminStats }) {
           <p className="text-[11px] dash-muted mt-1">ativos agora · sai em ~30s ao fechar</p>
         </div>
 
-        {/* Visitantes hoje / 7d / 30d */}
+        {/* Visitantes: total (cumulativo) + janelas móveis */}
         <div className="rounded-2xl border border-gray-100 dark:border-white/[0.07] bg-white dark:bg-white/[0.02] p-5">
-          <p className="text-xs dash-muted flex items-center gap-1 mb-3"><Users className="w-3.5 h-3.5" /> Visitantes ativos</p>
-          <div className="grid grid-cols-3 gap-2 text-center">
+          <div className="flex items-baseline justify-between gap-2 mb-2">
+            <p className="text-xs dash-muted flex items-center gap-1"><Users className="w-3.5 h-3.5" /> Visitantes</p>
+            <p className="text-[11px] dash-muted">desde o lançamento</p>
+          </div>
+          <p className="font-serif text-4xl font-bold dash-title leading-none">{s.visitorsTotal.toLocaleString("pt-BR")}</p>
+          <p className="text-[11px] dash-muted mt-1 mb-3">total acumulado · só cresce</p>
+          <div className="grid grid-cols-3 gap-2 text-center border-t border-gray-100 dark:border-white/[0.06] pt-3">
             {[
               { k: "Hoje", v: s.visitorsToday },
               { k: "7 dias", v: s.visitors7d },
               { k: "30 dias", v: s.visitors30d },
             ].map(x => (
               <div key={x.k}>
-                <p className="font-serif text-2xl font-bold dash-title leading-none">{x.v.toLocaleString("pt-BR")}</p>
+                <p className="font-serif text-xl font-bold dash-title leading-none">{x.v.toLocaleString("pt-BR")}</p>
                 <p className="text-[11px] dash-muted mt-1">{x.k}</p>
               </div>
             ))}
