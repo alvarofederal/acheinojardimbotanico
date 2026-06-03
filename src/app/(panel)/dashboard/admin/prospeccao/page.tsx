@@ -5,21 +5,13 @@ import { auth } from "@/lib/auth"
 import { db } from "@/lib/prisma"
 import { slugify } from "@/lib/utils"
 import { ProspectList, type Prospect } from "./_components/prospect-list"
+import { buildProspectMessage } from "@/lib/prospect-message"
 import type { Prisma } from "@/lib/prisma"
 
 export const dynamic = "force-dynamic"
 
 interface SearchProps {
   searchParams: Promise<{ q?: string; cat?: string; nota?: string; status?: string }>
-}
-
-function buildPitch(name: string, link: string, rating: number | null, count: number | null): string {
-  const ref = rating && rating >= 4.5 ? ` Vocês são referência aqui (nota ${rating.toFixed(1).replace(".0", "")}${count ? `, ${count} avaliações` : ""}! 👏)` : ""
-  return `Olá, pessoal da ${name}! Tudo bem? Aqui é o Álvaro, morador do bairro 🙂
-
-Criei o *Achei no Jardim Botânico*, um guia só dos negócios daqui, e já deixei vocês lá — olha como ficou: ${link}
-
-Normalmente é um plano pago, mas queria deixar *1 mês por minha conta, sem compromisso*, só pra vocês verem se chega cliente novo.${ref} A opinião de vocês vale muito pra mim. Topam testar? 🌿`
 }
 
 function waUrl(phoneOrWa: string | null, pitch: string): string | null {
@@ -64,7 +56,10 @@ export default async function ProspeccaoPage({ searchParams }: SearchProps) {
 
   let items: Prospect[] = businesses.map(b => {
     const link = `${base}/${slugify(b.neighborhood)}/${b.category.slug}/${b.slug}`
-    const pitch = buildPitch(b.name, link, b.googleRating, b.googleRatingCount)
+    const pitch = buildProspectMessage({
+      name: b.name, link, rating: b.googleRating, ratingCount: b.googleRatingCount,
+      categorySlug: b.category.slug, categoryName: b.category.name,
+    })
     return {
       id: b.id, name: b.name, category: b.category.name, neighborhood: b.neighborhood,
       rating: b.googleRating, ratingCount: b.googleRatingCount, phone: b.whatsapp ?? b.phone,
