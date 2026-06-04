@@ -6,9 +6,12 @@ import type { CardCardData } from "@/components/card-card"
  */
 export const ACHEI_CARD: CardCardData = {
   title: "Álvaro Gomes",
-  subtitle: "Achei no Jardim Botânico",
-  lines: ["(61) 9XXXX-XXXX", "atendimento@acheinojardimbotanico.com.br"],
+  subtitle: null,
+  lines: [
+    "(61) 9XXXX-XXXX",
+    "atendimento@acheinojardimbotanico.com.br",
+    "acheinojardimbotanico.com.br",
+  ],
   url: "https://www.acheinojardimbotanico.com.br",
-  label: "acheinojardimbotanico.com.br",
   imageUrl: null,
 }

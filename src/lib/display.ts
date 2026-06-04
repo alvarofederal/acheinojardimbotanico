@@ -33,12 +33,8 @@ export function buildDisplayData(b: BusinessForDisplay): DisplayCardData {
 export function buildCardData(b: BusinessForDisplay): CardCardData {
   const d = buildDisplayData(b)
   const contact = b.whatsapp || b.phone || null
-  return {
-    title: d.name,
-    subtitle: d.category,
-    url: d.url,
-    label: d.label,
-    imageUrl: d.imageUrl,
-    lines: contact ? [contact] : [],
-  }
+  const lines: string[] = []
+  if (contact) lines.push(contact)
+  lines.push(d.label)
+  return { title: d.name, subtitle: d.category, url: d.url, imageUrl: d.imageUrl, lines }
 }
