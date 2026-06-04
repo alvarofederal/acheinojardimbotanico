@@ -16,6 +16,7 @@ export type PlanFeature =
   | "destaque"
   | "redesSociais"
   | "selo"
+  | "cartao"
 
 /** Metadados dos recursos — usado para renderizar os checkboxes no admin. */
 export const PLAN_FEATURES: { key: PlanFeature; label: string; description: string }[] = [
@@ -26,6 +27,7 @@ export const PLAN_FEATURES: { key: PlanFeature; label: string; description: stri
   { key: "destaque", label: "Destaque na listagem", description: "Prioridade de posição na busca e na home" },
   { key: "redesSociais", label: "Redes sociais", description: "Exibir Instagram, Facebook, LinkedIn e YouTube no perfil" },
   { key: "selo", label: "Selo de verificado", description: "Badge de negócio verificado/pagante no perfil" },
+  { key: "cartao", label: "Cartão de visita", description: "Gerar cartão de visita do negócio (logo + QR + link) para impressão" },
 ]
 
 export const PLAN_FEATURE_KEYS = PLAN_FEATURES.map(f => f.key)
@@ -45,7 +47,7 @@ export interface PlanConfigData {
 }
 
 const allFeatures = (v: boolean): PlanFeatures => ({
-  promocoes: v, loja: v, eventos: v, metricas: v, destaque: v, redesSociais: v, selo: v,
+  promocoes: v, loja: v, eventos: v, metricas: v, destaque: v, redesSociais: v, selo: v, cartao: v,
 })
 
 /** Configuração-padrão (fallback quando o banco ainda não tem PlanConfig + seed inicial). */

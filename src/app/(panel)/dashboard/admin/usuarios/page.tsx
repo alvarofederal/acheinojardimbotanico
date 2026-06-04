@@ -5,7 +5,8 @@ import { CourtesyButton } from "./_components/courtesy-button"
 import { DisplayButton } from "./_components/display-button"
 import { NewUserButton, UserRowActions } from "./_components/user-admin"
 import { ActiveToggle } from "../negocios/_components/active-toggle"
-import { buildDisplayData } from "@/lib/display"
+import { CardButton } from "./_components/card-button"
+import { buildDisplayData, buildCardData } from "@/lib/display"
 import { Store, MessageCircle } from "lucide-react"
 
 export const dynamic = "force-dynamic"
@@ -151,6 +152,7 @@ export default async function AdminUsuariosPage({ searchParams }: SearchProps) {
                           <>
                             <ActiveToggle businessId={b.id} businessName={b.name} active={b.status !== "SUSPENDED"} hasOwner={true} />
                             <DisplayButton businessId={b.id} data={buildDisplayData(b)} />
+                            <CardButton businessId={b.id} data={buildCardData(b)} />
                             <CourtesyButton businessId={b.id} businessName={b.name} currentPlan={b.plan} isCourtesy={b.planIsCourtesy ?? false} />
                           </>
                         )
