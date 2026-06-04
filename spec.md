@@ -1335,6 +1335,17 @@ Estes vão para `.specify/memory/constitution.md` e o Spec-Kit os lê em toda ex
 - **Loops de crescimento**: alerta de lead ao lojista (quando clicam no WhatsApp dele), resumo mensal
   de desempenho por email, kit de compartilhamento da loja (botão compartilhar + selo "no Achei" linkando
   de volta + QR Code), rankings de SEO ("melhores X no Jardim Botânico").
+- **Importação pontual (1 negócio)**: ferramenta admin para adicionar UM negócio que já está no Google
+  mas não veio no lote — colar o link do Google Maps / buscar por nome → puxa via Places API e cria no
+  Achei. Útil no porta a porta (descobriu na rua, adiciona na hora). Obs.: cadastro manual de negócio
+  fora do Google já existe em `/dashboard/negocio/novo` (entra como `PENDING_REVIEW`).
+- **Serviço "Ponte digital" (R$250 setup)** — onboarding feito pra pequenos negócios que não têm/sabem
+  usar o Google Meu Negócio: o Álvaro cria a presença (Google + Achei) por um valor único.
+  > **Cuidado estratégico:** é serviço (mão de obra, não escala, come a 1h/dia) — NÃO pode virar o
+  > negócio principal. O modelo do Achei é **recorrência**. Tratar como **funil de aquisição**: o setup
+  > paga o tempo e abre a porta; o prêmio real é o lojista virar **assinante recorrente**. Considerar
+  > "setup grátis se assinar Premium por X meses" (derruba a barreira) vs. R$250 (filtra quem é sério).
+  > Bônus: criar o Google Meu Negócio deles gera uma listagem → que alimenta a importação do Achei (loop).
 
 ---
 
