@@ -4,6 +4,8 @@ import { getCategoryIcon } from "@/lib/category-icons"
 import { HeroSearch } from "./_components/hero-search"
 import { MonsteraLeaf, LeafSprig, FernFrond, SimpleLeaf } from "./_components/botanicals"
 import { ArrowRight, Sparkles, Star, MapPin, ChevronDown } from "lucide-react"
+import { FavoriteHeart } from "@/components/favorite-heart"
+import { FavoritosStrip } from "@/components/favoritos-strip"
 
 export const revalidate = 3600
 
@@ -141,6 +143,9 @@ export default async function HomePage() {
         )}
       </section>
 
+      {/* ═══════════ SEUS FAVORITOS (cookie, client-side) ═══════════ */}
+      <FavoritosStrip />
+
       {/* ═══════════ DESTAQUES ═══════════ */}
       {topRated.length > 0 && (
         <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-16">
@@ -164,6 +169,7 @@ export default async function HomePage() {
                       <span className="font-serif text-5xl text-flora-green/40">{b.name[0]}</span>
                     </div>
                   )}
+                  <FavoriteHeart item={{ id: b.id, name: b.name, href: `/${DEFAULT_BAIRRO}/${b.category.slug}/${b.slug}`, photo: b.photos[0]?.url ?? null }} />
                   {b.googleRating && (
                     <span className="absolute top-3 right-3 flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full bg-white/90 text-flora-ink backdrop-blur-md shadow-sm">
                       <Star className="w-3 h-3 fill-flora-gold text-flora-gold" />

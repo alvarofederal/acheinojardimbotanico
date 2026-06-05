@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { MapPin, Star, Clock, ShoppingBag } from "lucide-react"
 import { WhatsappIcon } from "@/components/whatsapp-icon"
+import { FavoriteHeart } from "@/components/favorite-heart"
 
 interface BusinessCardProps {
   business: {
@@ -70,8 +71,10 @@ export function BusinessCard({ business, bairro, categoria }: BusinessCardProps)
             </div>
           )}
 
+          <FavoriteHeart item={{ id: business.id, name: business.name, href: profileHref, photo: photo ?? null }} />
+
           {/* Badges sobre a imagem */}
-          <div className="absolute top-3 left-3 flex gap-1.5">
+          <div className="absolute top-3 left-14 flex gap-1.5">
             {seloLabel && (
               <span className="text-[10px] font-bold px-2 py-1 rounded-full bg-flora-gold text-flora-ink uppercase tracking-wide shadow-sm">
                 {seloLabel}
