@@ -8,7 +8,7 @@ export const ACHEI_CARD: CardCardData = {
   title: "Álvaro Gomes",
   subtitle: null,
   lines: [
-    "(61) 9XXXX-XXXX",
+    "(61) 99954-5417",
     "atendimento@acheinojardimbotanico.com.br",
     "acheinojardimbotanico.com.br",
   ],
