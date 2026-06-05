@@ -157,7 +157,8 @@ export default async function AdminUsuariosPage({ searchParams }: SearchProps) {
                           </>
                         )
                       })()}
-                      <UserRowActions id={u.id} name={u.name} role={u.role} isSelf={u.id === session.user.id} />
+                      <UserRowActions id={u.id} name={u.name} role={u.role} isSelf={u.id === session.user.id}
+                        business={(() => { const ub = bizByOwner.get(u.id); return ub ? { id: ub.id, active: ub.status !== "SUSPENDED" } : undefined })()} />
                     </div>
                   </td>
                 </tr>

@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
-import { UserPlus, Pencil, Trash2, X, Loader2 } from "lucide-react"
+import { UserPlus, Pencil, Trash2, X, Loader2, Power, PowerOff } from "lucide-react"
 
 const ROLES = [
   { value: "VISITOR", label: "Visitante" },
@@ -72,12 +72,13 @@ export function NewUserButton() {
 }
 
 /* ──────────────────── Editar / excluir usuário ──────────────────── */
-export function UserRowActions({ id, name, role, isSelf }: { id: string; name: string | null; role: string; isSelf: boolean }) {
+export function UserRowActions({ id, name, role, isSelf, business }: { id: string; name: string | null; role: string; isSelf: boolean; business?: { id: string; active: boolean } }) {
   const router = useRouter()
   const [editing, setEditing] = useState(false)
   const [confirming, setConfirming] = useState(false)
   const [saving, setSaving] = useState(false)
   const [form, setForm] = useState({ name: name ?? "", role: role as Role })
+  const [statusActive, setStatusActive] = useState(business?.active ?? true)
 
   async function save() {
     setSaving(true)
@@ -89,6 +90,15 @@ export function UserRowActions({ id, name, role, isSelf }: { id: string; name: s
       })
       const data = await res.json()
       if (!res.ok) { toast.error(data.error ?? "Erro ao salvar"); return }
+      // Status do negócio, se mudou (mesma cascata da edição de Negócios)
+      if (business && statusActive !== business.active) {
+        const r2 = await fetch(`/api/admin/negocios/${business.id}`, {
+          method: "PATCH", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: statusActive ? "activate" : "deactivate" }),
+        })
+        const d2 = await r2.json()
+        if (!r2.ok) { toast.error(d2.error ?? "Erro no status do negócio"); return }
+      }
       toast.success("Usuário atualizado")
       setEditing(false)
       router.refresh()
@@ -129,6 +139,28 @@ export function UserRowActions({ id, name, role, isSelf }: { id: string; name: s
             <RoleSelect value={form.role} onChange={r => setForm(f => ({ ...f, role: r }))} disabled={isSelf} />
           </Field>
           {isSelf && <p className="text-xs text-amber-500">Você não pode mudar o próprio papel.</p>}
+
+          {business && (
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-gray-500 dark:text-white/40 uppercase tracking-wide">Status do negócio</label>
+              <div className="flex gap-2">
+                <button onClick={() => setStatusActive(true)}
+                  className={`flex-1 py-2.5 rounded-xl text-sm font-semibold border transition-all flex items-center justify-center gap-2 ${statusActive ? "bg-emerald-600 border-emerald-600 text-white" : "border-gray-200 dark:border-white/10 dash-subtitle"}`}>
+                  <Power className="w-4 h-4" /> Ativo
+                </button>
+                <button onClick={() => setStatusActive(false)}
+                  className={`flex-1 py-2.5 rounded-xl text-sm font-semibold border transition-all flex items-center justify-center gap-2 ${!statusActive ? "bg-red-600 border-red-600 text-white" : "border-gray-200 dark:border-white/10 dash-subtitle"}`}>
+                  <PowerOff className="w-4 h-4" /> Inativo
+                </button>
+              </div>
+              {!statusActive && business.active && (
+                <p className="text-xs text-amber-600 dark:text-amber-400 bg-amber-50/60 dark:bg-amber-500/[0.08] rounded-lg p-2.5">
+                  Ao salvar, o negócio <strong>some do site</strong> e o dono é <strong>deslogado</strong> (não entra até reativar).
+                </p>
+              )}
+            </div>
+          )}
+
           <button onClick={save} disabled={saving}
             className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60 text-white text-sm font-semibold transition-colors flex items-center justify-center gap-2">
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : null} Salvar
