@@ -57,9 +57,11 @@ export default async function HomePage() {
 
           <h1 className="font-serif font-semibold text-white leading-[1.02] tracking-tight flora-rise"
             style={{ fontSize: "clamp(2.6rem, 7vw, 4.6rem)", animationDelay: ".05s" }}>
-            O melhor do bairro,
+            <span style={{ color: "#FB923C" }}>Achou!</span>
             <br />
-            <span className="italic text-flora-gold">florescendo</span> em um só lugar
+            <span style={{ fontSize: "0.58em" }} className="text-white/95">
+              Achei no <span className="italic text-flora-gold">Jardim Botânico</span>
+            </span>
           </h1>
 
           <p className="mt-6 text-base sm:text-xl text-white/75 max-w-xl mx-auto leading-relaxed flora-rise" style={{ animationDelay: ".1s" }}>
