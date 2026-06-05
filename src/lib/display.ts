@@ -36,5 +36,5 @@ export function buildCardData(b: BusinessForDisplay): CardCardData {
   const lines: string[] = []
   if (contact) lines.push(contact)
   lines.push(d.label)
-  return { title: d.name, subtitle: d.category, url: d.url, imageUrl: d.imageUrl, lines }
+  return { title: d.name, subtitle: null, url: d.url, imageUrl: d.imageUrl, lines }
 }
