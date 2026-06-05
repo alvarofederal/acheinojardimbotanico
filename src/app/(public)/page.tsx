@@ -55,13 +55,17 @@ export default async function HomePage() {
             Bairro Jardim Botânico · Brasília (DF)
           </span>
 
-          <h1 className="font-serif font-semibold text-white leading-[1.02] tracking-tight flora-rise"
-            style={{ fontSize: "clamp(2.6rem, 7vw, 4.6rem)", animationDelay: ".05s" }}>
-            <span style={{ color: "#FB923C", fontSize: "0.42em" }}>Achou?</span>
-            <br />
-            <span style={{ fontSize: "1.25em" }} className="text-white">
-              Achei no <span className="italic text-flora-gold">Jardim Botânico</span>
-            </span>
+          <h1 className="font-serif font-semibold leading-[1.05] tracking-tight flora-rise" style={{ animationDelay: ".05s" }}>
+            <span style={{ color: "#FB923C", fontSize: "clamp(1.5rem, 4vw, 2.7rem)" }}>Achou?</span>
+            {/* SVG: "Achei no Jardim Botânico" sempre em UMA linha, escala com a tela (mesma cara no celular) */}
+            <svg viewBox="0 0 1080 132" width="100%" preserveAspectRatio="xMidYMid meet"
+              role="img" aria-label="Achei no Jardim Botânico"
+              style={{ display: "block", margin: "0.1em auto 0", maxWidth: "880px" }}>
+              <text x="540" y="100" textAnchor="middle" textLength={1040} lengthAdjust="spacingAndGlyphs"
+                fontFamily="'Playfair Display', Georgia, serif" fontWeight={700} fontSize={96}>
+                <tspan fill="#ffffff">Achei no </tspan><tspan fill="#D2B48C" fontStyle="italic">Jardim Botânico</tspan>
+              </text>
+            </svg>
           </h1>
 
           <p className="mt-6 text-base sm:text-xl text-white/75 max-w-xl mx-auto leading-relaxed flora-rise" style={{ animationDelay: ".1s" }}>
