@@ -42,9 +42,6 @@ export async function PATCH(req: NextRequest) {
     if (raw === "") {
       handleUpdate = null // limpar
     } else {
-      if (business.plan === "FREE") {
-        return NextResponse.json({ error: "O link personalizado é um recurso de plano pago." }, { status: 403 })
-      }
       const err = validateHandle(raw)
       if (err) return NextResponse.json({ error: err }, { status: 400 })
       const norm = normalizeHandle(raw)

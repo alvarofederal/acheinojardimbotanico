@@ -6,6 +6,7 @@ import { DisplayButton } from "./_components/display-button"
 import { NewUserButton, UserRowActions } from "./_components/user-admin"
 import { ActiveToggle } from "../negocios/_components/active-toggle"
 import { CardButton } from "./_components/card-button"
+import { SlugButton } from "./_components/slug-button"
 import { buildDisplayData, buildCardData } from "@/lib/display"
 import { Store, MessageCircle } from "lucide-react"
 
@@ -151,6 +152,7 @@ export default async function AdminUsuariosPage({ searchParams }: SearchProps) {
                         return (
                           <>
                             <ActiveToggle businessId={b.id} businessName={b.name} active={b.status !== "SUSPENDED"} hasOwner={true} />
+                            <SlugButton businessId={b.id} businessName={b.name} currentHandle={b.handle} />
                             <DisplayButton businessId={b.id} data={buildDisplayData(b)} />
                             <CardButton businessId={b.id} data={buildCardData(b)} />
                             <CourtesyButton businessId={b.id} businessName={b.name} currentPlan={b.plan} isCourtesy={b.planIsCourtesy ?? false} />

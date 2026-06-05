@@ -55,13 +55,11 @@ export default async function NegocioPage() {
         <p className="dash-subtitle mt-0.5 text-sm">Informações de <strong className="dash-title">{business.name}</strong></p>
       </div>
       <BusinessEditor business={business} />
-      {business.plan !== "FREE" && (
-        <HandleEditor
-          initialHandle={business.handle}
-          suggested={slugify(business.name).slice(0, 40)}
-          siteUrl={SITE_URL}
-        />
-      )}
+      <HandleEditor
+        initialHandle={business.handle}
+        suggested={slugify(business.name).slice(0, 40)}
+        siteUrl={SITE_URL}
+      />
       <div className="pt-6 border-t border-gray-100 dark:border-white/[0.06]">
         <PhotoManager
           photos={business.photos}
