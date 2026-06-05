@@ -5,6 +5,7 @@ import Link from "next/link"
 import { ExternalLink, ShieldCheck } from "lucide-react"
 import { PendingActions } from "./_components/pending-actions"
 import { ActiveToggle } from "./_components/active-toggle"
+import { SlugButton } from "../usuarios/_components/slug-button"
 
 interface SearchProps {
   searchParams: Promise<{ q?: string; status?: string; page?: string }>
@@ -127,6 +128,7 @@ export default async function AdminNegociosPage({ searchParams }: SearchProps) {
                       {b.status !== "PENDING_REVIEW" && (
                         <ActiveToggle businessId={b.id} businessName={b.name} active={b.status !== "SUSPENDED"} hasOwner={!!b.ownerId} />
                       )}
+                      <SlugButton businessId={b.id} businessName={b.name} currentHandle={b.handle} />
                       <Link href={`/jardim-botanico/${b.category.slug}/${b.slug}`} target="_blank"
                         className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 transition-colors inline-flex">
                         <ExternalLink className="w-3.5 h-3.5 dash-muted" />
