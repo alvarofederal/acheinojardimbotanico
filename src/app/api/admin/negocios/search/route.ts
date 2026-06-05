@@ -2,7 +2,7 @@ export const runtime = "nodejs"
 import { NextRequest, NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/prisma"
-import { buildCardData } from "@/lib/display"
+import { buildCardData, buildDisplayData } from "@/lib/display"
 
 export async function GET(req: NextRequest) {
   const session = await auth()
@@ -27,7 +27,8 @@ export async function GET(req: NextRequest) {
     id: b.id,
     name: b.name,
     category: b.category.name,
-    data: buildCardData(b),
+    card: buildCardData(b),
+    display: buildDisplayData(b),
   }))
 
   return NextResponse.json({ results })

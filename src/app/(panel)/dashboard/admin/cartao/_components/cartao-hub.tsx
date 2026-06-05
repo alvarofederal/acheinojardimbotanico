@@ -5,7 +5,7 @@ import Link from "next/link"
 import { Search, CreditCard, Printer, X, Loader2, Store } from "lucide-react"
 import { CardCard, type CardCardData } from "@/components/card-card"
 
-interface Result { id: string; name: string; category: string; data: CardCardData }
+interface Result { id: string; name: string; category: string; card: CardCardData }
 
 export function CartaoHub({ acheiCard }: { acheiCard: CardCardData }) {
   const [acheiOpen, setAcheiOpen] = useState(false)
@@ -89,7 +89,7 @@ export function CartaoHub({ acheiCard }: { acheiCard: CardCardData }) {
 
       {/* Modal: cartão do negócio selecionado */}
       {selected && (
-        <CardModal title="Cartão do negócio" subtitle={selected.name} data={selected.data} printHref={`/card-print/${selected.id}`} onClose={() => setSelected(null)} />
+        <CardModal title="Cartão do negócio" subtitle={selected.name} data={selected.card} printHref={`/card-print/${selected.id}`} onClose={() => setSelected(null)} />
       )}
     </div>
   )

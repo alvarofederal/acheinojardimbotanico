@@ -36,8 +36,6 @@ const anuncianteNav: { href: string; label: string; icon: LucideIcon }[] = [
   { href: "/dashboard/negocio",   label: "Meu Negócio",  icon: Store           },
   { href: "/dashboard/produtos",  label: "Produtos",     icon: Tag             },
   { href: "/dashboard/eventos",   label: "Eventos",      icon: CalendarDays    },
-  { href: "/dashboard/display",   label: "Display",      icon: QrCode          },
-  { href: "/dashboard/cartao",    label: "Cartão",       icon: Contact         },
   { href: "/dashboard/plano",     label: "Meu Plano",    icon: ShieldCheck     },
   { href: "/dashboard/conta",     label: "Minha Conta",  icon: UserCog         },
 ]
@@ -46,7 +44,8 @@ const adminNav: { href: string; label: string; icon: LucideIcon }[] = [
   { href: "/dashboard",              label: "Visão Geral",  icon: LayoutDashboard },
   { href: "/dashboard/admin/usuarios", label: "Usuários",   icon: Users           },
   { href: "/dashboard/admin/negocios", label: "Negócios",   icon: Building2       },
-  { href: "/dashboard/admin/cartao",   label: "Cartão",     icon: Contact         },
+  { href: "/dashboard/admin/cartao",   label: "Cartões",    icon: Contact         },
+  { href: "/dashboard/admin/display",  label: "Displays",   icon: QrCode          },
   { href: "/dashboard/admin/import",   label: "Importar",   icon: Download        },
   { href: "/dashboard/admin/custos",   label: "Custos API", icon: DollarSign      },
   { href: "/dashboard/admin/pagamentos", label: "Pagamentos", icon: CreditCard    },
