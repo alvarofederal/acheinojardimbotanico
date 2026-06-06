@@ -5,6 +5,7 @@ import { PublicNav } from "./_components/public-nav"
 import { VisitTracker } from "./_components/visit-tracker"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { SiteLogo } from "@/components/ui/site-logo"
+import { APP_VERSION } from "@/lib/version"
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://acheinojardimbotanico.com.br"),
@@ -54,9 +55,19 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
               </nav>
             </div>
           </div>
-          <p className="mt-6 text-xs flora-muted/70 text-center sm:text-left">
-            © 2026 Achei no Jardim Botânico · Guia hiperlocal do Jardim Botânico (DF). Algumas informações fornecidas por Google.
-          </p>
+          <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-2">
+            <p className="text-xs flora-muted/70 text-center sm:text-left">
+              © 2026 Achei no Jardim Botânico · Guia hiperlocal do Jardim Botânico (DF). Algumas informações fornecidas por Google.
+            </p>
+            {/* Versão (SemVer) — fonte: package.json. Confere se o deploy subiu. */}
+            <span
+              className="text-xs tracking-wide flora-muted/60 select-none whitespace-nowrap"
+              style={{ fontFamily: "var(--font-roboto)", fontWeight: 500 }}
+              title="Versão da aplicação — veja o CHANGELOG.md"
+            >
+              v{APP_VERSION}
+            </span>
+          </div>
         </div>
       </footer>
     </div>

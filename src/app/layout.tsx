@@ -1,6 +1,6 @@
 // src/app/layout.tsx
 import type { Metadata } from "next";
-import { Inter, Playfair_Display, Open_Sans } from "next/font/google";
+import { Inter, Playfair_Display, Open_Sans, Roboto } from "next/font/google";
 import "./globals.css";
 import { SessionAuthProvider } from "@/components/session-auth";
 import { QueryClientContext } from "@/providers/queryclient";
@@ -29,6 +29,14 @@ const openSans = Open_Sans({
   variable: "--font-open-sans",
   subsets: ["latin"],
   weight: ["300", "400", "600", "700", "800"],
+});
+
+// Roboto — usada na versão do rodapé (cara de "build number")
+const roboto = Roboto({
+  variable: "--font-roboto",
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -94,7 +102,7 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body
-        className={`${inter.variable} ${playfair.variable} ${openSans.variable} antialiased`}
+        className={`${inter.variable} ${playfair.variable} ${openSans.variable} ${roboto.variable} antialiased`}
         suppressHydrationWarning
       >
         <SessionAuthProvider>

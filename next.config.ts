@@ -1,14 +1,26 @@
 import type { NextConfig } from "next";
 import path from "path";
+import { readFileSync } from "fs";
 
 // Em git worktree, node_modules fica na raiz do projeto (3 níveis acima de .claude/worktrees/<name>)
 const projectRoot = __dirname.includes(".claude") && __dirname.includes("worktrees")
   ? path.resolve(__dirname, "../../..")
   : __dirname
 
+// Versão da app = fonte única em package.json (bump via `npm run patch|end-sprint|release`).
+// Exposta ao app (rodapé) como NEXT_PUBLIC_APP_VERSION — só a string da versão, sem vazar o resto do package.json.
+const APP_VERSION = (JSON.parse(
+  readFileSync(path.join(__dirname, "package.json"), "utf8")
+) as { version: string }).version
+
 const nextConfig: NextConfig = {
   outputFileTracingRoot: projectRoot,
   output: 'standalone',
+
+  // Versão exposta ao cliente (rodapé público)
+  env: {
+    NEXT_PUBLIC_APP_VERSION: APP_VERSION,
+  },
 
   // ✅ Headers de segurança HTTP (OWASP A05)
   async headers() {
