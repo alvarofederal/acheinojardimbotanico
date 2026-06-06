@@ -9,7 +9,7 @@
 
 **Achei no Jardim Botânico** é um guia comercial digital hiperlocal para a região do Jardim Botânico (DF).
 Moradores encontram negócios locais. Comerciantes pagam mensalidade para ter destaque.
-Stack: Next.js 15 (App Router) + TypeScript + MySQL (Prisma) + Asaas + Vercel.
+Stack: Next.js 15 (App Router) + TypeScript + MySQL (Prisma) + Asaas + Hostinger (Node, auto-deploy no `git push`).
 **Domínio:** acheinojardimbotanico.com.br | **Branch ativo:** main | **Status:** MVP — Specs 001–008 implementadas (importação Places, listagem/detalhe público, claim, painel anunciante, admin, Asaas)
 
 ---
@@ -129,6 +129,55 @@ O schema do Achei já está em `prisma/schema.prisma` e aplicado no banco de dev
 `/api/admin/import`, `/api/claims`, `/api/admin/claims/[id]`, `/api/track/{view,whatsapp}`,
 `/api/dashboard/negocio` (+`/fotos`), `/api/asaas/{checkout,webhook}`,
 `/api/forgot-password`, `/api/reset-password`, `/api/lgpd/delete-my-data`
+
+---
+
+## Versionamento & Release (produção estável)
+
+> Toda subida para produção passa por aqui. Objetivo: **nunca perder dado** e **sempre saber o que está no ar**.
+
+### Versão (SemVer) — `MAJOR.MINOR.PATCH`
+- **Fonte única:** campo `version` do `package.json`. Exposto via `next.config.ts` (`env.NEXT_PUBLIC_APP_VERSION`) e lido em `src/lib/version.ts`. Aparece no **rodapé público** (`v1.18.0`, canto inferior direito).
+- **Quando subir cada número:**
+
+  | Mudança | Bump | Comando | Exemplo |
+  |---------|------|---------|---------|
+  | Correção / ajuste pequeno | PATCH | `npm run patch` | 1.18.0 → 1.18.1 |
+  | Marco / feature relevante | MINOR | `npm run end-sprint` | 1.18.x → 1.19.0 |
+  | Grande marco / reescrita | MAJOR | `npm run release` | 1.x → 2.0.0 |
+
+- Os scripts usam `npm version`: **atualizam o `package.json`, criam o commit e a tag `vX.Y.Z`** (commit a feature ANTES — o `npm version` exige árvore limpa). A tag é ponto de rollback (`git checkout vX.Y.Z`).
+- **Histórico:** `CHANGELOG.md` na raiz. Toda versão ganha uma entrada no topo. Se a release mexeu no banco, marque **`(inclui migration)`**.
+- **Regra de ouro:** todo deploy = 1 bump de versão + 1 linha no CHANGELOG. É assim que se confere, olhando o rodapé do site, se o deploy subiu.
+
+### Banco — Prisma Migrate (NUNCA mais `db push` em produção)
+`db push` força o schema e **pode apagar coluna/tabela com dado**. Em produção, só **migrations versionadas**:
+- **Dev:** `node_modules/.bin/prisma migrate dev --name descricao` → cria o SQL em `prisma/migrations/` e aplica no dev.
+- **Produção:** `node_modules/.bin/prisma migrate deploy` → aplica só as pendentes, **nunca reseta**.
+- **PROIBIDO em produção:** `migrate dev`, `migrate reset`, `db push` (podem resetar/derrubar dados).
+- **Setup único (baselining) — PENDENTE:** como o banco nasceu de `db push`, antes do 1º `migrate deploy` é preciso baselinar (gerar a migration `0_init` do estado atual e marcá-la com `migrate resolve --applied`). **Confirmar com o Álvaro antes de rodar.**
+
+### As 3 leis da mudança de schema com usuários ao vivo (aditivo primeiro)
+1. **Só ADICIONE** junto com o código que precisa. Coluna nova = **nullable ou com default**.
+2. **Nunca APAGUE/RENOMEIE** coluna que o código no ar ainda usa.
+3. Apagar/renomear só num deploy **posterior**, depois que o código já parou de usar.
+   *Renomear = adicionar a nova → copiar o dado (backfill) → trocar o código → (depois) apagar a velha.*
+
+### Checklist de deploy
+```
+COM MUDANÇA DE SCHEMA:
+  □ 1. Backup do banco de produção
+  □ 2. Revisar o SQL da migration → APAGA/RENOMEIA algo? Se sim, PARA e separa (3 leis)
+  □ 3. Aplicar a migration no DEV primeiro → testar o app
+  □ 4. Produção: prisma migrate deploy
+  □ 5. Bump de versão + linha no CHANGELOG "(inclui migration)"
+  □ 6. git push (auto-deploy Hostinger) → aguardar o build (~2-5 min)
+  □ 7. Smoke test: login + 1 página chave + criar/editar 1 registro
+  □ 8. Conferir o rodapé: versão nova subiu? UptimeRobot no ar?
+
+SÓ CÓDIGO (95% dos casos):
+  □ Bump de versão (npm run patch) + linha no CHANGELOG → git push. Sem banco, sem medo.
+```
 
 ---
 
