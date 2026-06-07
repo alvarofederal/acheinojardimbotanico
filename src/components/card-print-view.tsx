@@ -12,9 +12,22 @@ export function CardPrintView({ data, filename }: { data: CardCardData; filename
   useEffect(() => {
     const prev = document.title
     document.title = filename
-    const t = setTimeout(() => window.print(), 800)
-    return () => { clearTimeout(t); document.title = prev }
-  }, [filename])
+    let fired = false
+    const print = () => { if (!fired) { fired = true; window.print() } }
+    // Imprime só depois que o avatar carregar (senão sai sem imagem); fallback de 2.5s.
+    const fallback = setTimeout(print, 2500)
+    if (data.imageUrl) {
+      const img = new Image()
+      const go = () => { clearTimeout(fallback); setTimeout(print, 250) }
+      img.onload = go
+      img.onerror = go
+      img.src = data.imageUrl
+    } else {
+      clearTimeout(fallback)
+      setTimeout(print, 500)
+    }
+    return () => { clearTimeout(fallback); document.title = prev }
+  }, [filename, data.imageUrl])
 
   return (
     <div style={{ background: "#e5e5e5", minHeight: "100vh", padding: "24px", display: "flex", flexDirection: "column", alignItems: "center", gap: "16px" }}>

@@ -7,6 +7,14 @@ Todas as mudanças relevantes do projeto. Formato baseado em [Keep a Changelog](
 
 ---
 
+## [1.19.0] - 2026-06-07 — Logo curada no cartão (inclui migration)
+- **Logo da empresa no cartão/display:** upload curado pelo admin no "Editar" de Negócios → Cloudinary em alta qualidade
+- Cartão e display **priorizam a logo** (tile branco, sem cortar) → capa do lojista → 1ª foto
+- Alta qualidade na impressão (recorte/qualidade no delivery do Cloudinary)
+- Impressão do cartão **espera a imagem carregar** (não sai mais sem logo)
+- Lista de Negócios e hub de Cartões: thumbnail + **luz verde/vermelha** (tem logo / sem logo)
+- **Banco:** coluna `Business.logoUrl` (aditiva) + **Prisma Migrate baselinado** (`0_init`) em dev e prod
+
 ## [1.18.0] - 2026-06-05 — Favoritos & experiência
 - Favoritos da população (coração nos cards, cookie/localStorage, máx. 3)
 - Novo hero da home: "Achou?" + "Achei no Jardim Botânico" (SVG responsivo, 1 linha)

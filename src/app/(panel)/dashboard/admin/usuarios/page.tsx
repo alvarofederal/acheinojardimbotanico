@@ -51,7 +51,7 @@ export default async function AdminUsuariosPage({ searchParams }: SearchProps) {
     where: { ownerId: { in: users.map(u => u.id) } },
     select: {
       id: true, name: true, ownerId: true, plan: true, planIsCourtesy: true, planExpiresAt: true,
-      whatsapp: true, phone: true, handle: true, slug: true, neighborhood: true, storeCoverUrl: true, status: true,
+      whatsapp: true, phone: true, handle: true, slug: true, neighborhood: true, storeCoverUrl: true, logoUrl: true, status: true,
       category: { select: { name: true, slug: true } },
       photos: { take: 1, orderBy: { order: "asc" }, select: { url: true } },
     },

@@ -2,7 +2,7 @@ export const runtime = "nodejs"
 import { NextRequest, NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/prisma"
-import { buildCardData, buildDisplayData } from "@/lib/display"
+import { buildCardData, buildDisplayData, businessImage } from "@/lib/display"
 
 export async function GET(req: NextRequest) {
   const session = await auth()
@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
     where: { name: { contains: q } },
     select: {
       id: true, name: true, handle: true, slug: true, neighborhood: true,
-      whatsapp: true, phone: true, storeCoverUrl: true,
+      whatsapp: true, phone: true, storeCoverUrl: true, logoUrl: true,
       category: { select: { name: true, slug: true } },
       photos: { take: 1, orderBy: { order: "asc" }, select: { url: true } },
     },
@@ -29,6 +29,7 @@ export async function GET(req: NextRequest) {
     category: b.category.name,
     card: buildCardData(b),
     display: buildDisplayData(b),
+    image: businessImage(b),
   }))
 
   return NextResponse.json({ results })

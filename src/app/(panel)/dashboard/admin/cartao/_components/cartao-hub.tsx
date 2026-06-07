@@ -5,7 +5,7 @@ import Link from "next/link"
 import { Search, CreditCard, Printer, X, Loader2, Store } from "lucide-react"
 import { CardCard, type CardCardData } from "@/components/card-card"
 
-interface Result { id: string; name: string; category: string; card: CardCardData }
+interface Result { id: string; name: string; category: string; card: CardCardData; image: { url: string | null; isLogo: boolean } }
 
 export function CartaoHub({ acheiCard }: { acheiCard: CardCardData }) {
   const [acheiOpen, setAcheiOpen] = useState(false)
@@ -70,7 +70,19 @@ export function CartaoHub({ acheiCard }: { acheiCard: CardCardData }) {
             {results.map(r => (
               <button key={r.id} onClick={() => setSelected(r)}
                 className="w-full flex items-center gap-3 px-3 py-2.5 text-left hover:bg-gray-50 dark:hover:bg-white/[0.03] transition-colors">
-                <Store className="w-4 h-4 text-emerald-500 flex-shrink-0" />
+                <div className="relative flex-shrink-0">
+                  <div className="w-9 h-9 rounded-lg overflow-hidden border border-gray-200 dark:border-white/10 bg-white flex items-center justify-center">
+                    {r.image.url ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={r.image.url} alt={r.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <Store className="w-4 h-4 text-emerald-500" />
+                    )}
+                  </div>
+                  <span title={r.image.isLogo ? "Logo curada" : "Sem logo — imagem em desacordo"}
+                    className={`absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full ring-1 ring-white dark:ring-[#0f1c18] ${r.image.isLogo ? "bg-emerald-500" : "bg-red-500"}`}
+                    style={{ boxShadow: r.image.isLogo ? "0 0 5px 1px rgba(16,185,129,0.85)" : "0 0 5px 1px rgba(239,68,68,0.85)" }} />
+                </div>
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-medium dash-title truncate">{r.name}</p>
                   <p className="text-xs dash-muted truncate">{r.category}</p>

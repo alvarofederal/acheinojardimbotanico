@@ -23,7 +23,7 @@ export default async function CardPrintPage({ params }: { params: Promise<{ busi
     where: { id: businessId },
     select: {
       id: true, name: true, handle: true, slug: true, neighborhood: true, ownerId: true,
-      whatsapp: true, phone: true, storeCoverUrl: true,
+      whatsapp: true, phone: true, storeCoverUrl: true, logoUrl: true,
       category: { select: { name: true, slug: true } },
       photos: { take: 1, orderBy: { order: "asc" }, select: { url: true } },
     },
