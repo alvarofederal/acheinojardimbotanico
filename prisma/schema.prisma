@@ -138,6 +138,7 @@ model Business {
   storeWhatsappMessage String?     @db.Text  // mensagem padrão da vitrine (WhatsApp)
   storeCoverUrl     String?        @db.Text   // foto de capa da loja (hero) — escolhida pelo lojista
   storeTagline      String?                   // slogan/frase de destaque da loja
+  logoUrl           String?        @db.Text   // logo da empresa (curada pelo admin) — usada no cartão/display
 
   category       Category        @relation(fields: [categoryId], references: [id])
   owner          User?           @relation(fields: [ownerId], references: [id])

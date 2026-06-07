@@ -47,6 +47,8 @@ next-env.d.ts
 .aider*
 backups/
 *.sql
+# Migrations do Prisma são versionadas (exceção ao *.sql acima)
+!prisma/migrations/**/*.sql
 .claude/worktrees/
 
 # Segredos do Google Cloud (OAuth client)

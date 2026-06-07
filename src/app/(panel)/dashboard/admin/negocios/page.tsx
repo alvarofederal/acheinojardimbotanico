@@ -2,9 +2,10 @@ import { redirect } from "next/navigation"
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/prisma"
 import Link from "next/link"
-import { ExternalLink, ShieldCheck } from "lucide-react"
+import { ExternalLink, ShieldCheck, Building2 } from "lucide-react"
 import { PendingActions } from "./_components/pending-actions"
 import { BusinessEditButton } from "./_components/business-edit-button"
+import { businessImage } from "@/lib/display"
 
 interface SearchProps {
   searchParams: Promise<{ q?: string; status?: string; page?: string }>
@@ -41,7 +42,7 @@ export default async function AdminNegociosPage({ searchParams }: SearchProps) {
   const [businesses, total] = await Promise.all([
     db.business.findMany({
       where,
-      include: { category: true },
+      include: { category: true, photos: { take: 1, orderBy: { order: "asc" }, select: { url: true } } },
       orderBy: [{ plan: "desc" }, { createdAt: "desc" }],
       take,
       skip,
@@ -96,11 +97,33 @@ export default async function AdminNegociosPage({ searchParams }: SearchProps) {
               {businesses.map(b => (
                 <tr key={b.id} className="hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors">
                   <td className="px-4 py-3">
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium dash-title truncate max-w-[200px]">{b.name}</span>
-                      {b.ownerId && <ShieldCheck className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" />}
+                    <div className="flex items-center gap-3">
+                      {(() => {
+                        const img = businessImage(b)
+                        return (
+                          <div className="relative flex-shrink-0">
+                            <div className="w-10 h-10 rounded-lg overflow-hidden border border-gray-200 dark:border-white/10 bg-white flex items-center justify-center">
+                              {img.url ? (
+                                // eslint-disable-next-line @next/next/no-img-element
+                                <img src={img.url} alt={b.name} className="w-full h-full object-cover" />
+                              ) : (
+                                <Building2 className="w-4 h-4 text-gray-300 dark:text-white/20" />
+                              )}
+                            </div>
+                            <span title={img.isLogo ? "Logo curada" : "Sem logo — usando foto/capa"}
+                              className={`absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full ring-1 ring-white dark:ring-[#0f1c18] ${img.isLogo ? "bg-emerald-500" : "bg-red-500"}`}
+                              style={{ boxShadow: img.isLogo ? "0 0 5px 1px rgba(16,185,129,0.85)" : "0 0 5px 1px rgba(239,68,68,0.85)" }} />
+                          </div>
+                        )
+                      })()}
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium dash-title truncate max-w-[200px]">{b.name}</span>
+                          {b.ownerId && <ShieldCheck className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" />}
+                        </div>
+                        <p className="text-xs dash-muted truncate max-w-[200px]">{b.neighborhood}</p>
+                      </div>
                     </div>
-                    <p className="text-xs dash-muted truncate max-w-[200px]">{b.neighborhood}</p>
                   </td>
                   <td className="px-4 py-3 dash-subtitle hidden sm:table-cell">{b.category.name}</td>
                   <td className="px-4 py-3">
@@ -125,7 +148,7 @@ export default async function AdminNegociosPage({ searchParams }: SearchProps) {
                     <div className="flex items-center gap-2 justify-end">
                       {b.status === "PENDING_REVIEW" && <PendingActions businessId={b.id} />}
                       {b.status !== "PENDING_REVIEW" && (
-                        <BusinessEditButton businessId={b.id} businessName={b.name} currentHandle={b.handle} active={b.status !== "SUSPENDED"} hasOwner={!!b.ownerId} />
+                        <BusinessEditButton businessId={b.id} businessName={b.name} currentHandle={b.handle} active={b.status !== "SUSPENDED"} hasOwner={!!b.ownerId} currentLogo={b.logoUrl} />
                       )}
                       <Link href={`/jardim-botanico/${b.category.slug}/${b.slug}`} target="_blank"
                         className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 transition-colors inline-flex">
