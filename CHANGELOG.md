@@ -7,6 +7,10 @@ Todas as mudanças relevantes do projeto. Formato baseado em [Keep a Changelog](
 
 ---
 
+## [1.19.1] - 2026-06-07 — Gabarito de corte no cartão
+- Folha A4 com **marcas de corte nos 4 cantos de cada cartão** (corte individual, reto)
+- Espaço entre os cartões (gutter 6mm) + marcas mais visíveis (0.4mm)
+
 ## [1.19.0] - 2026-06-07 — Logo curada no cartão (inclui migration)
 - **Logo da empresa no cartão/display:** upload curado pelo admin no "Editar" de Negócios → Cloudinary em alta qualidade
 - Cartão e display **priorizam a logo** (tile branco, sem cortar) → capa do lojista → 1ª foto
