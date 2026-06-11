@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { Radio, Users, CreditCard, ShieldCheck, Building2, Eye, MessageCircle, Clock, TrendingUp } from "lucide-react"
+import { Radio, Users, CreditCard, ShieldCheck, Building2, Eye, MessageCircle, Clock, TrendingUp, Sprout, Lock, CheckCircle2 } from "lucide-react"
 
 export interface AdminStats {
   online: number
@@ -10,6 +10,7 @@ export interface AdminStats {
   totalBusinesses: number
   claimed: number
   paying: number
+  gatePaying: number // pagantes REAIS (sem cortesia) — régua dos Gates da Rede
   pendingReview: number
   pendingClaims: number
   pendingPayments: number
@@ -17,6 +18,66 @@ export interface AdminStats {
   views7d: number
   clicks7d: number
   mrrCents: number
+}
+
+/** Os Gates da Rede Achei (docs/rede/plano-de-negocios.md §8) — lembrete visual. */
+function GatesCard({ gatePaying }: { gatePaying: number }) {
+  const gate1Done = gatePaying >= 10
+  const gate2Done = gatePaying >= 20
+  const pct = (v: number, alvo: number) => Math.min(100, Math.round((v / alvo) * 100))
+
+  const gates = [
+    {
+      n: 1, alvo: 10, done: gate1Done, unlocked: true,
+      titulo: "Loja-modelo provada",
+      regua: `${gatePaying}/10 pagantes reais`,
+      pctVal: pct(gatePaying, 10),
+      libera: "código multi-tenant da Rede",
+    },
+    {
+      n: 2, alvo: 20, done: gate2Done, unlocked: gate1Done,
+      titulo: "História vendável",
+      regua: `${gatePaying}/20 pagantes + playbook + lista ≥50`,
+      pctVal: pct(gatePaying, 20),
+      libera: "vender às 3 praças-piloto",
+    },
+    {
+      n: 3, alvo: 0, done: false, unlocked: false,
+      titulo: "Piloto validado",
+      regua: "2 de 3 operadores renovando na meta",
+      pctVal: 0,
+      libera: "escala nacional",
+    },
+  ]
+
+  return (
+    <div className="rounded-2xl border border-emerald-200/60 dark:border-emerald-500/20 bg-gradient-to-br from-emerald-50/60 to-transparent dark:from-emerald-500/[0.06] p-5">
+      <div className="flex items-center gap-2 mb-4">
+        <Sprout className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+        <p className="text-sm font-bold dash-title">Rumo à Rede Achei</p>
+        <span className="text-[11px] dash-muted">— os Gates (cada marco libera a próxima aposta)</span>
+      </div>
+      <div className="grid sm:grid-cols-3 gap-4">
+        {gates.map(g => (
+          <div key={g.n} className={`rounded-xl border p-3.5 ${g.done ? "border-emerald-300 dark:border-emerald-500/40 bg-emerald-50/60 dark:bg-emerald-500/[0.08]" : g.unlocked ? "border-gray-200 dark:border-white/10 bg-white dark:bg-white/[0.02]" : "border-dashed border-gray-200 dark:border-white/10 opacity-60"}`}>
+            <div className="flex items-center gap-1.5 mb-1.5">
+              {g.done
+                ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                : !g.unlocked
+                  ? <Lock className="w-3.5 h-3.5 text-gray-400 dark:text-white/30" />
+                  : <span className="w-3.5 h-3.5 rounded-full border-2 border-emerald-500 inline-block" />}
+              <p className="text-xs font-bold dash-title">Gate {g.n} — {g.titulo}</p>
+            </div>
+            <p className="text-[11px] dash-muted mb-2">{g.regua}</p>
+            <div className="h-1.5 rounded-full bg-gray-100 dark:bg-white/10 overflow-hidden">
+              <div className={`h-full rounded-full transition-all ${g.done ? "bg-emerald-500" : "bg-emerald-400/80"}`} style={{ width: `${g.pctVal}%` }} />
+            </div>
+            <p className="text-[10px] dash-muted mt-1.5">→ libera: <span className="font-semibold">{g.libera}</span></p>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
 }
 
 const brl = (c: number) => (c / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })
@@ -39,6 +100,9 @@ export function AdminOverview({ s }: { s: AdminStats }) {
 
   return (
     <div className="space-y-5">
+      {/* Gates da Rede — o lembrete visual que controla a ansiedade 🌱 */}
+      <GatesCard gatePaying={s.gatePaying} />
+
       {/* Tráfego: online + visitantes */}
       <div className="grid sm:grid-cols-2 gap-4">
         {/* Online agora */}

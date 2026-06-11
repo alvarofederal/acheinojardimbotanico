@@ -7,6 +7,15 @@ Todas as mudanças relevantes do projeto. Formato baseado em [Keep a Changelog](
 
 ---
 
+## [1.20.0] - 2026-06-11 — Cadência de vendas + Gates da Rede
+- **Prospecção com cadência D0 → D+3 → D+7:** badge de estágio por negócio, mensagem
+  certa por toque (apresentação → prova → escassez), filtro "Follow-up vencido",
+  contador de vencidos e reset de ciclo — o ritual de 20 min num só lugar
+- **Card "Rumo à Rede"** na visão geral do admin: os 3 Gates com progresso real
+  (pagantes sem cortesia) — o lembrete visual da tese
+- **Auditoria & Histórico mesclados:** uma tela só com abas (Tudo | Ações com lojistas);
+  /historico redireciona; menu admin mais limpo
+
 ## [1.19.4] - 2026-06-11 — Cura do PANIC: Prisma 5.22 + motor binário
 - Upgrade Prisma 5.17.0 → 5.22.0 (sem mudança de schema/banco — zero toque em dados)
 - `engineType = "binary"`: o query engine vira processo separado, imune ao fork do

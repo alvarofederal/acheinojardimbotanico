@@ -32,7 +32,7 @@ export default async function DashboardPage() {
 
     const [
       online, vToday, v7, v30, vTotal,
-      totalBusinesses, claimed, payingList,
+      totalBusinesses, claimed, payingList, gatePaying,
       pendingReview, pendingClaims, pendingPayments, pendingEvents,
       views7, clicks7, cfgs,
     ] = await Promise.all([
@@ -44,6 +44,8 @@ export default async function DashboardPage() {
       db.business.count(),
       db.business.count({ where: { ownerId: { not: null } } }),
       db.business.findMany({ where: { plan: { in: ["VISIBILITY", "PREMIUM"] }, planExpiresAt: { gt: now } }, select: { plan: true } }),
+      // Pagantes REAIS (sem cortesia) — é o número que conta pros Gates da Rede
+      db.business.count({ where: { plan: { in: ["VISIBILITY", "PREMIUM"] }, planExpiresAt: { gt: now }, planIsCourtesy: false } }),
       db.business.count({ where: { status: "PENDING_REVIEW" } }),
       db.claimRequest.count({ where: { status: "PENDING" } }),
       db.paymentClaim.count({ where: { status: "PENDING" } }),
@@ -57,7 +59,7 @@ export default async function DashboardPage() {
 
     adminStats = {
       online, visitorsToday: vToday, visitors7d: v7, visitors30d: v30, visitorsTotal: vTotal,
-      totalBusinesses, claimed, paying: payingList.length,
+      totalBusinesses, claimed, paying: payingList.length, gatePaying,
       pendingReview, pendingClaims, pendingPayments, pendingEvents,
       views7d: views7._sum.count ?? 0, clicks7d: clicks7._sum.count ?? 0, mrrCents,
     }

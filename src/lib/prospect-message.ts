@@ -58,6 +58,24 @@ export interface ProspectMessageInput {
   categoryName: string
 }
 
+/** Follow-up D+3 — prova visual + lembra o presente (display). */
+export function buildFollowup3Message(i: { name: string; link: string }): string {
+  return `Oi, pessoal da ${i.name}! Álvaro aqui de novo 🌿
+
+Passando rapidinho pra mostrar como o perfil de vocês ficou no ar: ${i.link}
+
+E aquele *display com QR* pro balcão continua de pé — é presente, sem custo nenhum. Posso passar aí essa semana pra entregar em mãos?`
+}
+
+/** Follow-up D+7 — última mensagem, escassez honesta (1 destaque por categoria). */
+export function buildFollowup7Message(i: { name: string; categoryName: string }): string {
+  return `Pessoal da ${i.name}, última mensagem pra não encher! 🙂
+
+Semana que vem vou liberar o *destaque de ${i.categoryName}* da região pra outro negócio — antes quis confirmar com vocês, que são uma das referências da categoria por aqui.
+
+Se não fizer sentido agora, tranquilo — o perfil de vocês continua no guia normalmente. 🌿`
+}
+
 /** Mensagem completa, focada em entregar o display (presente) em mãos. */
 export function buildProspectMessage(i: ProspectMessageInput): string {
   const hook = categoryHook(i.categorySlug, i.categoryName)
