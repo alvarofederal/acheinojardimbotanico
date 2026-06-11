@@ -25,7 +25,7 @@ export default async function DashboardPage() {
   let topClicks: TopRow[] = []
   if (isAdmin) {
     const now = new Date()
-    const onlineWindow = new Date(now.getTime() - 30 * 1000) // "online agora" ≈ ativos nos últimos 30s
+    const onlineWindow = new Date(now.getTime() - 150 * 1000) // "online agora" ≈ ativos nos últimos 2,5 min (2,5× o batimento de 60s)
     const startToday = new Date(now); startToday.setHours(0, 0, 0, 0)
     const d7 = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
     const d30 = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)

@@ -7,6 +7,11 @@ Todas as mudanças relevantes do projeto. Formato baseado em [Keep a Changelog](
 
 ---
 
+## [1.19.2] - 2026-06-11 — Hotfix P0: crash loop em produção (PANIC do Prisma)
+- Batimento de presença 12s → 60s (5× menos carga) e janela "online agora" 30s → 150s
+- Era a query mais frequente do sistema e o gatilho estatístico do `PANIC: timer has gone away` do query engine (Prisma 5.17 + fork do Passenger/Hostinger) que derrubava o app em loop (503)
+- Correção de raiz proposta: upgrade Prisma 5.17 → 5.22 (deploy separado)
+
 ## [1.19.1] - 2026-06-07 — Gabarito de corte no cartão
 - Folha A4 com **marcas de corte nos 4 cantos de cada cartão** (corte individual, reto)
 - Espaço entre os cartões (gutter 6mm) + marcas mais visíveis (0.4mm)
