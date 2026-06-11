@@ -4,6 +4,10 @@ generator client {
   provider        = "prisma-client-js"
   output          = "../src/generated/prisma"
   previewFeatures = ["driverAdapters"]
+  // Motor como PROCESSO SEPARADO (não embutido no Node): o gerenciador da
+  // Hostinger clona o processo Node (fork) e o motor embutido (library) morre
+  // no clone — "PANIC: timer has gone away". O binário é imune ao fork.
+  engineType      = "binary"
 }
 
 datasource db {

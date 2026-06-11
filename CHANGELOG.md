@@ -7,6 +7,12 @@ Todas as mudanças relevantes do projeto. Formato baseado em [Keep a Changelog](
 
 ---
 
+## [1.19.4] - 2026-06-11 — Cura do PANIC: Prisma 5.22 + motor binário
+- Upgrade Prisma 5.17.0 → 5.22.0 (sem mudança de schema/banco — zero toque em dados)
+- `engineType = "binary"`: o query engine vira processo separado, imune ao fork do
+  Passenger/Hostinger que matava o motor embutido ("PANIC: timer has gone away" → 503)
+- Rollback: tag v1.19.3
+
 ## [1.19.3] - 2026-06-11 — Resiliência de boot e configuração
 - `AUTH_URL` canônica definida no código em produção (corrige o login Google sem depender de variável no painel do host)
 - Validação de env no boot (`src/instrumentation.ts`): log claro do que falta/está malformado — fim do "morreu sem log"
