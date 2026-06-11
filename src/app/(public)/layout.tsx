@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 import Link from "next/link"
-import { Instagram } from "lucide-react"
+import { Instagram, Leaf } from "lucide-react"
 import { PublicNav } from "./_components/public-nav"
 import { VisitTracker } from "./_components/visit-tracker"
 import { ThemeToggle } from "@/components/theme-toggle"
@@ -59,6 +59,14 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
             <p className="text-xs flora-muted/70 text-center sm:text-left">
               © 2026 Achei no Jardim Botânico · Guia hiperlocal do Jardim Botânico (DF). Algumas informações fornecidas por Google.
             </p>
+            {/* Selo verde — fiel ao claim do data center (energia renovável/compensada) */}
+            <span
+              className="flex items-center gap-1.5 text-xs flora-muted/70 whitespace-nowrap"
+              title="Nosso servidor fica em um data center alimentado ou compensado por 100% de energia renovável."
+            >
+              <Leaf className="w-3.5 h-3.5 text-flora-green dark:text-flora-fresh" strokeWidth={2} />
+              Hospedado com 100% de energia renovável
+            </span>
             {/* Versão (SemVer) — fonte: package.json. Confere se o deploy subiu. */}
             <span
               className="text-xs tracking-wide flora-muted/60 select-none whitespace-nowrap"
