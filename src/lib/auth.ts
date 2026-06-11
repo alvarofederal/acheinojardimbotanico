@@ -9,6 +9,15 @@ import bcrypt from "bcryptjs"
 
 export const runtime = "nodejs"
 
+// Resiliência de config: em produção, se AUTH_URL não veio do painel do host,
+// usa o domínio canônico. O OAuth (Google) exige redirect https no domínio
+// público — atrás do proxy da Hostinger o host visto pelo app é 0.0.0.0:3000,
+// então sem isso o redirect sai errado. Definido no código = ninguém precisa
+// (nem pode errar ao) configurar no painel.
+if (process.env.NODE_ENV === "production" && !process.env.AUTH_URL?.trim()) {
+  process.env.AUTH_URL = "https://www.acheinojardimbotanico.com.br"
+}
+
 declare module "next-auth" {
   interface Session {
     user: {
