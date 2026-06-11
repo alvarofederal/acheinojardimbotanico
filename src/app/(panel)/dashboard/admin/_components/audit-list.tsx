@@ -18,16 +18,24 @@ const ACTION_TONE: Record<string, string> = {
 
 /** Listagem de auditoria com busca por lojista + paginação. Server component. */
 export function AuditList({
-  rows, total, totalPages, page, q, basePath,
+  rows, total, totalPages, page, q, basePath, extraQuery,
 }: {
   rows: AuditRow[]; total: number; totalPages: number; page: number; q?: string; basePath: string
+  /** Params extras preservados na busca e paginação (ex.: escopo=lojistas) */
+  extraQuery?: Record<string, string>
 }) {
-  const pageHref = (p: number) => `${basePath}?q=${encodeURIComponent(q ?? "")}&page=${p}`
+  const extra = extraQuery
+    ? "&" + Object.entries(extraQuery).map(([k, v]) => `${k}=${encodeURIComponent(v)}`).join("&")
+    : ""
+  const pageHref = (p: number) => `${basePath}?q=${encodeURIComponent(q ?? "")}&page=${p}${extra}`
 
   return (
     <div className="space-y-4">
       {/* Busca por lojista */}
       <form action={basePath} className="flex gap-3">
+        {extraQuery && Object.entries(extraQuery).map(([k, v]) => (
+          <input key={k} type="hidden" name={k} value={v} />
+        ))}
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-white/30" />
           <input
@@ -41,7 +49,7 @@ export function AuditList({
           Buscar
         </button>
         {q && (
-          <Link href={basePath} className="px-4 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 text-sm dash-subtitle hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
+          <Link href={extra ? `${basePath}?${extra.slice(1)}` : basePath} className="px-4 py-2.5 rounded-xl border border-gray-200 dark:border-white/10 text-sm dash-subtitle hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
             Limpar
           </Link>
         )}

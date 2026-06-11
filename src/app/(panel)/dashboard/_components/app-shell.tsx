@@ -15,7 +15,6 @@ import {
   ShieldCheck,
   Download,
   ScrollText,
-  History,
   Target,
   UserCog,
   DollarSign,
@@ -53,7 +52,6 @@ const adminNav: { href: string; label: string; icon: LucideIcon }[] = [
   { href: "/dashboard/admin/prospeccao", label: "Prospecção", icon: Target         },
   { href: "/dashboard/admin/noticias", label: "Notícias",   icon: Newspaper       },
   { href: "/dashboard/admin/eventos",  label: "Eventos",    icon: CalendarDays    },
-  { href: "/dashboard/admin/historico", label: "Histórico", icon: History         },
   { href: "/dashboard/admin/audit",    label: "Auditoria",  icon: ScrollText      },
 ]
 

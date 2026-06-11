@@ -83,7 +83,8 @@ O schema do Achei já está em `prisma/schema.prisma` e aplicado no banco de dev
 - Role admin = `ADMIN`. Role do anunciante após claim aprovado = `ADVERTISER`.
 - Senha no campo `passwordHash` (não `password`).
 - **NÃO FAÇA `db push`** com mudança de schema sem confirmar — o banco tem dados.
-- Prisma 5.17.0: use `node_modules/.bin/prisma` (o `npx prisma` puxa a v7, incompatível).
+- Prisma **5.22.0** com `engineType = "binary"` (processo separado — o library engine morria no fork do Passenger/Hostinger: "PANIC: timer has gone away"). Use `node_modules/.bin/prisma` (o `npx prisma` puxa a v7, incompatível).
+- **NÃO subir para Prisma 6/7 por ora** — é migração major (breaking). Planejada como pré-requisito da fase multi-tenant (pós Gate 1); o Prisma 7 remove o engine Rust (cura definitiva do PANIC).
 
 ---
 
