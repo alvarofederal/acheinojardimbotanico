@@ -7,6 +7,10 @@ Todas as mudanças relevantes do projeto. Formato baseado em [Keep a Changelog](
 
 ---
 
+## [1.20.1] - 2026-06-11 — Selo verde no rodapé
+- Selo "Hospedado com 100% de energia renovável" (folha Flora) no rodapé público —
+  fiel ao claim do data center (alimentado/compensado por energia renovável)
+
 ## [1.20.0] - 2026-06-11 — Cadência de vendas + Gates da Rede
 - **Prospecção com cadência D0 → D+3 → D+7:** badge de estágio por negócio, mensagem
   certa por toque (apresentação → prova → escassez), filtro "Follow-up vencido",
