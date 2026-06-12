@@ -28,8 +28,11 @@ jobs:
       - name: Instalar dependências
         run: npm ci
 
-      - name: Auditoria de segurança (falha em vulnerabilidade alta/crítica)
-        run: npm audit --audit-level=high
+      - name: Auditoria de segurança (só dependências de PRODUÇÃO; falha em alta/crítica)
+        # --omit=dev: audita apenas o que embarca no site. Vulnerabilidade em
+        # ferramenta de teste/build (cypress, tmp, etc.) não derruba o deploy —
+        # ela nunca chega no visitante. O que importa é o que roda em produção.
+        run: npm audit --omit=dev --audit-level=high
 
       - name: Testes unitários
         run: npm run test:unit

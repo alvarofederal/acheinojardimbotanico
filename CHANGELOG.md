@@ -7,6 +7,11 @@ Todas as mudanças relevantes do projeto. Formato baseado em [Keep a Changelog](
 
 ---
 
+## [1.21.1] - 2026-06-12 — Ajuste do gate de segurança da CI
+- Auditoria da esteira escopada a **dependências de produção** (`npm audit --omit=dev`):
+  vulnerabilidade em ferramenta de teste/build (Cypress, tmp…) não bloqueia mais o deploy
+- `npm audit fix`: removida a vulnerabilidade ALTA (`tmp`, dev-only); produção limpa de alta/crítica
+
 ## [1.21.0] - 2026-06-11 — Esteira CI/CD + documentação da migração VPS
 - **Esteira GitHub Actions** (`.github/workflows/deploy.yml`): push na main → auditoria de
   segurança (`npm audit`) + testes unitários → deploy via SSH no VPS (pull, ci, migrate
