@@ -7,6 +7,15 @@ Todas as mudanças relevantes do projeto. Formato baseado em [Keep a Changelog](
 
 ---
 
+## [1.21.0] - 2026-06-11 — Esteira CI/CD + documentação da migração VPS
+- **Esteira GitHub Actions** (`.github/workflows/deploy.yml`): push na main → auditoria de
+  segurança (`npm audit`) + testes unitários → deploy via SSH no VPS (pull, ci, migrate
+  deploy, build, pm2 restart) → health check público. Build quebrado nunca derruba produção.
+- **Primeiros testes unitários reais** (`tests/unit`): PIX BR Code (pagamento) e slugify (SEO/QR)
+- **Runbook completo da migração VPS** (`docs/infra/migracao-vps.md`) — passo a passo, operação
+  diária, rollback e lições aprendidas (pronto pra PDF)
+- **ADR 0007**: registro arquitetural da migração shared → VPS + nota de atualização no spec.md
+
 ## [1.20.1] - 2026-06-11 — Selo verde no rodapé
 - Selo "Hospedado com 100% de energia renovável" (folha Flora) no rodapé público —
   fiel ao claim do data center (alimentado/compensado por energia renovável)

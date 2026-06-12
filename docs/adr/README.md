@@ -11,6 +11,7 @@ contexto, a decisão, as alternativas e as consequências de uma escolha relevan
 | [0004](0004-pagamento-asaas.md) | Asaas como provedor de pagamento | Aceito |
 | [0005](0005-sessoes-database.md) | Sessões em banco (database strategy) | Aceito |
 | [0006](0006-rate-limit-memoria.md) | Rate limiting em memória (sem Upstash) | Aceito |
+| [0007](0007-migracao-vps.md) | Migração shared → VPS Hostinger (Node+PM2+Caddy; MySQL fica no shared) | Aceito |
 
 ## Convenção
 

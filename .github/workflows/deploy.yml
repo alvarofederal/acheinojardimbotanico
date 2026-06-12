@@ -1,0 +1,67 @@
+# Esteira CI/CD — Achei no Jardim Botânico
+# push na main → CI (segurança + testes) → CD (deploy no VPS via SSH) → health check
+# Secrets necessários (repo → Settings → Secrets and variables → Actions):
+#   SSH_HOST = IP do VPS · SSH_USER = root · SSH_KEY = chave privada DEDICADA da esteira
+name: CI/CD
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {} # botão de deploy manual no GitHub (aba Actions)
+
+concurrency:
+  group: deploy-producao
+  cancel-in-progress: false # deploys em fila, nunca dois ao mesmo tempo
+
+jobs:
+  ci:
+    name: Verificações (segurança + testes)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Auditoria de segurança (falha em vulnerabilidade alta/crítica)
+        run: npm audit --audit-level=high
+
+      - name: Testes unitários
+        run: npm run test:unit
+
+  deploy:
+    name: Deploy no VPS
+    needs: ci # só roda se a CI passar — build quebrado nunca chega em produção
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pull + build + restart (no servidor)
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          script_stop: true # qualquer comando falhar = aborta (o app antigo segue no ar)
+          command_timeout: 15m
+          script: |
+            cd /var/www/achei
+            git pull origin main
+            npm ci
+            node_modules/.bin/prisma migrate deploy
+            npm run build
+            pm2 restart achei --update-env
+
+      - name: Health check (app + banco respondendo)
+        run: |
+          sleep 10
+          for i in $(seq 1 12); do
+            BODY=$(curl -fsS --max-time 15 https://www.acheinojardimbotanico.com.br/api/health || true)
+            echo "[$i] $BODY"
+            echo "$BODY" | grep -q '"ok":true' && echo "✅ Produção saudável" && exit 0
+            sleep 10
+          done
+          echo "❌ Health check falhou após o deploy" && exit 1

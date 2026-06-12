@@ -9,7 +9,8 @@
 
 **Achei no Jardim Botânico** é um guia comercial digital hiperlocal para a região do Jardim Botânico (DF).
 Moradores encontram negócios locais. Comerciantes pagam mensalidade para ter destaque.
-Stack: Next.js 15 (App Router) + TypeScript + MySQL (Prisma) + Asaas + Hostinger (Node, auto-deploy no `git push`).
+Stack: Next.js 15 (App Router) + TypeScript + MySQL (Prisma) + Asaas + **VPS Hostinger** (Ubuntu, Node 22 + PM2 + Caddy/SSL, app em `/var/www/achei`; banco MySQL segue no shared).
+**⚠️ Deploy (desde 2026-06-11):** não há mais auto-deploy no push. Deploy = `ssh root@2.25.199.147` → `cd /var/www/achei && git pull && npm ci && npm run build && pm2 restart achei`. (Esteira GitHub Actions planejada.)
 **Domínio:** acheinojardimbotanico.com.br | **Branch ativo:** main | **Status:** MVP — Specs 001–008 implementadas (importação Places, listagem/detalhe público, claim, painel anunciante, admin, Asaas)
 
 ---

@@ -625,6 +625,13 @@ Observabilidade: Vercel Analytics + Sentry
 Hospedagem:   Vercel
 ```
 
+> **🔄 Atualização de infra (2026-06-11):** o design acima é o original. Na prática, as imagens
+> foram para o **Cloudinary** e a hospedagem evoluiu: Vercel → shared Hostinger (custo em dólar
+> vetado) → **VPS Hostinger** (Ubuntu + Node 22 + PM2 + Caddy/SSL), após o shared derrubar o app
+> recorrentemente (PANIC do query engine sob limites de recursos). O banco MySQL permanece no
+> shared. Registro completo: **`docs/adr/0007-migracao-vps.md`** e runbook em
+> **`docs/infra/migracao-vps.md`**. Deploy: esteira GitHub Actions (CI: audit+testes → CD: SSH).
+
 **Justificativa essencial:**
 - **Next.js**: você já domina + bom SEO via SSR/ISR
 - **MySQL** sobre Postgres: você já usa, ecossistema maduro, sem motivo para mudar
