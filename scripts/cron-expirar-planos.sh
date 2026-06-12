@@ -13,7 +13,8 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-SECRET=$(grep -E '^CRON_SECRET=' .env | head -1 | cut -d= -f2- | tr -d '"' | tr -d "'")
+# tr -d '\r\n"': remove CR (do .env salvo no Windows/CRLF — senão vira header malformado/400), LF e aspas
+SECRET=$(grep -E '^CRON_SECRET=' .env | head -1 | cut -d= -f2- | tr -d '\r\n"' | tr -d "'")
 if [ -z "${SECRET:-}" ]; then
   echo "[$(date -Iseconds)] ERRO: CRON_SECRET não encontrado no .env" >&2
   exit 1
