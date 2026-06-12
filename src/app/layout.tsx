@@ -7,7 +7,13 @@ import { QueryClientContext } from "@/providers/queryclient";
 import { Toaster } from "sonner";
 import Script from "next/script";
 
-const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
+// Google Analytics 4 — o ID de medição é público (vai no HTML de qualquer forma).
+// Só ATIVA em produção: assim o tráfego de dev/localhost não polui as métricas reais.
+// O env NEXT_PUBLIC_GA_ID sobrepõe o padrão, se um dia quiser trocar sem mexer no código.
+const GA_ID =
+  process.env.NODE_ENV === "production"
+    ? process.env.NEXT_PUBLIC_GA_ID || "G-SXDHG23V5B"
+    : undefined;
 
 // Flora Design System — Playfair Display (títulos) + Inter (corpo/UI)
 const inter = Inter({
@@ -110,7 +116,7 @@ export default function RootLayout({
           </QueryClientContext>
         </SessionAuthProvider>
 
-        {/* Google Analytics 4 — só carrega se NEXT_PUBLIC_GA_ID estiver definido */}
+        {/* Google Analytics 4 — só em produção (ver GA_ID acima) */}
         {GA_ID && (
           <>
             <Script src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`} strategy="afterInteractive" />

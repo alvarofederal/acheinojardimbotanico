@@ -7,6 +7,11 @@ Todas as mudanças relevantes do projeto. Formato baseado em [Keep a Changelog](
 
 ---
 
+## [1.21.3] - 2026-06-12 — Google Analytics 4 ativo
+- GA4 (`G-SXDHG23V5B`) ligado em produção (o código já existia; faltava o ID)
+- Ativa **só em produção** (`NODE_ENV`) — dev/localhost não polui mais as métricas
+- `NEXT_PUBLIC_GA_ID` continua sobrepondo o padrão, se quiser trocar sem mexer no código
+
 ## [1.21.2] - 2026-06-12 — Limpeza dos resíduos da Vercel
 - Removidos `@vercel/analytics` e `@vercel/speed-insights` (carregavam `/_vercel/*` que dá 404 fora da Vercel — erros no console)
 - `vercel.json` removido; o **cron de expiração de planos** migrou para `scripts/cron-expirar-planos.sh` (instalar no crontab do VPS)
