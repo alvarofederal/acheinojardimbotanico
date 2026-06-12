@@ -7,6 +7,11 @@ Todas as mudanças relevantes do projeto. Formato baseado em [Keep a Changelog](
 
 ---
 
+## [1.21.2] - 2026-06-12 — Limpeza dos resíduos da Vercel
+- Removidos `@vercel/analytics` e `@vercel/speed-insights` (carregavam `/_vercel/*` que dá 404 fora da Vercel — erros no console)
+- `vercel.json` removido; o **cron de expiração de planos** migrou para `scripts/cron-expirar-planos.sh` (instalar no crontab do VPS)
+- Google Analytics (o analytics real) inalterado
+
 ## [1.21.1] - 2026-06-12 — Ajuste do gate de segurança da CI
 - Auditoria da esteira escopada a **dependências de produção** (`npm audit --omit=dev`):
   vulnerabilidade em ferramenta de teste/build (Cypress, tmp…) não bloqueia mais o deploy

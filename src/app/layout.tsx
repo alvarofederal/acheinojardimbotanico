@@ -5,8 +5,6 @@ import "./globals.css";
 import { SessionAuthProvider } from "@/components/session-auth";
 import { QueryClientContext } from "@/providers/queryclient";
 import { Toaster } from "sonner";
-import { Analytics } from "@vercel/analytics/next";
-import { SpeedInsights } from "@vercel/speed-insights/next";
 import Script from "next/script";
 
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
@@ -111,10 +109,6 @@ export default function RootLayout({
             <Toaster position="top-right" richColors duration={2500} />
           </QueryClientContext>
         </SessionAuthProvider>
-
-        {/* Métricas — Vercel Analytics + Speed Insights */}
-        <Analytics />
-        <SpeedInsights />
 
         {/* Google Analytics 4 — só carrega se NEXT_PUBLIC_GA_ID estiver definido */}
         {GA_ID && (
