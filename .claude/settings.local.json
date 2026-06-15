@@ -30,7 +30,12 @@
       "Bash(ls ~/.claude/projects/ | head -20)",
       "Bash(awk '{print $2}')",
       "Bash(xargs '-I{}' sh -c 'python3 -c \" *)",
-      "WebFetch(domain:www.acheinojardimbotanico.com.br)"
+      "WebFetch(domain:www.acheinojardimbotanico.com.br)",
+      "WebFetch(domain:acheinojardimbotanico.com.br)",
+      "mcp__Claude_in_Chrome__list_connected_browsers",
+      "mcp__Claude_in_Chrome__select_browser",
+      "mcp__Claude_in_Chrome__browser_batch",
+      "mcp__Claude_in_Chrome__javascript_tool"
     ]
   }
 }
