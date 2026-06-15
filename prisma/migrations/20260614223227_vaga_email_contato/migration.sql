@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE `Vaga` ADD COLUMN `email` VARCHAR(191) NULL,
+    ADD COLUMN `showWhatsapp` BOOLEAN NOT NULL DEFAULT true;

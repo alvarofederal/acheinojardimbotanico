@@ -10,6 +10,7 @@ const CONTENT_LINKS = [
   { href: "/promocoes", label: "Promoções" },
   { href: "/noticias", label: "Notícias" },
   { href: "/eventos", label: "Eventos" },
+  { href: "/vagas", label: "Vagas" },
 ]
 
 export function PublicNav() {

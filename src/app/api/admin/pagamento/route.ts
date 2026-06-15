@@ -18,6 +18,7 @@ const planSchema = z.object({
   priceCents: z.number().int().min(0).max(10_000_000),
   productLimit: z.number().int().min(0).max(1000),
   photoLimit: z.number().int().min(0).max(1000),
+  vagaLimit: z.number().int().min(0).max(1000),
   features: featuresSchema,
   mercadoPagoLink: z.string().url().or(z.literal("")).optional(),
 })
@@ -66,6 +67,7 @@ export async function PATCH(req: NextRequest) {
         priceCents: isFree ? 0 : pl.priceCents,
         productLimit: pl.productLimit,
         photoLimit: pl.photoLimit,
+        vagaLimit: pl.vagaLimit,
         features: pl.features as unknown as Prisma.InputJsonValue,
         mercadoPagoLink: isFree ? null : (pl.mercadoPagoLink?.trim() || null),
       }

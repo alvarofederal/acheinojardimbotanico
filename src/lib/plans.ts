@@ -17,6 +17,7 @@ export type PlanFeature =
   | "redesSociais"
   | "selo"
   | "cartao"
+  | "vagas"
 
 /** Metadados dos recursos — usado para renderizar os checkboxes no admin. */
 export const PLAN_FEATURES: { key: PlanFeature; label: string; description: string }[] = [
@@ -28,6 +29,7 @@ export const PLAN_FEATURES: { key: PlanFeature; label: string; description: stri
   { key: "redesSociais", label: "Redes sociais", description: "Exibir Instagram, Facebook, LinkedIn e YouTube no perfil" },
   { key: "selo", label: "Selo de verificado", description: "Badge de negócio verificado/pagante no perfil" },
   { key: "cartao", label: "Cartão de visita", description: "Gerar cartão de visita do negócio (logo + QR + link) para impressão" },
+  { key: "vagas", label: "Vagas (oportunidades)", description: "Publicar vagas de emprego — aparecem no perfil e na página /vagas" },
 ]
 
 export const PLAN_FEATURE_KEYS = PLAN_FEATURES.map(f => f.key)
@@ -42,31 +44,32 @@ export interface PlanConfigData {
   priceCents: number
   productLimit: number
   photoLimit: number
+  vagaLimit: number
   features: PlanFeatures
   mercadoPagoLink: string | null
 }
 
 const allFeatures = (v: boolean): PlanFeatures => ({
-  promocoes: v, loja: v, eventos: v, metricas: v, destaque: v, redesSociais: v, selo: v, cartao: v,
+  promocoes: v, loja: v, eventos: v, metricas: v, destaque: v, redesSociais: v, selo: v, cartao: v, vagas: v,
 })
 
 /** Configuração-padrão (fallback quando o banco ainda não tem PlanConfig + seed inicial). */
 export const DEFAULT_PLAN_CONFIGS: Record<PlanId, PlanConfigData> = {
   FREE: {
     plan: "FREE", label: "Free", active: true, order: 0,
-    priceCents: 0, productLimit: 2, photoLimit: 3,
+    priceCents: 0, productLimit: 2, photoLimit: 3, vagaLimit: 0,
     features: { ...allFeatures(false), redesSociais: true },
     mercadoPagoLink: null,
   },
   VISIBILITY: {
     plan: "VISIBILITY", label: "Visibilidade", active: true, order: 1,
-    priceCents: 7900, productLimit: 10, photoLimit: 6,
+    priceCents: 7900, productLimit: 10, photoLimit: 6, vagaLimit: 5,
     features: { ...allFeatures(true), destaque: false },
     mercadoPagoLink: null,
   },
   PREMIUM: {
     plan: "PREMIUM", label: "Premium", active: true, order: 2,
-    priceCents: 19700, productLimit: 50, photoLimit: 20,
+    priceCents: 19700, productLimit: 50, photoLimit: 20, vagaLimit: 10,
     features: allFeatures(true),
     mercadoPagoLink: null,
   },
@@ -105,7 +108,10 @@ export function planDisplayFeatures(cfg: PlanConfigData): string[] {
     `Até ${cfg.productLimit} produto${cfg.productLimit === 1 ? "" : "s"} na vitrine`,
     `Até ${cfg.photoLimit} foto${cfg.photoLimit === 1 ? "" : "s"} do perfil`,
   ]
+  if (cfg.features.vagas && cfg.vagaLimit > 0)
+    lines.push(`Até ${cfg.vagaLimit} vaga${cfg.vagaLimit === 1 ? "" : "s"} de emprego`)
   for (const f of PLAN_FEATURES) {
+    if (f.key === "vagas") continue // já exibido como linha de limite acima
     if (cfg.features[f.key]) lines.push(f.label)
   }
   return lines

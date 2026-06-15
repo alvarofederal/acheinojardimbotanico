@@ -5,7 +5,7 @@ import { slugify, SITE_URL } from "@/lib/utils"
 import { getPlanConfig } from "@/lib/plan-config"
 import { type PlanId } from "@/lib/plans"
 import Link from "next/link"
-import { MapPin, Phone, Globe, Instagram, Facebook, Linkedin, Youtube, Star, Clock, Navigation, Store } from "lucide-react"
+import { MapPin, Phone, Globe, Instagram, Facebook, Linkedin, Youtube, Star, Clock, Navigation, Store, Briefcase } from "lucide-react"
 import { TrackView } from "./_components/track-view"
 import { WhatsAppButton } from "./_components/whatsapp-button"
 import { ClaimBanner } from "./_components/claim-banner"
@@ -70,6 +70,7 @@ export default async function BusinessPage({ params }: PageProps) {
       category: true,
       photos: { orderBy: { order: "asc" }, take: 10 },
       products: { where: { active: true }, orderBy: { order: "asc" } },
+      vagas: { where: { active: true }, select: { id: true }, take: 1 },
     },
   })
 
@@ -82,6 +83,8 @@ export default async function BusinessPage({ params }: PageProps) {
   // Recursos liberados pelo plano do negócio
   const planCfg = await getPlanConfig(business.plan as PlanId)
   const feat = planCfg.features
+  // Botão "Vagas" no perfil: só negócio reivindicado, em plano com vagas e com ≥1 vaga ativa.
+  const hasVagas = !!business.ownerId && feat.vagas && business.vagas.length > 0
 
   const showcaseProducts = business.products.map(p => ({
     id: p.id, name: p.name, description: p.description, categoria: p.categoria,
@@ -172,6 +175,12 @@ export default async function BusinessPage({ params }: PageProps) {
             <Link href={`/${bairro}/${categoria}/${slug}/loja`}
               className="flex items-center gap-2 px-5 py-3 rounded-full bg-flora-gold hover:brightness-105 text-flora-ink text-sm font-semibold transition-all shadow-lg shadow-flora-gold/25">
               <Store className="w-4 h-4" /> Ver loja completa
+            </Link>
+          )}
+          {hasVagas && (
+            <Link href={`/vagas?negocio=${slug}`}
+              className="flex items-center gap-2 px-5 py-3 rounded-full flora-chip text-sm font-semibold flora-ink transition-all">
+              <Briefcase className="w-4 h-4 text-flora-green" /> Vagas
             </Link>
           )}
           {business.phone && (

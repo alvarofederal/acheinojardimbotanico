@@ -29,6 +29,7 @@ interface PlanForm {
   priceReais: string
   productLimit: string
   photoLimit: string
+  vagaLimit: string
   features: Record<PlanFeature, boolean>
   mercadoPagoLink: string
 }
@@ -39,6 +40,7 @@ function toForm(p: PlanConfigData): PlanForm {
     priceReais: (p.priceCents / 100).toString(),
     productLimit: p.productLimit.toString(),
     photoLimit: p.photoLimit.toString(),
+    vagaLimit: p.vagaLimit.toString(),
     features: { ...p.features },
     mercadoPagoLink: p.mercadoPagoLink ?? "",
   }
@@ -81,6 +83,7 @@ export function ConfigForm({ payment, plans }: { payment: Payment | null; plans:
             priceCents: Math.round(parseFloat(f.priceReais || "0") * 100),
             productLimit: Math.max(0, parseInt(f.productLimit || "0", 10)),
             photoLimit: Math.max(0, parseInt(f.photoLimit || "0", 10)),
+            vagaLimit: Math.max(0, parseInt(f.vagaLimit || "0", 10)),
             features: f.features,
             mercadoPagoLink: f.mercadoPagoLink.trim(),
           })),
@@ -117,7 +120,7 @@ export function ConfigForm({ payment, plans }: { payment: Payment | null; plans:
                   </label>
                 </div>
 
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-2 gap-2">
                   <div className="space-y-1">
                     <label className={labelCls}>R$/mês</label>
                     <input type="number" step="0.01" min="0" value={f.priceReais} disabled={isFree}
@@ -136,6 +139,12 @@ export function ConfigForm({ payment, plans }: { payment: Payment | null; plans:
                     <input type="number" min="0" value={f.photoLimit}
                       onChange={e => updatePlan(f.plan, { photoLimit: e.target.value })}
                       data-testid={`photos-${f.plan}`} className={inputCls} />
+                  </div>
+                  <div className="space-y-1">
+                    <label className={labelCls}>Vagas</label>
+                    <input type="number" min="0" value={f.vagaLimit}
+                      onChange={e => updatePlan(f.plan, { vagaLimit: e.target.value })}
+                      data-testid={`vagas-${f.plan}`} className={inputCls} />
                   </div>
                 </div>
 

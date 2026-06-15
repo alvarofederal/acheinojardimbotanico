@@ -7,6 +7,15 @@ Todas as mudanças relevantes do projeto. Formato baseado em [Keep a Changelog](
 
 ---
 
+## [1.22.0] - 2026-06-14 — Sistema de Vagas + impressão A5 do display (inclui migration)
+- **Vagas**: anunciante reivindicado publica vagas (CRUD em `/dashboard/vagas`), limite por plano (**5** Visibilidade / **10** Premium); liberação por plano no admin (toggle "Vagas" + limite)
+- Página pública **`/vagas`** (cards pequenos clicáveis) + detalhe **`/vagas/[id]`** com a descrição completa
+- Candidatura por **WhatsApp** e/ou **e-mail** (botão que copia o endereço), escolhível por vaga
+- Link **"Vagas"** no navbar e no rodapé; botão "Vagas" no perfil (só negócio reivindicado e com vaga ativa)
+- **Impressão do display em A5**: o A6 sai girado ocupando metade da folha → **2 displays por folha** (vira 180° e reimprime), zero desperdício
+- Migrations aditivas: `add_vagas`, `vaga_email_contato`
+- ⚠️ Vagas sobe **desligada** — ativar no admin (Pagamentos), por plano
+
 ## [1.21.3] - 2026-06-12 — Google Analytics 4 ativo
 - GA4 (`G-SXDHG23V5B`) ligado em produção (o código já existia; faltava o ID)
 - Ativa **só em produção** (`NODE_ENV`) — dev/localhost não polui mais as métricas

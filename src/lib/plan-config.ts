@@ -50,7 +50,7 @@ async function loadFromDb(): Promise<Record<PlanId, PlanConfigData>> {
           where: { plan: p },
           create: {
             plan: p, label: d.label, active: d.active, order: d.order,
-            priceCents: d.priceCents, productLimit: d.productLimit, photoLimit: d.photoLimit,
+            priceCents: d.priceCents, productLimit: d.productLimit, photoLimit: d.photoLimit, vagaLimit: d.vagaLimit,
             features: d.features,
           },
           update: {},
@@ -68,7 +68,7 @@ async function loadFromDb(): Promise<Record<PlanId, PlanConfigData>> {
     data[p] = r
       ? {
           plan: p, label: r.label, active: r.active, order: r.order,
-          priceCents: r.priceCents, productLimit: r.productLimit, photoLimit: r.photoLimit,
+          priceCents: r.priceCents, productLimit: r.productLimit, photoLimit: r.photoLimit, vagaLimit: r.vagaLimit,
           features: normalizeFeatures(r.features),
           mercadoPagoLink: r.mercadoPagoLink ?? null,
         }
@@ -95,6 +95,11 @@ export async function productLimit(plan: PlanId): Promise<number> {
 /** Limite de fotos do perfil do plano. */
 export async function photoLimit(plan: PlanId): Promise<number> {
   return (await getPlanConfig(plan)).photoLimit
+}
+
+/** Limite de vagas do plano (0 = recurso desligado). */
+export async function vagaLimit(plan: PlanId): Promise<number> {
+  return (await getPlanConfig(plan)).vagaLimit
 }
 
 /** Se o plano libera um recurso específico. */

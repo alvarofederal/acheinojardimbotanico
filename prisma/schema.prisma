@@ -148,6 +148,7 @@ model Business {
   owner          User?           @relation(fields: [ownerId], references: [id])
   photos         Photo[]
   products       Product[]
+  vagas          Vaga[]
   views          BusinessView[]
   whatsappClicks WhatsappClick[]
   claimRequests  ClaimRequest[]
@@ -377,6 +378,30 @@ enum ProductPriceMode {
 }
 
 // ===================================================
+// VAGAS (oportunidades de emprego do anunciante)
+// ===================================================
+// Só negócios reivindicados (com owner) e em plano com a flag `vagas` ligada
+// podem cadastrar; o limite por plano é PlanConfig.vagaLimit. Candidatura é via
+// o WhatsApp já cadastrado no Business. Publica direto (sem moderação).
+model Vaga {
+  id          String   @id @default(cuid())
+  businessId  String
+  title       String                    // ex.: "Atendente de balcão"
+  description String   @db.Text          // descrição da vaga (requisitos, jornada, etc.)
+  type        String?                   // CLT | PJ | ESTAGIO | FREELA | TEMPORARIO | OUTRO
+  email        String?                  // e-mail p/ candidatura (opcional)
+  showWhatsapp Boolean @default(true)   // exibir o WhatsApp do negócio como contato
+  active      Boolean  @default(true)   // lojista pode pausar sem apagar
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@index([businessId])
+}
+
+// ===================================================
 // PAGAMENTO MANUAL (PIX + Mercado Pago)
 // ===================================================
 
@@ -420,7 +445,8 @@ model PlanConfig {
   priceCents   Int      @default(0)      // preço mensal (centavos)
   productLimit Int      @default(2)      // máximo de produtos na vitrine
   photoLimit   Int      @default(3)      // máximo de fotos do perfil
-  features     Json                      // { promocoes, loja, eventos, metricas, destaque, redesSociais, selo }
+  vagaLimit    Int      @default(0)      // máximo de vagas (0 = sem vagas neste plano)
+  features     Json                      // { promocoes, loja, eventos, metricas, destaque, redesSociais, selo, cartao, vagas }
   mercadoPagoLink String? @db.Text       // link de cobrança do Mercado Pago deste plano (valor fixo mensal)
   updatedAt    DateTime @updatedAt
 }

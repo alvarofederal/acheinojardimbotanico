@@ -49,6 +49,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
 
               {/* Links */}
               <nav className="flex items-center gap-5 text-sm flora-muted">
+                <Link href="/vagas" className="hover:text-flora-green dark:hover:text-flora-fresh transition-colors">Vagas</Link>
                 <Link href="/termos" className="hover:text-flora-green dark:hover:text-flora-fresh transition-colors">Termos</Link>
                 <Link href="/privacidade" className="hover:text-flora-green dark:hover:text-flora-fresh transition-colors">Privacidade</Link>
                 <Link href="/register" className="hover:text-flora-green dark:hover:text-flora-fresh transition-colors">Anunciar</Link>
