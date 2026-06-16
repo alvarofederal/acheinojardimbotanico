@@ -1,10 +1,11 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 import { db } from "@/lib/prisma"
-import { MonsteraLeaf, LeafSprig, SimpleLeaf } from "../_components/botanicals"
+import { MonsteraLeaf, SimpleLeaf } from "../_components/botanicals"
+import { HeroParallax } from "../_components/hero-parallax"
 import {
   ArrowRight, Search, MessageCircle, BarChart3, ShieldCheck, Zap, Crown,
-  Check, MapPin,
+  Check, MapPin, ChevronDown,
 } from "lucide-react"
 import { formatBRL, planDisplayFeatures, type PlanId } from "@/lib/plans"
 import { getPlanConfigs } from "@/lib/plan-config"
@@ -46,26 +47,33 @@ export default async function AnunciePage() {
 
   return (
     <main>
-      {/* Hero */}
-      <section className="relative flora-hero overflow-hidden">
-        <MonsteraLeaf className="absolute -left-16 top-6 w-72 h-72 text-flora-fresh/20 flora-wind" />
-        <LeafSprig className="absolute right-[6%] -top-4 w-28 h-72 text-flora-soft/25 flora-wind hidden sm:block" style={{ animationDelay: "1s" }} />
-        <div className="relative max-w-3xl mx-auto px-4 sm:px-6 pt-20 pb-24 sm:pt-24 sm:pb-28 text-center">
-          <span className="inline-flex items-center gap-1.5 text-xs font-medium px-3.5 py-1.5 rounded-full bg-white/10 text-white/90 border border-white/15 mb-6">
+      {/* Hero — padrão UAU: verde cobrindo a tela + parallax + textura pontilhada */}
+      <section className="relative flora-hero overflow-hidden min-h-[calc(100svh-4rem)] flex flex-col items-center justify-center">
+        <HeroParallax />
+        {/* Textura pontilhada (grain) — igual à home */}
+        <div aria-hidden className="absolute inset-0 pointer-events-none opacity-[0.06]" style={{ backgroundImage: "radial-gradient(#fff 1px, transparent 1px)", backgroundSize: "4px 4px" }} />
+        {/* Brilho dourado superior */}
+        <div aria-hidden className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-flora-gold/10 to-transparent pointer-events-none" />
+        <div className="relative max-w-3xl mx-auto px-4 sm:px-6 py-14 sm:py-16 text-center">
+          <span className="inline-flex items-center gap-1.5 text-xs font-medium px-3.5 py-1.5 rounded-full bg-white/10 text-white/90 border border-white/15 mb-6 flora-rise">
             <MapPin className="w-3 h-3" /> Para comerciantes do Jardim Botânico
           </span>
-          <h1 className="font-serif font-semibold text-white leading-[1.05] tracking-tight" style={{ fontSize: "clamp(2.4rem, 6vw, 4rem)" }}>
+          <h1 className="font-serif font-semibold text-white leading-[1.05] tracking-tight flora-rise" style={{ fontSize: "clamp(2.4rem, 6vw, 4rem)", animationDelay: ".05s" }}>
             Seja <span className="italic text-flora-gold">encontrado</span> por quem
             <br />mora pertinho de você
           </h1>
-          <p className="mt-5 text-base sm:text-lg text-white/75 max-w-xl mx-auto">
+          <p className="mt-5 text-base sm:text-lg text-white/75 max-w-xl mx-auto flora-rise" style={{ animationDelay: ".1s" }}>
             Todo dia gente do bairro procura no Google por restaurantes, serviços e lojas.
             Coloque seu negócio onde eles procuram.
           </p>
           <Link href="/register"
-            className="inline-flex items-center gap-2 mt-9 px-8 py-4 rounded-full bg-white text-flora-green font-semibold text-sm hover:bg-flora-gold hover:text-flora-ink transition-all hover:shadow-2xl hover:-translate-y-0.5">
+            className="inline-flex items-center gap-2 mt-9 px-8 py-4 rounded-full bg-white text-flora-green font-semibold text-sm hover:bg-flora-gold hover:text-flora-ink transition-all hover:shadow-2xl hover:-translate-y-0.5 flora-rise"
+            style={{ animationDelay: ".15s" }}>
             Cadastrar meu negócio grátis <ArrowRight className="w-4 h-4" />
           </Link>
+          <div className="mt-12 flex justify-center flora-rise" style={{ animationDelay: ".2s" }}>
+            <ChevronDown className="w-5 h-5 text-white/40 animate-bounce" />
+          </div>
         </div>
         <svg className="absolute bottom-0 left-0 w-full" viewBox="0 0 1440 90" preserveAspectRatio="none" style={{ height: "52px" }}>
           <path d="M0,45 C240,90 480,10 720,35 C960,60 1200,20 1440,40 L1440,90 L0,90 Z" className="fill-flora-cream dark:fill-flora-deep" />

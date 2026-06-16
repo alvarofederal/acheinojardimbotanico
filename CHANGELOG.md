@@ -7,6 +7,11 @@ Todas as mudanças relevantes do projeto. Formato baseado em [Keep a Changelog](
 
 ---
 
+## [1.23.1] - 2026-06-16 — Herói da /anuncie no padrão UAU
+- Página **/anuncie**: herói cinematográfico igual à home — verde cobrindo a tela (100svh) + parallax (`HeroParallax`) + textura pontilhada (grain) + conteúdo centrado + scroll cue
+- Resto da página inalterado (já no padrão Flora; planos puxam os preços reais do banco)
+- Docs: `docs/vendas/playbook-porta-a-porta.html` — playbook de vendas porta a porta (HTML/PDF imprimível)
+
 ## [1.23.0] - 2026-06-15 — Redesign UAU das telas públicas + visibilidade de funcionalidades (inclui migration)
 - **Redesign nível Designer Sênior** das telas públicas (padrão do estudo `docs/design/hero-uau.html`):
   - **Home**: herói verde cobrindo a tela inteira (100svh) com **navbar transparente** que congela em verde fosco ao rolar; **parallax** de folhas/brilhos (mouse + scroll); textura **pontilhada** (grain); **joias** em cards editoriais 4:5 que revelam ao passar o mouse (avaliações + WhatsApp); **favoritos** no mesmo idioma

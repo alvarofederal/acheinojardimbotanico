@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Playbook de Campo — Porta a Porta · Achei no Jardim Botânico</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.7.0/dist/tabler-icons.min.css" />
+<style>
+  :root{
+    --ink:#1d1d22; --muted:#6c6c77; --soft:#9a9aa3; --line:#e9e5dd;
+    --accent:#cf5a2e; --accent-d:#a8431f; --accent-soft:#fbeee7;
+    --sand:#fbf7f0; --gold:#c98a2e; --paper:#ffffff;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  body{font-family:'Inter',system-ui,-apple-system,sans-serif;color:var(--ink);background:#e7e4dd;line-height:1.62;font-size:15px}
+  .page{max-width:840px;margin:28px auto;background:var(--paper);padding:54px 60px 64px;box-shadow:0 18px 60px rgba(0,0,0,.16)}
+  h1,h2,h3,.serif{font-family:'Fraunces',Georgia,serif}
+  h2{font-size:27px;font-weight:600;line-height:1.12;letter-spacing:-.01em}
+  h3{font-size:18px;font-weight:600}
+  p{margin:0}
+  .kicker{font-size:11.5px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--accent)}
+  .muted{color:var(--muted)}
+  .lead{font-size:18px;line-height:1.6;color:#3a3a42}
+  strong{font-weight:700;color:var(--ink)}
+  .em{color:var(--accent-d);font-weight:700}
+
+  .toolbar{max-width:840px;margin:18px auto -8px;display:flex;justify-content:flex-end}
+  .printbtn{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:#fff;border:none;border-radius:999px;padding:10px 20px;font:600 14px Inter,sans-serif;cursor:pointer;box-shadow:0 6px 18px rgba(207,90,46,.35)}
+
+  .section{margin-top:42px}
+  .section .kicker{margin-bottom:8px}
+  .hr{height:1px;background:var(--line);border:0;margin:46px 0 0}
+
+  /* Cover */
+  .cover{display:flex;gap:28px;align-items:center;border-bottom:2px solid var(--ink);padding-bottom:30px}
+  .cover h1{font-size:62px;font-weight:600;line-height:.95;letter-spacing:-.02em;margin:6px 0 12px}
+  .cover .lead{max-width:30em}
+  .cover .art{flex:0 0 150px}
+
+  /* Callout */
+  .callout{background:var(--accent-soft);border:1px solid #f3d9cb;border-radius:14px;padding:20px 24px;margin-top:18px}
+  .callout .big{font-family:'Fraunces',serif;font-size:23px;font-weight:600;line-height:1.18;color:var(--accent-d)}
+  .sand{background:var(--sand);border:1px solid var(--line);border-radius:14px;padding:20px 24px}
+
+  /* Meta cards */
+  .metas{display:flex;gap:14px;margin-top:18px;flex-wrap:wrap}
+  .meta{flex:1 1 0;min-width:150px;background:var(--sand);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+  .meta .n{font-family:'Fraunces',serif;font-size:30px;font-weight:600;color:var(--accent);line-height:1}
+  .meta .l{font-size:13px;color:var(--muted);margin-top:4px}
+
+  .pills{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+  .pill{display:inline-flex;align-items:center;gap:7px;background:#fff;border:1.5px solid var(--accent);color:var(--accent-d);border-radius:999px;padding:7px 15px;font-size:13px;font-weight:600}
+
+  /* Funnel steps */
+  .steps{margin-top:22px;position:relative}
+  .step{display:flex;gap:18px;padding:0 0 22px;position:relative}
+  .step:last-child{padding-bottom:0}
+  .rail{flex:0 0 44px;display:flex;flex-direction:column;align-items:center}
+  .badge{width:44px;height:44px;border-radius:50%;background:#fff;border:2px solid var(--ink);color:var(--ink);display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-weight:600;font-size:20px;flex:0 0 44px;z-index:1}
+  .step.key .badge{background:var(--accent);border-color:var(--accent);color:#fff}
+  .line-v{flex:1;width:2px;background:var(--line);margin-top:2px}
+  .step:last-child .line-v{display:none}
+  .step .body{padding-top:7px;flex:1}
+  .step .body .t{font-family:'Fraunces',serif;font-size:18px;font-weight:600;display:flex;align-items:center;gap:9px}
+  .step .body .t i{color:var(--accent);font-size:19px}
+  .step .body .d{color:var(--muted);font-size:14.5px;margin-top:2px}
+  .step.key .body{background:var(--accent-soft);border:1px solid #f3d9cb;border-radius:12px;padding:11px 16px;margin-top:-4px}
+  .star{margin-left:6px;color:var(--gold);font-size:15px}
+
+  /* Script */
+  .beats{margin-top:20px;display:flex;flex-direction:column;gap:12px}
+  .beat{display:grid;grid-template-columns:118px 1fr;gap:16px;align-items:start}
+  .beat .tag{font-size:11.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);padding-top:6px}
+  .beat .say{background:var(--sand);border-left:3px solid var(--accent);border-radius:0 10px 10px 0;padding:11px 16px;font-size:14.5px;line-height:1.55}
+  .beat .say.do{background:#f3f6f1;border-left-color:#7a9a72;color:#4a5a46;font-style:italic}
+
+  /* Triggers grid */
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px}
+  .tg{display:flex;gap:13px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .tg .ic{flex:0 0 38px;height:38px;border-radius:10px;background:var(--accent-soft);color:var(--accent-d);display:flex;align-items:center;justify-content:center;font-size:20px}
+  .tg .tt{font-weight:700;font-size:14.5px}
+  .tg .dd{font-size:13.5px;color:var(--muted);margin-top:1px;line-height:1.45}
+
+  /* Pricing */
+  .plans{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:20px}
+  .plan{border:1px solid var(--line);border-radius:14px;padding:18px 16px;background:#fff;display:flex;flex-direction:column}
+  .plan .tag{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--soft)}
+  .plan .nm{font-family:'Fraunces',serif;font-size:19px;font-weight:600;margin-top:3px}
+  .plan .pr{font-family:'Fraunces',serif;font-size:26px;font-weight:600;color:var(--accent);margin:6px 0 10px}
+  .plan .pr small{font-size:13px;color:var(--muted);font-family:'Inter',sans-serif;font-weight:500}
+  .plan ul{list-style:none;font-size:13px;color:#46464e;line-height:1.5}
+  .plan li{padding-left:18px;position:relative;margin-top:5px}
+  .plan li::before{content:"";position:absolute;left:2px;top:7px;width:7px;height:7px;border-radius:50%;background:var(--accent)}
+  .founder{margin-top:14px;background:var(--ink);color:#fff;border-radius:14px;padding:20px 24px;display:flex;gap:18px;align-items:center}
+  .founder .star-b{flex:0 0 44px;height:44px;border-radius:50%;background:var(--gold);color:#3a2a10;display:flex;align-items:center;justify-content:center;font-size:24px}
+  .founder .ft{font-family:'Fraunces',serif;font-size:18px;font-weight:600}
+  .founder .fd{font-size:13.5px;color:#d9d9df;margin-top:2px}
+  .founder .em{color:#f0b865}
+
+  /* Checklist */
+  .checks{margin-top:18px;display:grid;grid-template-columns:1fr 1fr;gap:11px}
+  .ck{display:flex;gap:11px;align-items:flex-start;font-size:14.5px}
+  .box{flex:0 0 20px;width:20px;height:20px;border:2px solid var(--accent);border-radius:5px;margin-top:1px}
+
+  /* Footer philosophy */
+  .philo{margin-top:44px;border-top:2px solid var(--ink);padding-top:26px;text-align:center}
+  .philo .q{font-family:'Fraunces',serif;font-size:25px;font-weight:600;line-height:1.2}
+  .philo .q .em{color:var(--accent)}
+  .philo .sub{color:var(--muted);font-size:14.5px;margin-top:10px}
+  .philo .sig{font-size:12px;color:var(--soft);margin-top:18px;letter-spacing:.04em}
+
+  @media print{
+    body{background:#fff;font-size:12.5px}
+    .toolbar{display:none}
+    .page{max-width:none;margin:0;padding:0;box-shadow:none}
+    .section,.step,.tg,.plan,.beat,.callout,.founder,.cover,.philo{break-inside:avoid}
+    h2{font-size:22px}
+    .cover h1{font-size:50px}
+  }
+  @page{size:A4;margin:14mm}
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <button class="printbtn" onclick="window.print()"><i class="ti ti-printer"></i> Imprimir / Salvar PDF</button>
+</div>
+
+<main class="page">
+
+  <!-- ===== CAPA ===== -->
+  <header class="cover">
+    <div>
+      <div class="kicker">Achei no Jardim Botânico · Playbook de campo</div>
+      <h1>Porta<br/>a Porta</h1>
+      <p class="lead">Como transformar uma caminhada de sábado em <strong>perfis reivindicados</strong> — e perfis reivindicados em <strong>clientes que ficam</strong>.</p>
+    </div>
+    <div class="art" aria-hidden="true">
+      <svg viewBox="0 0 150 170" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="22" y="46" width="106" height="118" rx="4" fill="#fbf7f0" stroke="#1d1d22" stroke-width="2.5"/>
+        <path d="M16 46 L75 16 L134 46 Z" fill="#fbeee7" stroke="#1d1d22" stroke-width="2.5" stroke-linejoin="round"/>
+        <rect x="58" y="92" width="34" height="72" rx="3" fill="#fff" stroke="#1d1d22" stroke-width="2.5"/>
+        <circle cx="84" cy="128" r="3.2" fill="#cf5a2e"/>
+        <rect x="34" y="74" width="16" height="16" rx="2" fill="#fff" stroke="#1d1d22" stroke-width="2"/>
+        <rect x="100" y="74" width="16" height="16" rx="2" fill="#fff" stroke="#1d1d22" stroke-width="2"/>
+        <path d="M104 40 C104 28 113 19 124 19 C135 19 144 28 144 40 C144 53 124 70 124 70 C124 70 104 53 104 40 Z" fill="#cf5a2e" stroke="#fff" stroke-width="2.5"/>
+        <circle cx="124" cy="39" r="6.5" fill="#fff"/>
+      </svg>
+    </div>
+  </header>
+
+  <!-- ===== 1. MENTALIDADE ===== -->
+  <section class="section">
+    <div class="kicker">A mentalidade</div>
+    <h2>Sábado é dia de plantar, não de colher.</h2>
+    <div class="callout">
+      <p class="big">Não saia para vender. Saia para dar o controle.</p>
+    </div>
+    <p class="lead" style="margin-top:16px">Um perfil reivindicado de graça <strong>não é um pagante</strong> — é um <span class="em">ativo seu</span> e um <span class="em">lead quente</span>. Tire a meta de "fechar venda" da porta e seu "sim" dispara. A venda vem depois, com prova na mão.</p>
+    <div class="metas">
+      <div class="meta"><div class="n">10–15</div><div class="l">reivindicações no dia</div></div>
+      <div class="meta"><div class="n">3–5</div><div class="l">fundadores reservados</div></div>
+      <div class="meta"><div class="n">R$ 0</div><div class="l">de pressão por dinheiro hoje</div></div>
+    </div>
+  </section>
+
+  <!-- ===== 2. SUPERPODER ===== -->
+  <section class="section">
+    <div class="kicker">Seu superpoder</div>
+    <h2>Eles já estão lá.</h2>
+    <div style="display:flex;gap:22px;align-items:center;margin-top:14px">
+      <p class="lead" style="flex:1"><strong>878 comércios do bairro já estão no guia</strong> — importados do Google, <span class="em">sem dono</span>. Quase toda porta que você bater, o negócio já aparece. Você não chega oferecendo: chega <strong>mostrando algo que já é dele e está largado</strong>.</p>
+      <svg width="92" height="92" viewBox="0 0 92 92" fill="none" aria-hidden="true" style="flex:0 0 92px">
+        <rect x="26" y="8" width="46" height="80" rx="7" fill="#fff" stroke="#1d1d22" stroke-width="2.5"/>
+        <rect x="32" y="16" width="34" height="20" rx="3" fill="#fbeee7"/>
+        <circle cx="40" cy="26" r="5" fill="#cf5a2e"/>
+        <rect x="48" y="22" width="14" height="3" rx="1.5" fill="#1d1d22"/>
+        <rect x="48" y="29" width="10" height="3" rx="1.5" fill="#9a9aa3"/>
+        <rect x="32" y="42" width="34" height="4" rx="2" fill="#e9e5dd"/>
+        <rect x="32" y="50" width="26" height="4" rx="2" fill="#e9e5dd"/>
+        <rect x="32" y="62" width="34" height="13" rx="4" fill="#cf5a2e"/>
+        <path d="M8 40 C8 31 15 24 24 24" stroke="#c98a2e" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="2 5"/>
+      </svg>
+    </div>
+    <div class="pills">
+      <span class="pill"><i class="ti ti-flag-2"></i> Gatilho: posse</span>
+      <span class="pill"><i class="ti ti-alert-triangle"></i> Gatilho: medo de perder</span>
+    </div>
+  </section>
+
+  <hr class="hr"/>
+
+  <!-- ===== 3. FUNIL ===== -->
+  <section class="section">
+    <div class="kicker">O caminho</div>
+    <h2>Seis passos. O dinheiro mora no passo 6.</h2>
+    <div class="steps">
+      <div class="step"><div class="rail"><div class="badge">1</div><div class="line-v"></div></div>
+        <div class="body"><div class="t"><i class="ti ti-hand-stop"></i> Abordagem</div><div class="d">"Você já está no guia do bairro." Dez segundos pra não levar não.</div></div></div>
+      <div class="step"><div class="rail"><div class="badge">2</div><div class="line-v"></div></div>
+        <div class="body"><div class="t"><i class="ti ti-device-mobile"></i> Mostra</div><div class="d">Puxa o site: o negócio dele + um vizinho já reivindicado (bonito de ver).</div></div></div>
+      <div class="step key"><div class="rail"><div class="badge">3</div><div class="line-v"></div></div>
+        <div class="body"><div class="t"><i class="ti ti-flag-2"></i> Reivindica <span class="star"><i class="ti ti-star"></i></span></div><div class="d">De graça, <strong>com ele</strong>, na hora (2 min). Aqui nasce o ativo — a vaga dele no guia agora tem dono.</div></div></div>
+      <div class="step"><div class="rail"><div class="badge">4</div><div class="line-v"></div></div>
+        <div class="body"><div class="t"><i class="ti ti-photo"></i> Encanta</div><div class="d">Sobe uma foto boa + WhatsApp + horário ali mesmo. "Pronto, tá no ar." Reciprocidade.</div></div></div>
+      <div class="step"><div class="rail"><div class="badge">5</div><div class="line-v"></div></div>
+        <div class="body"><div class="t"><i class="ti ti-bookmark"></i> Reserva fundador</div><div class="d">"Os primeiros do bairro entram como fundadores." Pega o sim + contato + data de retorno.</div></div></div>
+      <div class="step key"><div class="rail"><div class="badge">6</div></div>
+        <div class="body"><div class="t"><i class="ti ti-chart-line"></i> Follow-up <span class="star"><i class="ti ti-star"></i></span></div><div class="d">Duas semanas depois: <strong>"X pessoas viram seu perfil, Y clicaram no seu WhatsApp."</strong> É aqui que a venda fecha.</div></div></div>
+    </div>
+    <div class="callout" style="margin-top:22px">
+      <p class="big">O fechamento não é na porta — é na métrica.</p>
+      <p class="muted" style="margin-top:6px;font-size:14px">Dê ao fundador uma cortesia do plano Visibilidade no período grátis: ele passa a ver os números. Deixe o dado vender por você.</p>
+    </div>
+  </section>
+
+  <hr class="hr"/>
+
+  <!-- ===== 4. SCRIPT ===== -->
+  <section class="section">
+    <div class="kicker">Na porta</div>
+    <h2>O que dizer — decore a espinha, não o texto.</h2>
+    <div class="beats">
+      <div class="beat"><div class="tag">Abertura</div><div class="say">"Oi, tudo bem? Sou o Álvaro, moro aqui no Jardim Botânico. Montei um guia só do bairro — e o seu comércio <strong>já está nele</strong>. Posso te mostrar?"</div></div>
+      <div class="beat"><div class="tag">Dor + posse</div><div class="say">"Tá vendo? Você já aparece. Mas no automático, puxado do Google: sem suas fotos boas, com o WhatsApp talvez errado. Quem procura no bairro te acha — só que te acha <strong>capenga</strong>."</div></div>
+      <div class="beat"><div class="tag">Oferta (grátis)</div><div class="say">"Em 2 minutos eu te dou o controle disso. <strong>De graça, agora.</strong> Você passa a editar foto, horário, e o cliente fala direto no seu WhatsApp pela página."</div></div>
+      <div class="beat"><div class="tag">Encanta</div><div class="say do">(reivindica junto, sobe uma foto boa, ajusta o WhatsApp) "Pronto — já está no ar, ó."</div></div>
+      <div class="beat"><div class="tag">Fundador</div><div class="say">"Como você é dos primeiros do bairro, entra como <strong>fundador</strong>: tudo liberado, 3 meses sem pagar nada. Depois, se valer pra você, trava o <strong>menor preço pra sempre</strong>. Reservo?"</div></div>
+      <div class="beat"><div class="tag">Fecha o loop</div><div class="say">"Daqui duas semanas eu te mando quantas pessoas viram seu perfil e clicaram no seu WhatsApp. Você decide <strong>com número na mão</strong>, beleza?"</div></div>
+    </div>
+  </section>
+
+  <hr class="hr"/>
+
+  <!-- ===== 5. GATILHOS ===== -->
+  <section class="section">
+    <div class="kicker">Gatilhos mentais</div>
+    <h2>Certeiros — e honestos.</h2>
+    <p class="muted" style="margin-top:6px">Persuadir não é enganar. É facilitar um "sim" que já fazia sentido pra ele.</p>
+    <div class="grid2">
+      <div class="tg"><div class="ic"><i class="ti ti-flag-2"></i></div><div><div class="tt">Posse &amp; perda</div><div class="dd">"Você já está lá, sem dono." O gatilho mais forte que você tem.</div></div></div>
+      <div class="tg"><div class="ic"><i class="ti ti-users"></i></div><div><div class="tt">Prova social</div><div class="dd">"878 comércios já no guia" + mostra um vizinho reivindicado.</div></div></div>
+      <div class="tg"><div class="ic"><i class="ti ti-gift"></i></div><div><div class="tt">Reciprocidade</div><div class="dd">Reivindica, sobe foto, dá 3 meses. Ele sente que "deve" uma.</div></div></div>
+      <div class="tg"><div class="ic"><i class="ti ti-hourglass-high"></i></div><div><div class="tt">Escassez honesta</div><div class="dd">Fundador é real e limitado. Nunca invente urgência.</div></div></div>
+      <div class="tg"><div class="ic"><i class="ti ti-chart-line"></i></div><div><div class="tt">Prova / dado</div><div class="dd">As métricas falam por você. Dado vence promessa.</div></div></div>
+      <div class="tg"><div class="ic"><i class="ti ti-shield-check"></i></div><div><div class="tt">Risco zero</div><div class="dd">"Sem pagar agora, cancela quando quiser, sem fidelidade."</div></div></div>
+      <div class="tg"><div class="ic"><i class="ti ti-bulb"></i></div><div><div class="tt">O porquê</div><div class="dd">"O Google some com os pequenos; eu coloco a vizinhança no mapa."</div></div></div>
+      <div class="tg"><div class="ic"><i class="ti ti-checks"></i></div><div><div class="tt">Micro-sins</div><div class="dd">Reivindica → foto → WhatsApp → fundador. Um sim puxa o outro.</div></div></div>
+    </div>
+  </section>
+
+  <hr class="hr"/>
+
+  <!-- ===== 6. PREÇO ===== -->
+  <section class="section">
+    <div class="kicker">Dinheiro</div>
+    <h2>Quanto cobrar — e a oferta de fundador.</h2>
+    <div class="plans">
+      <div class="plan"><div class="tag">A isca</div><div class="nm">Free</div><div class="pr">R$ 0</div>
+        <ul><li>Perfil com dono</li><li>3 fotos + WhatsApp</li><li>Redes sociais</li></ul></div>
+      <div class="plan" style="border-color:var(--accent);border-width:2px"><div class="tag" style="color:var(--accent)">Pão com manteiga</div><div class="nm">Visibilidade</div><div class="pr">R$ 47,90<small>/mês</small></div>
+        <ul><li>Métricas (views + cliques)</li><li>Selo de verificado</li><li>Vitrine + promoções + vagas</li><li>6 fotos</li></ul></div>
+      <div class="plan"><div class="tag">Pro ambicioso</div><div class="nm">Premium</div><div class="pr">R$ 97,90<small>/mês</small></div>
+        <ul><li>Destaque no topo</li><li>20 fotos · 50 produtos</li><li>10 vagas</li></ul></div>
+    </div>
+    <div class="founder">
+      <div class="star-b"><i class="ti ti-award"></i></div>
+      <div><div class="ft">Oferta de fundador (a sua arma de sábado)</div>
+        <div class="fd">No plano <span class="em">Visibilidade</span>: <span class="em">3 meses grátis</span>, depois <span class="em">R$ 29,90/mês travado pra sempre</span> (tabela R$ 47,90) · só pros primeiros <span class="em">15–20</span> do bairro.</div></div>
+    </div>
+    <div class="sand" style="margin-top:14px">
+      <p style="font-size:14.5px"><strong>A tabela já é enxuta.</strong> Visibilidade <span class="em">R$ 47,90/mês</span> (= R$ 1,60/dia) · Premium R$ 97,90. O fundador é o doce: <strong>R$ 29,90/mês travado pra sempre</strong> — ~R$ 1/dia, uns 38% abaixo da tabela. Lembre o cliente: <strong>mais barato que um post impulsionado</strong> no Instagram, e um único cliente novo paga vários meses.</p>
+      <p class="muted" style="font-size:13.5px;margin-top:10px">Sua dúvida ("não entrego o bastante") tem fundo só no <strong>dia 1</strong>, com tráfego baixo. Por isso não venda "trago clientes" agora — venda controle, presença e ser fundador. A métrica prova o resto. Só mexa no preço se, depois de 20–30 conversas, a objeção for <strong>consistentemente preço</strong> — não "não vi resultado".</p>
+    </div>
+  </section>
+
+  <hr class="hr"/>
+
+  <!-- ===== 7. CHECKLIST ===== -->
+  <section class="section">
+    <div class="kicker">Antes de sábado</div>
+    <h2>Seis caixas pra marcar.</h2>
+    <div class="checks">
+      <div class="ck"><div class="box"></div><div>Rota definida — uma rua comercial densa (concentra portas).</div></div>
+      <div class="ck"><div class="box"></div><div>Site aberto e testado no celular (a v1.23.0 vende sozinha).</div></div>
+      <div class="ck"><div class="box"></div><div>Reivindicar de cor — faça 2-3 ensaios no celular.</div></div>
+      <div class="ck"><div class="box"></div><div>Oferta de fundador decidida (Visibilidade: 3 meses grátis → R$ 29,90 travado).</div></div>
+      <div class="ck"><div class="box"></div><div>Saber liberar a cortesia Visibilidade no admin.</div></div>
+      <div class="ck"><div class="box"></div><div>5-10 displays A5 impressos como brinde/prova física.</div></div>
+    </div>
+  </section>
+
+  <!-- ===== FILOSOFIA ===== -->
+  <footer class="philo">
+    <p class="q">"Pega o que está bom e <span class="em">melhora</span>. Sempre."</p>
+    <p class="sub">Toda porta é um ensaio: bata na próxima melhor do que na anterior. O "não" de hoje é o roteiro de amanhã.</p>
+    <p class="sig">Achei no Jardim Botânico · guia hiperlocal do bairro · v1.23.0</p>
+  </footer>
+
+</main>
+</body>
+</html>
