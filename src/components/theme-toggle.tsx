@@ -5,7 +5,7 @@ import { Moon, Sun } from "lucide-react"
 
 const STORAGE_KEY = "cfy-theme"
 
-export function ThemeToggle() {
+export function ThemeToggle({ className }: { className?: string } = {}) {
   const [isDark, setIsDark] = useState(true)   // padrão escuro
   const [mounted, setMounted] = useState(false)
 
@@ -34,7 +34,7 @@ export function ThemeToggle() {
   return (
     <button
       onClick={toggle}
-      className="p-2 rounded-lg transition-colors text-gray-500 hover:text-gray-700 hover:bg-gray-100 dark:text-white/50 dark:hover:text-white dark:hover:bg-white/10"
+      className={className ?? "p-2 rounded-lg transition-colors text-gray-500 hover:text-gray-700 hover:bg-gray-100 dark:text-white/50 dark:hover:text-white dark:hover:bg-white/10"}
       aria-label={isDark ? "Mudar para modo claro" : "Mudar para modo escuro"}
       title={isDark ? "Modo claro" : "Modo escuro"}
     >

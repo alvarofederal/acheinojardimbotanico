@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next"
 import { db } from "@/lib/prisma"
 import { slugify, SITE_URL } from "@/lib/utils"
+import { getMenuVisibility } from "@/lib/site-visibility"
 
 export const revalidate = 3600
 
@@ -9,8 +10,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: SITE_URL, lastModified: new Date(), changeFrequency: "daily", priority: 1 },
   ]
 
-  // Páginas estáticas relevantes para SEO
-  for (const path of ["anuncie", "promocoes", "noticias", "eventos"]) {
+  // Páginas estáticas — funcionalidades só entram no sitemap quando visíveis no site
+  const vis = await getMenuVisibility()
+  const staticPaths = ["anuncie"]
+  if (vis.promocoes) staticPaths.push("promocoes")
+  if (vis.noticias) staticPaths.push("noticias")
+  if (vis.eventos) staticPaths.push("eventos")
+  if (vis.vagas) staticPaths.push("vagas")
+  for (const path of staticPaths) {
     entries.push({ url: `${SITE_URL}/${path}`, lastModified: new Date(), changeFrequency: "daily", priority: 0.6 })
   }
 
@@ -44,24 +51,28 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })
   }
 
-  // Notícias publicadas
-  const news = await db.news.findMany({
-    where: { status: "PUBLISHED" },
-    select: { slug: true, updatedAt: true },
-    take: 2000,
-  })
-  for (const n of news) {
-    entries.push({ url: `${SITE_URL}/noticias/${n.slug}`, lastModified: n.updatedAt, changeFrequency: "monthly", priority: 0.6 })
+  // Notícias publicadas (só se a seção estiver visível)
+  if (vis.noticias) {
+    const news = await db.news.findMany({
+      where: { status: "PUBLISHED" },
+      select: { slug: true, updatedAt: true },
+      take: 2000,
+    })
+    for (const n of news) {
+      entries.push({ url: `${SITE_URL}/noticias/${n.slug}`, lastModified: n.updatedAt, changeFrequency: "monthly", priority: 0.6 })
+    }
   }
 
-  // Eventos publicados
-  const events = await db.event.findMany({
-    where: { status: "PUBLISHED" },
-    select: { slug: true, updatedAt: true },
-    take: 2000,
-  })
-  for (const e of events) {
-    entries.push({ url: `${SITE_URL}/eventos/${e.slug}`, lastModified: e.updatedAt, changeFrequency: "weekly", priority: 0.6 })
+  // Eventos publicados (só se a seção estiver visível)
+  if (vis.eventos) {
+    const events = await db.event.findMany({
+      where: { status: "PUBLISHED" },
+      select: { slug: true, updatedAt: true },
+      take: 2000,
+    })
+    for (const e of events) {
+      entries.push({ url: `${SITE_URL}/eventos/${e.slug}`, lastModified: e.updatedAt, changeFrequency: "weekly", priority: 0.6 })
+    }
   }
 
   return entries

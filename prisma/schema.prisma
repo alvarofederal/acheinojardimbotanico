@@ -417,6 +417,18 @@ model PaymentConfig {
   updatedAt       DateTime @updatedAt
 }
 
+// Visibilidade das funcionalidades no site público (navbar/footer/página).
+// A chave liga a INTENÇÃO; o link só aparece se TAMBÉM houver >=1 conteúdo
+// publicado. Nasce tudo OFF — revela quando tiver conteúdo pra apresentar.
+model SiteConfig {
+  id            String   @id @default("default")
+  showPromocoes Boolean  @default(false)
+  showNoticias  Boolean  @default(false)
+  showEventos   Boolean  @default(false)
+  showVagas     Boolean  @default(false)
+  updatedAt     DateTime @updatedAt
+}
+
 model PaymentClaim {
   id          String    @id @default(cuid())
   businessId  String

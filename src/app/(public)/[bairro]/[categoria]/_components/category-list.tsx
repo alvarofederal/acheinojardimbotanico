@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useMemo } from "react"
-import { Search } from "lucide-react"
+import { Search, Clock } from "lucide-react"
 import { BusinessCard } from "./business-card"
 
 interface BusinessItem {
@@ -62,34 +62,46 @@ export function CategoryList({
 
   return (
     <div className="space-y-6">
-      {/* Controles */}
-      <div className="flex flex-col sm:flex-row gap-3">
-        <div className="relative flex-1">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-flora-green/50" />
-          <input
-            value={query}
-            onChange={e => setQuery(e.target.value)}
-            placeholder="Buscar nesta categoria..."
-            className="w-full pl-11 pr-4 py-3 rounded-full bg-white/70 dark:bg-white/[0.04] border border-flora-green/10 dark:border-white/10 text-sm flora-ink placeholder:text-flora-ink/35 focus:outline-none focus:ring-2 focus:ring-flora-fresh/40 transition-all"
-          />
+      {/* Controles — barra que acompanha a rolagem (fica sob o cabeçalho fixo) */}
+      <div className="sticky top-[68px] z-30">
+        <div className="flex items-center gap-2 rounded-full bg-white/85 dark:bg-flora-deep/80 backdrop-blur-xl ring-1 ring-flora-green/10 dark:ring-white/10 shadow-lg shadow-flora-green/5 p-1.5 pl-4">
+          {/* Busca */}
+          <div className="relative flex-1 flex items-center min-w-0">
+            <Search className="w-4 h-4 text-flora-green/50 flex-shrink-0" />
+            <input
+              value={query}
+              onChange={e => setQuery(e.target.value)}
+              placeholder="Buscar nesta categoria..."
+              className="w-full pl-2.5 pr-2 py-2 bg-transparent text-sm flora-ink placeholder:text-flora-ink/35 focus:outline-none"
+            />
+          </div>
+          {/* Contagem ao vivo */}
+          <span className="hidden sm:inline text-xs flora-muted whitespace-nowrap px-1">
+            {filtered.length} {filtered.length === 1 ? "resultado" : "resultados"}
+          </span>
+          <span className="hidden sm:block w-px h-5 bg-flora-green/15 dark:bg-white/10" />
+          {/* Aberto agora */}
+          <button
+            onClick={() => setOpenOnly(v => !v)}
+            aria-pressed={openOnly}
+            className={`px-4 py-2 rounded-full text-sm font-semibold transition-all flex-shrink-0 inline-flex items-center gap-1.5 ${
+              openOnly
+                ? "bg-flora-green text-white shadow-md shadow-flora-green/20"
+                : "text-flora-ink hover:bg-flora-green/5 dark:hover:bg-white/5"
+            }`}
+          >
+            <Clock className="w-3.5 h-3.5" />
+            Aberto agora
+          </button>
         </div>
-        <button
-          onClick={() => setOpenOnly(v => !v)}
-          className={`px-5 py-3 rounded-full text-sm font-semibold transition-all flex-shrink-0 ${
-            openOnly
-              ? "bg-flora-green text-white shadow-lg shadow-flora-green/20"
-              : "flora-chip flora-ink"
-          }`}
-        >
-          Aberto agora
-        </button>
       </div>
 
       {/* Resultado */}
       {filtered.length === 0 ? (
-        <p className="text-center py-12 text-sm flora-muted">
-          Nenhum resultado para os filtros atuais.
-        </p>
+        <div className="text-center py-14">
+          <p className="font-serif text-lg flora-ink mb-1">Nada por aqui ainda</p>
+          <p className="text-sm flora-muted">Tente outro termo{openOnly ? " ou desligue o filtro “Aberto agora”" : ""}.</p>
+        </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {filtered.map(business => (

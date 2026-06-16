@@ -1,5 +1,7 @@
 import type { Metadata } from "next"
+import { notFound } from "next/navigation"
 import { db } from "@/lib/prisma"
+import { getMenuVisibility } from "@/lib/site-visibility"
 import { slugify, SITE_URL } from "@/lib/utils"
 import { getPlanConfigs } from "@/lib/plan-config"
 import { type PlanId } from "@/lib/plans"
@@ -14,6 +16,7 @@ export const metadata: Metadata = {
 }
 
 export default async function PromocoesPage() {
+  if (!(await getMenuVisibility()).promocoes) notFound()
   const products = await db.product.findMany({
     where: {
       active: true,

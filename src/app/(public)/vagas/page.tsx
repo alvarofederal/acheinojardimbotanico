@@ -1,6 +1,8 @@
 import type { Metadata } from "next"
 import Link from "next/link"
+import { notFound } from "next/navigation"
 import { db } from "@/lib/prisma"
+import { getMenuVisibility } from "@/lib/site-visibility"
 import { getPlanConfigs } from "@/lib/plan-config"
 import { PLAN_IDS } from "@/lib/plans"
 import { Briefcase, MapPin } from "lucide-react"
@@ -14,6 +16,7 @@ export const metadata: Metadata = {
 
 export default async function VagasPublicPage({ searchParams }: { searchParams: Promise<{ negocio?: string }> }) {
   const { negocio } = await searchParams
+  if (!(await getMenuVisibility()).vagas) notFound()
 
   // Só mostram vagas os negócios reivindicados em planos que liberam o recurso.
   const configs = await getPlanConfigs()

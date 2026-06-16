@@ -1,5 +1,7 @@
 import type { Metadata } from "next"
+import { notFound } from "next/navigation"
 import { db } from "@/lib/prisma"
+import { getMenuVisibility } from "@/lib/site-visibility"
 import { ContentSections, type ContentItem } from "../_components/content-sections"
 
 export const revalidate = 600
@@ -12,6 +14,7 @@ export const metadata: Metadata = {
 const fmt = (d: Date | null) => d ? new Date(d).toLocaleDateString("pt-BR", { day: "2-digit", month: "long", hour: "2-digit", minute: "2-digit" }) : null
 
 export default async function EventosPage() {
+  if (!(await getMenuVisibility()).eventos) notFound()
   const now = new Date()
   const events = await db.event.findMany({
     where: { status: "PUBLISHED", OR: [{ eventDate: { gte: now } }, { eventDate: null }] },

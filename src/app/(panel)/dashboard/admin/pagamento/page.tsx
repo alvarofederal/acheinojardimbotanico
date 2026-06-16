@@ -4,6 +4,7 @@ import { db } from "@/lib/prisma"
 import { getPlanConfigsFresh } from "@/lib/plan-config"
 import { PLAN_IDS } from "@/lib/plans"
 import { ConfigForm } from "./_components/config-form"
+import { SiteVisibilityForm, type SiteCfg } from "./_components/site-visibility-form"
 
 export const dynamic = "force-dynamic"
 
@@ -12,12 +13,19 @@ export default async function PagamentoConfigPage() {
   if (!session?.user) redirect("/login")
   if (session.user.role !== "ADMIN") redirect("/dashboard")
 
-  const [config, cfgs] = await Promise.all([
+  const [config, cfgs, siteCfg] = await Promise.all([
     db.paymentConfig.findUnique({ where: { id: "default" } }),
     getPlanConfigsFresh(),
+    db.siteConfig.findUnique({ where: { id: "default" } }),
   ])
 
   const plans = PLAN_IDS.map(id => cfgs[id])
+  const site: SiteCfg = {
+    showPromocoes: siteCfg?.showPromocoes ?? false,
+    showNoticias: siteCfg?.showNoticias ?? false,
+    showEventos: siteCfg?.showEventos ?? false,
+    showVagas: siteCfg?.showVagas ?? false,
+  }
 
   return (
     <div className="space-y-6">
@@ -28,6 +36,7 @@ export default async function PagamentoConfigPage() {
         </p>
       </div>
       <ConfigForm payment={config} plans={plans} />
+      <SiteVisibilityForm site={site} />
     </div>
   )
 }

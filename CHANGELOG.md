@@ -7,6 +7,16 @@ Todas as mudanças relevantes do projeto. Formato baseado em [Keep a Changelog](
 
 ---
 
+## [1.23.0] - 2026-06-15 — Redesign UAU das telas públicas + visibilidade de funcionalidades (inclui migration)
+- **Redesign nível Designer Sênior** das telas públicas (padrão do estudo `docs/design/hero-uau.html`):
+  - **Home**: herói verde cobrindo a tela inteira (100svh) com **navbar transparente** que congela em verde fosco ao rolar; **parallax** de folhas/brilhos (mouse + scroll); textura **pontilhada** (grain); **joias** em cards editoriais 4:5 que revelam ao passar o mouse (avaliações + WhatsApp); **favoritos** no mesmo idioma
+  - **Perfil do lojista**: herói cinematográfico com capa, barra de ação em vidro, seções com kicker + título e "aberto agora"
+  - **Resultado de busca**: banner da categoria (ícone + média) + barra de filtro **fixa** com contagem ao vivo
+  - **Chrome global**: navbar verde + dourado, **footer verde**, busca de vidro + dourado, logo em variante clara
+- **Visibilidade de funcionalidades** (Promoções/Notícias/Eventos/Vagas): cada seção aparece no site **só** quando a chave manual está ON **e** há ≥1 conteúdo publicado; **nasce desligada**; oculto vira **404 + sai do sitemap**; toggle no admin (Pagamentos)
+- Migration aditiva: `site_config` (tabela `SiteConfig`)
+- ⚠️ As seções sobem **invisíveis** — ativar no admin quando houver conteúdo
+
 ## [1.22.0] - 2026-06-14 — Sistema de Vagas + impressão A5 do display (inclui migration)
 - **Vagas**: anunciante reivindicado publica vagas (CRUD em `/dashboard/vagas`), limite por plano (**5** Visibilidade / **10** Premium); liberação por plano no admin (toggle "Vagas" + limite)
 - Página pública **`/vagas`** (cards pequenos clicáveis) + detalhe **`/vagas/[id]`** com a descrição completa

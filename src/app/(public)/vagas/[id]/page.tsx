@@ -4,6 +4,7 @@ import { notFound } from "next/navigation"
 import { db } from "@/lib/prisma"
 import { slugify } from "@/lib/utils"
 import { getPlanConfigs } from "@/lib/plan-config"
+import { getMenuVisibility } from "@/lib/site-visibility"
 import { PLAN_IDS } from "@/lib/plans"
 import { ArrowLeft, MapPin } from "lucide-react"
 import { WhatsappIcon } from "@/components/whatsapp-icon"
@@ -36,6 +37,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
 export default async function VagaDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
+  if (!(await getMenuVisibility()).vagas) notFound()
   const v = await getVaga(id)
   if (!v) notFound()
 

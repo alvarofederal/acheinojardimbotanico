@@ -1,5 +1,7 @@
 import type { Metadata } from "next"
+import { notFound } from "next/navigation"
 import { db } from "@/lib/prisma"
+import { getMenuVisibility } from "@/lib/site-visibility"
 import { ContentSections, type ContentItem } from "../_components/content-sections"
 
 export const revalidate = 600
@@ -12,6 +14,7 @@ export const metadata: Metadata = {
 const fmtDate = (d: Date | null) => d ? new Date(d).toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" }) : null
 
 export default async function NoticiasPage() {
+  if (!(await getMenuVisibility()).noticias) notFound()
   const news = await db.news.findMany({
     where: { status: "PUBLISHED" },
     orderBy: [{ featured: "desc" }, { createdAt: "desc" }],

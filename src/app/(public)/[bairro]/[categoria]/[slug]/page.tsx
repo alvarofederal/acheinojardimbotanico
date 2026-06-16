@@ -3,15 +3,17 @@ import type { Metadata } from "next"
 import { db } from "@/lib/prisma"
 import { slugify, SITE_URL } from "@/lib/utils"
 import { getPlanConfig } from "@/lib/plan-config"
+import { getMenuVisibility } from "@/lib/site-visibility"
 import { type PlanId } from "@/lib/plans"
 import Link from "next/link"
-import { MapPin, Phone, Globe, Instagram, Facebook, Linkedin, Youtube, Star, Clock, Navigation, Store, Briefcase } from "lucide-react"
+import { MapPin, Phone, Globe, Instagram, Facebook, Linkedin, Youtube, Star, Clock, Navigation, Store, Briefcase, ArrowLeft, BadgeCheck, Sparkles, Images, ShoppingBag, MapPinned } from "lucide-react"
 import { TrackView } from "./_components/track-view"
 import { WhatsAppButton } from "./_components/whatsapp-button"
 import { ClaimBanner } from "./_components/claim-banner"
 import { ProductShowcase } from "./_components/product-showcase"
 import { PhotoGallery } from "./_components/photo-gallery"
 import { BusinessMap } from "./_components/business-map"
+import { FloatingWhatsApp } from "./loja/_components/floating-whatsapp"
 
 export const revalidate = 3600
 
@@ -33,12 +35,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     title: `${business.name} — ${business.category.name} em ${business.neighborhood}`,
     description: business.description ?? `${business.name} — ${business.category.name} no ${business.neighborhood}, ${business.city}. Endereço, telefone e horários de funcionamento.`,
     alternates: { canonical },
-    openGraph: {
-      title: business.name,
-      description: business.description ?? undefined,
-      type: "website",
-      url: canonical,
-    },
+    openGraph: { title: business.name, description: business.description ?? undefined, type: "website", url: canonical },
   }
 }
 
@@ -61,6 +58,21 @@ function getWeekdayDescriptions(openingHours: unknown): string[] {
   } catch { return [] }
 }
 
+/** Aberto agora? — formato `periods` do Google (mesma lógica do card de listagem). */
+function isOpenNow(openingHours: unknown): boolean | null {
+  if (!openingHours) return null
+  try {
+    const h = openingHours as { periods?: Array<{ open: { day: number; hour: number; minute: number }; close: { day: number; hour: number; minute: number } }> }
+    if (!h.periods) return null
+    const now = new Date()
+    const day = now.getDay()
+    const mins = now.getHours() * 60 + now.getMinutes()
+    const p = h.periods.find(x => x.open.day === day)
+    if (!p) return false
+    return mins >= p.open.hour * 60 + p.open.minute && mins < p.close.hour * 60 + p.close.minute
+  } catch { return null }
+}
+
 export default async function BusinessPage({ params }: PageProps) {
   const { bairro, categoria, slug } = await params
 
@@ -79,12 +91,14 @@ export default async function BusinessPage({ params }: PageProps) {
 
   const weekdays = getWeekdayDescriptions(business.openingHours)
   const reviews = getReviews(business.reviews)
+  const open = isOpenNow(business.openingHours)
 
   // Recursos liberados pelo plano do negócio
   const planCfg = await getPlanConfig(business.plan as PlanId)
   const feat = planCfg.features
-  // Botão "Vagas" no perfil: só negócio reivindicado, em plano com vagas e com ≥1 vaga ativa.
-  const hasVagas = !!business.ownerId && feat.vagas && business.vagas.length > 0
+  // Botão "Vagas" no perfil: Vagas visível no site + reivindicado, em plano com vagas e com ≥1 vaga ativa.
+  const menuVis = await getMenuVisibility()
+  const hasVagas = menuVis.vagas && !!business.ownerId && feat.vagas && business.vagas.length > 0
 
   const showcaseProducts = business.products.map(p => ({
     id: p.id, name: p.name, description: p.description, categoria: p.categoria,
@@ -100,242 +114,258 @@ export default async function BusinessPage({ params }: PageProps) {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
     name: business.name,
-    address: {
-      "@type": "PostalAddress",
-      streetAddress: business.address,
-      addressLocality: business.city,
-      addressRegion: business.state,
-      addressCountry: "BR",
-    },
+    address: { "@type": "PostalAddress", streetAddress: business.address, addressLocality: business.city, addressRegion: business.state, addressCountry: "BR" },
     geo: { "@type": "GeoCoordinates", latitude: business.latitude, longitude: business.longitude },
     telephone: business.phone ?? undefined,
     url: business.website ?? undefined,
-    aggregateRating: business.googleRating ? {
-      "@type": "AggregateRating",
-      ratingValue: business.googleRating,
-      reviewCount: business.googleRatingCount ?? 1,
-    } : undefined,
+    aggregateRating: business.googleRating ? { "@type": "AggregateRating", ratingValue: business.googleRating, reviewCount: business.googleRatingCount ?? 1 } : undefined,
   }
 
-  // "Como chegar" → rota até o local exato. Usa o Place ID do Google quando
-  // disponível (precisão máxima); senão cai em nome+endereço; por fim lat/lng.
   const destinationText = encodeURIComponent(`${business.name}, ${business.address}`)
   const mapsUrl = business.placeId
     ? `https://www.google.com/maps/dir/?api=1&destination=${destinationText}&destination_place_id=${business.placeId}`
     : `https://www.google.com/maps/dir/?api=1&destination=${business.latitude},${business.longitude}`
 
+  const cover = business.storeCoverUrl ?? business.photos[0]?.url ?? null
+  const logo = business.logoUrl ?? business.photos[0]?.url ?? null
+  const rating = business.googleRating ?? 0
+  const ghostBtn = "flex items-center gap-2 px-4 py-3 rounded-2xl bg-flora-green/[0.07] hover:bg-flora-green/[0.13] text-flora-ink dark:text-white text-sm font-semibold transition-all hover:-translate-y-0.5"
+
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <style dangerouslySetInnerHTML={{ __html: "@keyframes kbns{from{transform:scale(1.06)}to{transform:scale(1.16) translateY(-10px)}}" }} />
       <TrackView businessId={business.id} />
 
-      <main className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
-        {/* Breadcrumb */}
-        <nav className="text-xs flora-muted mb-5 flex items-center gap-1.5 flex-wrap">
-          <Link href="/" className="hover:text-flora-green dark:hover:text-flora-fresh transition-colors">Início</Link>
-          <span className="opacity-50">/</span>
-          <Link href={`/${bairro}/${categoria}`} className="hover:text-flora-green dark:hover:text-flora-fresh transition-colors">
-            {business.category.name}
-          </Link>
-          <span className="opacity-50">/</span>
-          <span className="flora-ink truncate max-w-[200px]">{business.name}</span>
-        </nav>
+      {/* ── HERO cinematográfico ──────────────────────────────────── */}
+      <header className="relative min-h-[72vh] flex flex-col justify-end overflow-hidden isolate">
+        {cover ? (
+          <div className="absolute inset-0 -z-30 bg-cover bg-center" style={{ backgroundImage: `url('${cover}')`, animation: "kbns 22s ease-out forwards" }} />
+        ) : (
+          <div className="absolute inset-0 -z-30" style={{ background: "radial-gradient(125% 95% at 50% -10%,#1e5c45,#123f2f 46%,#0a2b20)" }} />
+        )}
+        <div className="absolute inset-0 -z-20" style={{ background: "linear-gradient(180deg,rgba(10,43,32,.45) 0%,rgba(10,43,32,.12) 30%,rgba(10,43,32,.6) 70%,rgba(10,43,32,.93) 100%)" }} />
 
-        {/* Fotos — galeria editorial com lightbox */}
-        <PhotoGallery photos={business.photos.map(p => p.url)} name={business.name} />
-
-        {/* Header */}
-        <div className="mb-6 flora-rise">
-          <div className="flex items-start gap-3 flex-wrap">
-            <p className="text-xs font-medium uppercase tracking-wider text-flora-green dark:text-flora-fresh">{business.category.name}</p>
-            {feat.selo && (
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-flora-gold text-flora-ink uppercase tracking-wide">{planCfg.label}</span>
-            )}
+        {/* Voltar p/ a listagem */}
+        <div className="absolute top-0 left-0 right-0 z-10 px-4 sm:px-6 pt-4">
+          <div className="max-w-3xl mx-auto">
+            <Link href={`/${bairro}/${categoria}`}
+              className="inline-flex items-center gap-2 text-[13px] font-medium text-white/85 bg-black/20 backdrop-blur-sm border border-white/15 px-3.5 py-2 rounded-full hover:bg-black/30 transition-colors">
+              <ArrowLeft className="w-4 h-4" /> {business.category.name} em {business.neighborhood}
+            </Link>
           </div>
-          <h1 className="font-serif text-3xl sm:text-4xl font-semibold flora-ink leading-tight mt-1.5">
-            {business.name}
-          </h1>
-          {business.googleRating && (
-            <span className="inline-flex items-center gap-1.5 text-sm mt-2.5">
-              <Star className="w-4 h-4 fill-flora-gold text-flora-gold" />
-              <span className="font-semibold flora-ink">{business.googleRating.toFixed(1)}</span>
-              {business.googleRatingCount && (
-                <span className="flora-muted text-xs">· {business.googleRatingCount} avaliações no Google</span>
+        </div>
+
+        <div className="relative z-10 px-4 sm:px-6 pb-9 sm:pb-12">
+          <div className="max-w-3xl mx-auto">
+            {logo && (
+              <img src={logo} alt={business.name} loading="eager"
+                className="w-[76px] h-[76px] rounded-2xl object-cover border-[3px] border-white/90 shadow-2xl mb-4" />
+            )}
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full bg-flora-gold text-flora-ink">{business.category.name}</span>
+              {open !== null && (
+                <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full ${open ? "bg-flora-fresh/90 text-white" : "bg-black/40 text-white/80 backdrop-blur-sm"}`}>
+                  <Clock className="w-3.5 h-3.5" /> {open ? "Aberto agora" : "Fechado agora"}
+                </span>
               )}
-            </span>
-          )}
-        </div>
-
-        {/* CTAs principais — maiores, mais visíveis */}
-        <div className="flex flex-wrap gap-3 mb-6">
-          {business.whatsapp && (
-            <WhatsAppButton businessId={business.id} whatsapp={business.whatsapp} name={business.name} />
-          )}
-          {feat.loja && (
-            <Link href={`/${bairro}/${categoria}/${slug}/loja`}
-              className="flex items-center gap-2 px-5 py-3 rounded-full bg-flora-gold hover:brightness-105 text-flora-ink text-sm font-semibold transition-all shadow-lg shadow-flora-gold/25">
-              <Store className="w-4 h-4" /> Ver loja completa
-            </Link>
-          )}
-          {hasVagas && (
-            <Link href={`/vagas?negocio=${slug}`}
-              className="flex items-center gap-2 px-5 py-3 rounded-full flora-chip text-sm font-semibold flora-ink transition-all">
-              <Briefcase className="w-4 h-4 text-flora-green" /> Vagas
-            </Link>
-          )}
-          {business.phone && (
-            <a href={`tel:${business.phone}`}
-              className="flex items-center gap-2 px-5 py-3 rounded-full flora-chip text-sm font-semibold flora-ink transition-all">
-              <Phone className="w-4 h-4 text-flora-green" />
-              {business.phone}
-            </a>
-          )}
-          <a href={mapsUrl} target="_blank" rel="noopener noreferrer"
-            className="flex items-center gap-2 px-5 py-3 rounded-full flora-chip text-sm font-semibold flora-ink transition-all">
-            <Navigation className="w-4 h-4 text-flora-green" />
-            Como chegar
-          </a>
-          {business.website && (
-            <a href={business.website} target="_blank" rel="noopener noreferrer"
-              className="flex items-center gap-2 px-5 py-3 rounded-full flora-chip text-sm font-semibold flora-ink transition-all">
-              <Globe className="w-4 h-4 text-flora-green" />
-              Site
-            </a>
-          )}
-        </div>
-
-        {/* Redes sociais — centraliza a visão do negócio */}
-        {feat.redesSociais && (business.instagram || business.facebook || business.linkedin || business.youtube) && (
-          <div className="flex flex-wrap items-center gap-2.5 mb-8">
-            <span className="text-xs font-semibold uppercase tracking-wider flora-muted">Redes</span>
-            {business.instagram && (
-              <a href={`https://instagram.com/${business.instagram.replace("@", "")}`} target="_blank" rel="noopener noreferrer"
-                aria-label="Instagram"
-                className="flex items-center justify-center w-11 h-11 rounded-full flora-chip text-flora-green hover:text-flora-fresh transition-all">
-                <Instagram className="w-5 h-5" />
-              </a>
-            )}
-            {business.facebook && (
-              <a href={business.facebook} target="_blank" rel="noopener noreferrer" aria-label="Facebook"
-                className="flex items-center justify-center w-11 h-11 rounded-full flora-chip text-flora-green hover:text-flora-fresh transition-all">
-                <Facebook className="w-5 h-5" />
-              </a>
-            )}
-            {business.linkedin && (
-              <a href={business.linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"
-                className="flex items-center justify-center w-11 h-11 rounded-full flora-chip text-flora-green hover:text-flora-fresh transition-all">
-                <Linkedin className="w-5 h-5" />
-              </a>
-            )}
-            {business.youtube && (
-              <a href={business.youtube} target="_blank" rel="noopener noreferrer" aria-label="YouTube"
-                className="flex items-center justify-center w-11 h-11 rounded-full flora-chip text-flora-green hover:text-flora-fresh transition-all">
-                <Youtube className="w-5 h-5" />
-              </a>
-            )}
+              {feat.selo && (
+                <span className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full bg-white/15 text-white backdrop-blur-sm border border-white/25">
+                  <BadgeCheck className="w-3.5 h-3.5" /> {planCfg.label}
+                </span>
+              )}
+            </div>
+            <h1 className="font-serif font-bold text-white leading-[1.02] tracking-tight mt-3 mb-2.5 flora-rise"
+              style={{ fontSize: "clamp(2.4rem,6.5vw,4.4rem)", textShadow: "0 4px 30px rgba(0,0,0,.4)" }}>
+              {business.name}
+            </h1>
+            <div className="flex items-center gap-x-5 gap-y-1.5 flex-wrap text-white/90 text-sm">
+              {business.googleRating && (
+                <span className="inline-flex items-center gap-2">
+                  <span className="inline-flex">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Star key={i} className={`w-4 h-4 ${i < Math.round(rating) ? "fill-flora-gold text-flora-gold" : "text-white/30"}`} />
+                    ))}
+                  </span>
+                  <b className="text-base">{rating.toFixed(1)}</b>
+                  {business.googleRatingCount && <span className="text-white/60">· {business.googleRatingCount} avaliações no Google</span>}
+                </span>
+              )}
+              <span className="inline-flex items-center gap-1.5 text-white/80"><MapPin className="w-4 h-4" /> {business.neighborhood} · {business.city}</span>
+            </div>
           </div>
+        </div>
+      </header>
+
+      {/* ── Barra de ações (vidro, sobrepondo o herói) ─────────────── */}
+      <div className="relative z-20 -mt-7 px-4 sm:px-6">
+        <div className="max-w-3xl mx-auto">
+          <div className="rounded-3xl border border-white/60 dark:border-white/10 bg-white/75 dark:bg-flora-deep/70 backdrop-blur-xl shadow-2xl shadow-flora-green/20 p-3 flex flex-wrap gap-2.5">
+            {business.whatsapp && (
+              <div className="flex-1 min-w-[160px] flex">
+                <WhatsAppButton businessId={business.id} whatsapp={business.whatsapp} name={business.name} />
+              </div>
+            )}
+            {feat.loja && (
+              <Link href={`/${bairro}/${categoria}/${slug}/loja`}
+                className="flex items-center gap-2 px-4 py-3 rounded-2xl bg-flora-gold hover:brightness-105 text-flora-ink text-sm font-semibold transition-all hover:-translate-y-0.5">
+                <Store className="w-4 h-4" /> Ver loja
+              </Link>
+            )}
+            {hasVagas && (
+              <Link href={`/vagas?negocio=${slug}`} className={ghostBtn}><Briefcase className="w-4 h-4 text-flora-green" /> Vagas</Link>
+            )}
+            <a href={mapsUrl} target="_blank" rel="noopener noreferrer" className={ghostBtn}><Navigation className="w-4 h-4 text-flora-green" /> Como chegar</a>
+            {business.phone && <a href={`tel:${business.phone}`} className={ghostBtn}><Phone className="w-4 h-4 text-flora-green" /> Ligar</a>}
+            {business.website && <a href={business.website} target="_blank" rel="noopener noreferrer" className={ghostBtn}><Globe className="w-4 h-4 text-flora-green" /> Site</a>}
+          </div>
+        </div>
+      </div>
+
+      <main className="max-w-3xl mx-auto px-4 sm:px-6 pb-16">
+
+        {/* ── Sobre + fatos ──────────────────────────────────────── */}
+        {(business.description || business.storeTagline) && (
+          <section className="pt-12 sm:pt-16">
+            <span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[.16em] text-flora-fresh"><Sparkles className="w-3.5 h-3.5" /> Sobre</span>
+            {business.storeTagline && <h2 className="font-serif text-2xl sm:text-3xl font-semibold flora-ink mt-2.5 leading-snug">{business.storeTagline}</h2>}
+            {business.description && (
+              <p className="font-serif italic text-lg sm:text-xl text-flora-green dark:text-flora-fresh/90 leading-relaxed mt-4 pl-5 border-l-4 border-flora-gold/70">
+                “{business.description}”
+              </p>
+            )}
+          </section>
         )}
 
-        {/* Descrição */}
-        {business.description && (
-          <div className="mb-8 flora-card rounded-3xl p-6">
-            <p className="font-serif text-lg flora-ink leading-relaxed italic">“{business.description}”</p>
+        {/* Fatos rápidos */}
+        <section className="grid sm:grid-cols-2 gap-3 mt-8">
+          <div className="flex gap-3.5 items-start flora-card rounded-2xl p-4">
+            <span className="w-11 h-11 rounded-xl bg-flora-green/10 text-flora-green flex items-center justify-center flex-shrink-0"><MapPin className="w-5 h-5" /></span>
+            <div><b className="block text-sm flora-ink">{business.address.split(",").slice(0, 2).join(",")}</b><span className="text-xs flora-muted">{business.neighborhood}, {business.city}–{business.state}</span></div>
           </div>
-        )}
-
-        <div className="grid sm:grid-cols-2 gap-5">
-          {/* Endereço */}
-          <div className="flora-card rounded-3xl p-6 space-y-3">
-            <h2 className="font-semibold flora-ink text-sm uppercase tracking-wider flex items-center gap-2">
-              <MapPin className="w-5 h-5 text-flora-green" /> Localização
-            </h2>
-            <p className="text-base flora-muted leading-relaxed">{business.address}</p>
-            <a href={mapsUrl} target="_blank" rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-sm font-semibold text-flora-green dark:text-flora-fresh hover:gap-2.5 transition-all">
-              <Navigation className="w-4 h-4" /> Ver rota
-            </a>
-          </div>
-
-          {/* Horários */}
           {weekdays.length > 0 && (
-            <div className="flora-card rounded-3xl p-6 space-y-3">
-              <h2 className="font-semibold flora-ink text-sm uppercase tracking-wider flex items-center gap-2">
-                <Clock className="w-5 h-5 text-flora-green" /> Horários
-              </h2>
-              <ul className="text-base flora-muted space-y-1.5">
-                {weekdays.map((day, i) => (
-                  <li key={i} className="flex justify-between gap-4">
-                    <span className="opacity-70">{day.split(":")[0]}</span>
-                    <span className="text-right flora-ink">{day.split(":").slice(1).join(":").trim()}</span>
-                  </li>
-                ))}
-              </ul>
+            <div className="flex gap-3.5 items-start flora-card rounded-2xl p-4">
+              <span className="w-11 h-11 rounded-xl bg-flora-green/10 text-flora-green flex items-center justify-center flex-shrink-0"><Clock className="w-5 h-5" /></span>
+              <div><b className={`block text-sm ${open ? "text-flora-green dark:text-flora-fresh" : "flora-ink"}`}>{open === null ? "Horários" : open ? "Aberto agora" : "Fechado agora"}</b><span className="text-xs flora-muted">{weekdays[new Date().getDay() === 0 ? 6 : new Date().getDay() - 1] ?? weekdays[0]}</span></div>
             </div>
           )}
-        </div>
+          {business.phone && (
+            <div className="flex gap-3.5 items-start flora-card rounded-2xl p-4">
+              <span className="w-11 h-11 rounded-xl bg-flora-green/10 text-flora-green flex items-center justify-center flex-shrink-0"><Phone className="w-5 h-5" /></span>
+              <div><b className="block text-sm flora-ink">{business.phone}</b><span className="text-xs flora-muted">Telefone & WhatsApp</span></div>
+            </div>
+          )}
+          {feat.redesSociais && business.instagram && (
+            <a href={`https://instagram.com/${business.instagram.replace("@", "")}`} target="_blank" rel="noopener noreferrer" className="flex gap-3.5 items-start flora-card rounded-2xl p-4 hover:-translate-y-0.5 transition-transform">
+              <span className="w-11 h-11 rounded-xl bg-flora-green/10 text-flora-green flex items-center justify-center flex-shrink-0"><Instagram className="w-5 h-5" /></span>
+              <div><b className="block text-sm flora-ink">{business.instagram.startsWith("@") ? business.instagram : "@" + business.instagram}</b><span className="text-xs flora-muted">Instagram</span></div>
+            </a>
+          )}
+        </section>
 
-        {/* Mapa interativo do local */}
-        <BusinessMap lat={business.latitude} lng={business.longitude} name={business.name} address={business.address} mapsUrl={mapsUrl} />
-
-        {/* Vitrine de produtos */}
-        {showcaseProducts.length > 0 && (
-          <ProductShowcase
-            products={showcaseProducts}
-            businessId={business.id}
-            whatsapp={business.whatsapp}
-            storeMessage={business.storeWhatsappMessage}
-            businessUrl={businessUrl}
-            storeHref={feat.loja ? `/${bairro}/${categoria}/${slug}/loja` : undefined}
-          />
+        {/* Redes sociais extras */}
+        {feat.redesSociais && (business.facebook || business.linkedin || business.youtube) && (
+          <div className="flex items-center gap-2.5 mt-6">
+            <span className="text-xs font-semibold uppercase tracking-wider flora-muted">Também em</span>
+            {business.facebook && <a href={business.facebook} target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="w-10 h-10 rounded-full flora-chip flex items-center justify-center text-flora-green hover:text-flora-fresh transition-all"><Facebook className="w-5 h-5" /></a>}
+            {business.linkedin && <a href={business.linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="w-10 h-10 rounded-full flora-chip flex items-center justify-center text-flora-green hover:text-flora-fresh transition-all"><Linkedin className="w-5 h-5" /></a>}
+            {business.youtube && <a href={business.youtube} target="_blank" rel="noopener noreferrer" aria-label="YouTube" className="w-10 h-10 rounded-full flora-chip flex items-center justify-center text-flora-green hover:text-flora-fresh transition-all"><Youtube className="w-5 h-5" /></a>}
+          </div>
         )}
 
-        {/* Avaliações do Google */}
+        {/* ── Galeria ────────────────────────────────────────────── */}
+        {business.photos.length > 0 && (
+          <section className="pt-14">
+            <span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[.16em] text-flora-fresh"><Images className="w-3.5 h-3.5" /> Galeria</span>
+            <h2 className="font-serif text-2xl sm:text-3xl font-semibold flora-ink mt-2 mb-5">O ambiente</h2>
+            <PhotoGallery photos={business.photos.map(p => p.url)} name={business.name} />
+          </section>
+        )}
+
+        {/* ── Vitrine ────────────────────────────────────────────── */}
+        {showcaseProducts.length > 0 && (
+          <section className="pt-14">
+            <span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[.16em] text-flora-fresh"><ShoppingBag className="w-3.5 h-3.5" /> Vitrine</span>
+            <h2 className="font-serif text-2xl sm:text-3xl font-semibold flora-ink mt-2 mb-5">O que oferecemos</h2>
+            <ProductShowcase
+              products={showcaseProducts}
+              businessId={business.id}
+              whatsapp={business.whatsapp}
+              storeMessage={business.storeWhatsappMessage}
+              businessUrl={businessUrl}
+              storeHref={feat.loja ? `/${bairro}/${categoria}/${slug}/loja` : undefined}
+            />
+          </section>
+        )}
+
+        {/* ── Avaliações ─────────────────────────────────────────── */}
         {reviews.length > 0 && (
-          <div className="mt-10">
-            <h2 className="font-serif text-2xl font-semibold flora-ink mb-5 flex items-center gap-2">
-              <Star className="w-5 h-5 fill-flora-gold text-flora-gold" />
-              O que dizem no Google
-            </h2>
+          <section className="pt-14">
+            <span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[.16em] text-flora-fresh"><Star className="w-3.5 h-3.5" /> O que dizem</span>
+            <h2 className="font-serif text-2xl sm:text-3xl font-semibold flora-ink mt-2 mb-5">Avaliações no Google</h2>
             <div className="grid sm:grid-cols-3 gap-4">
               {reviews.map((r, i) => (
-                <div key={i} className="flora-card rounded-2xl p-5 flex flex-col gap-3">
+                <div key={i} className="flora-card rounded-2xl p-6 flex flex-col gap-3.5">
                   <div className="flex items-center gap-0.5">
                     {Array.from({ length: 5 }).map((_, s) => (
-                      <Star key={s} className={`w-3.5 h-3.5 ${s < Math.round(r.rating ?? 0) ? "fill-flora-gold text-flora-gold" : "text-flora-soft/40"}`} />
+                      <Star key={s} className={`w-4 h-4 ${s < Math.round(r.rating ?? 0) ? "fill-flora-gold text-flora-gold" : "text-flora-soft/40"}`} />
                     ))}
                   </div>
-                  <p className="text-sm flora-muted leading-relaxed line-clamp-5 flex-1">“{r.text?.text}”</p>
-                  <div className="flex items-center gap-2 pt-1">
+                  <p className="text-sm flora-ink/90 leading-relaxed line-clamp-5 flex-1">“{r.text?.text}”</p>
+                  <div className="flex items-center gap-2.5 pt-1">
                     {r.authorAttribution?.photoUri ? (
-                      <img src={r.authorAttribution.photoUri} alt="" className="w-7 h-7 rounded-full object-cover" loading="lazy" />
+                      <img src={r.authorAttribution.photoUri} alt="" className="w-8 h-8 rounded-full object-cover" loading="lazy" />
                     ) : (
-                      <span className="w-7 h-7 rounded-full bg-flora-green/15 flex items-center justify-center text-flora-green text-xs font-bold">
-                        {(r.authorAttribution?.displayName ?? "?")[0]}
-                      </span>
+                      <span className="w-8 h-8 rounded-full bg-flora-green/15 flex items-center justify-center text-flora-green text-sm font-bold">{(r.authorAttribution?.displayName ?? "?")[0]}</span>
                     )}
                     <div className="min-w-0">
                       <p className="text-xs font-semibold flora-ink truncate">{r.authorAttribution?.displayName ?? "Visitante"}</p>
-                      {r.relativePublishTimeDescription && (
-                        <p className="text-[11px] flora-muted">{r.relativePublishTimeDescription}</p>
-                      )}
+                      {r.relativePublishTimeDescription && <p className="text-[11px] flora-muted">{r.relativePublishTimeDescription}</p>}
                     </div>
                   </div>
                 </div>
               ))}
             </div>
-          </div>
+          </section>
         )}
 
-        {/* Claim banner */}
-        {!business.ownerId && <ClaimBanner businessId={business.id} businessName={business.name} />}
+        {/* ── Localização & horários ─────────────────────────────── */}
+        <section className="pt-14">
+          <span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[.16em] text-flora-fresh"><MapPinned className="w-3.5 h-3.5" /> Onde fica</span>
+          <h2 className="font-serif text-2xl sm:text-3xl font-semibold flora-ink mt-2 mb-5">Localização & horários</h2>
+          <div className="grid sm:grid-cols-2 gap-4 items-start">
+            <div>
+              <BusinessMap lat={business.latitude} lng={business.longitude} name={business.name} address={business.address} mapsUrl={mapsUrl} />
+            </div>
+            {weekdays.length > 0 && (
+              <div className="flora-card rounded-3xl p-6">
+                <h3 className="font-serif text-lg font-semibold flora-ink mb-4 flex items-center gap-2"><Clock className="w-5 h-5 text-flora-green" /> Horários</h3>
+                <ul className="space-y-2.5">
+                  {weekdays.map((day, i) => (
+                    <li key={i} className="flex justify-between gap-4 text-sm">
+                      <span className="flora-muted">{day.split(":")[0]}</span>
+                      <span className="flora-ink text-right">{day.split(":").slice(1).join(":").trim()}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        </section>
+
+        {/* Claim */}
+        {!business.ownerId && <div className="pt-12"><ClaimBanner businessId={business.id} businessName={business.name} /></div>}
 
         {/* Atribuição obrigatória — Google Places TOS */}
         {(business.googleRating || business.photos.some(p => p.source === "GOOGLE_PLACES")) && (
-          <p className="mt-8 text-xs text-gray-300 dark:text-white/20 text-center">
-            Algumas informações e fotos fornecidas por Google
-          </p>
+          <p className="mt-10 text-xs text-gray-300 dark:text-white/20 text-center">Algumas informações e fotos fornecidas por Google</p>
         )}
       </main>
+
+      {/* WhatsApp flutuante — sempre à mão (já trackeia) */}
+      {business.whatsapp && (
+        <FloatingWhatsApp businessId={business.id} whatsapp={business.whatsapp} storeMessage={business.storeWhatsappMessage} businessUrl={businessUrl} />
+      )}
     </>
   )
 }
