@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Dossiê de Crescimento — Jardim Botânico</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.7.0/dist/tabler-icons.min.css" />
+<style>
+  :root{
+    --ink:#1a1a1e;--muted:#65656e;--soft:#9b9ba3;--line:#e9e4d9;
+    --brass:#a87a2c;--brass-d:#7a5618;--brass-soft:#f7efdf;--cream:#fbf8f1;--paper:#fff;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);background:#e6e3da;line-height:1.62;font-size:15px}
+  .page{max-width:860px;margin:28px auto;background:var(--paper);padding:56px 62px 64px;box-shadow:0 18px 60px rgba(0,0,0,.16)}
+  h1,h2,h3,.serif{font-family:'Fraunces',Georgia,serif}
+  h2{font-size:26px;font-weight:600;line-height:1.12;letter-spacing:-.01em}
+  p{margin:0}
+  .kicker{font-size:11.5px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--brass)}
+  .muted{color:var(--muted)}
+  strong,b{font-weight:700;color:var(--ink)}
+  .em{color:var(--brass-d);font-weight:700}
+  .mono{font-family:'JetBrains Mono',monospace}
+
+  .toolbar{max-width:860px;margin:18px auto -8px;display:flex;justify-content:flex-end}
+  .printbtn{display:inline-flex;align-items:center;gap:8px;background:var(--brass);color:#fff;border:none;border-radius:999px;padding:10px 20px;font:600 14px Inter,sans-serif;cursor:pointer;box-shadow:0 6px 18px rgba(168,122,44,.4)}
+
+  /* Capa */
+  .cover{border-bottom:2px solid var(--ink);padding-bottom:30px;position:relative}
+  .stamp{position:absolute;top:0;right:0;display:inline-flex;align-items:center;gap:6px;border:1.5px solid var(--brass);color:var(--brass-d);font-size:10.5px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;padding:5px 11px;border-radius:6px;transform:rotate(3deg)}
+  .cover h1{font-size:54px;font-weight:600;line-height:.98;letter-spacing:-.02em;margin:14px 0 14px;max-width:13ch}
+  .cover .lead{font-size:17px;color:#3a3a42;max-width:46ch}
+
+  .section{margin-top:42px}
+  .section>.kicker{margin-bottom:8px}
+  .hr{height:1px;background:var(--line);border:0;margin:44px 0 0}
+
+  .manifesto{background:var(--ink);color:#f3efe6;border-radius:16px;padding:26px 30px;margin-top:20px}
+  .manifesto .big{font-family:'Fraunces',serif;font-size:25px;font-weight:600;line-height:1.16}
+  .manifesto .big .em{color:#e0b061}
+  .manifesto p.sub{color:#bdbdc4;font-size:14.5px;margin-top:10px}
+
+  /* Jogadas */
+  .play{display:flex;gap:20px;padding:20px 0;border-top:1px solid var(--line)}
+  .play:first-of-type{border-top:0}
+  .pn{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:30px;color:var(--brass);line-height:1;flex:0 0 54px}
+  .pc{flex:1}
+  .pc h3{font-size:18.5px;font-weight:600;line-height:1.2;margin-bottom:7px}
+  .pc .sacada{font-size:14.5px;line-height:1.6;color:#3c3c44}
+  .pc .jogada{font-size:14px;line-height:1.55;color:var(--brass-d);background:var(--brass-soft);border-radius:9px;padding:9px 13px;margin-top:9px}
+  .pc .jogada b{color:var(--brass-d)}
+
+  /* Plano 30 dias */
+  .week{border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin-top:14px}
+  .wh{display:flex;align-items:baseline;gap:12px;margin-bottom:10px}
+  .wn{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:13px;color:#fff;background:var(--brass);border-radius:7px;padding:4px 10px;letter-spacing:.04em}
+  .wt{font-family:'Fraunces',serif;font-size:19px;font-weight:600}
+  .week ul{list-style:none;font-size:14px;line-height:1.5}
+  .week li{padding-left:22px;position:relative;margin-top:7px;color:#3c3c44}
+  .week li::before{content:"";position:absolute;left:3px;top:8px;width:7px;height:7px;border-radius:50%;background:var(--brass)}
+  .week li .ref{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--brass);font-weight:700}
+  .week .meta{margin-top:12px;font-size:13.5px;font-weight:600;color:var(--brass-d);border-top:1px dashed var(--line);padding-top:10px}
+
+  .philo{margin-top:46px;border-top:2px solid var(--ink);padding-top:26px;text-align:center}
+  .philo .q{font-family:'Fraunces',serif;font-size:24px;font-weight:600;line-height:1.22;max-width:30ch;margin:0 auto}
+  .philo .q .em{color:var(--brass)}
+  .philo .sub{color:var(--muted);font-size:14px;margin-top:12px;max-width:52ch;margin-left:auto;margin-right:auto}
+  .philo .sig{font-size:11px;color:var(--soft);margin-top:18px;letter-spacing:.06em;text-transform:uppercase}
+
+  @media print{
+    body{background:#fff;font-size:12.5px}
+    .toolbar{display:none}
+    .page{max-width:none;margin:0;padding:0;box-shadow:none}
+    .play,.week,.manifesto,.cover,.philo,.section>.kicker{break-inside:avoid}
+    h2{font-size:21px}.cover h1{font-size:44px}
+  }
+  @page{size:A4;margin:13mm}
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <button class="printbtn" onclick="window.print()"><i class="ti ti-printer"></i> Imprimir / Salvar PDF</button>
+</div>
+
+<main class="page">
+
+  <header class="cover">
+    <span class="stamp"><i class="ti ti-lock"></i> Confidencial · uso interno</span>
+    <div class="kicker">Dossiê de crescimento · Jardim Botânico</div>
+    <h1>Jogadas que não estão na lista</h1>
+    <p class="lead">Crescimento hiperlocal para um fundador <strong>solo</strong>, <strong>sem grana</strong> e <strong>sem um único lojista ainda</strong> — o que consultoria cobra caro pra contar.</p>
+  </header>
+
+  <div class="manifesto">
+    <p class="big">Não existe hipnose. Existe <span class="em">alavanca</span>.</p>
+    <p class="sub">O que parece "mágica" é só psicologia honesta + jogadas que dão trabalho demais pra maioria fazer. Você não tem equipe — tem foco total e zero burocracia. No começo, isso vale mais.</p>
+  </div>
+
+  <!-- ===== AS JOGADAS ===== -->
+  <section class="section">
+    <div class="kicker">Parte 1 · As 10 jogadas escondidas</div>
+
+    <div class="play">
+      <div class="pn">01</div>
+      <div class="pc">
+        <h3>Você não tem um diretório vazio. Tem o bairro inteiro escondido.</h3>
+        <p class="sacada">Todo concorrente abre <strong>vazio</strong> e morre no "ninguém usa porque não tem nada". Você abre com <strong>878 negócios já dentro</strong> (importados do Google). Sua escassez não é de conteúdo — é de <span class="em">dono</span>.</p>
+        <p class="jogada"><b>→ A jogada:</b> nunca diga "cadastre-se". Diga "o bairro inteiro já está aqui, só faltava quem organizasse". O lojista que vê o próprio negócio já no ar não resiste.</p>
+      </div>
+    </div>
+
+    <div class="play">
+      <div class="pn">02</div>
+      <div class="pc">
+        <h3>Domine UMA rua antes de sonhar com o bairro.</h3>
+        <p class="sacada">Solo, você não cobre o JBT — mas cobre <strong>uma quadra a 100%</strong>. Densidade vira prova viva que se espalha sozinha; cobertura fina morre no silêncio.</p>
+        <p class="jogada"><b>→ A jogada:</b> seja "o guia da Rua X" antes de ser "do Jardim Botânico". Esgote um quarteirão, depois copie a máquina pro próximo.</p>
+      </div>
+    </div>
+
+    <div class="play">
+      <div class="pn">03</div>
+      <div class="pc">
+        <h3>Seja a página inicial do bairro, não um diretório.</h3>
+        <p class="sacada">Ninguém muda o hábito por um "diretório". Mas todo mundo abre o que resolve dor recorrente: <strong>"farmácia de plantão hoje", "o que abre no feriado", "a agenda do bairro"</strong>.</p>
+        <p class="jogada"><b>→ A jogada:</b> publique 1 utilidade que se repete toda semana. Vire o "e hoje, no bairro?" das pessoas — é o motor de Notícias/Eventos que você já construiu.</p>
+      </div>
+    </div>
+
+    <div class="play">
+      <div class="pn">04</div>
+      <div class="pc">
+        <h3>A abertura que desarma: "eu já te trouxe cliente".</h3>
+        <p class="sacada">A frase que derruba a defesa do lojista não é "assine" — é <strong>"X pessoas viram seu perfil e Y clicaram no seu WhatsApp essa semana"</strong>, <em>antes</em> de pedir qualquer coisa. Melhor ainda: chegue com um lead real ("um vizinho perguntou de você no grupo").</p>
+        <p class="jogada"><b>→ A jogada:</b> nunca peça antes de dar. Quem ajuda primeiro recebe o "sim" de graça (reciprocidade).</p>
+      </div>
+    </div>
+
+    <div class="play">
+      <div class="pn">05</div>
+      <div class="pc">
+        <h3>Lance como um evento, não como uma gota.</h3>
+        <p class="sacada">Três posts espaçados ninguém vê. Três lojistas-âncora + uma página local + um disparo nos grupos <strong>no mesmo dia</strong> criam o "todo mundo está falando disso". Percepção de movimento é movimento.</p>
+        <p class="jogada"><b>→ A jogada:</b> escolha uma data e estoure tudo junto — "o guia do JBT chegou". Densidade no <em>tempo</em>, não só no espaço.</p>
+      </div>
+    </div>
+
+    <div class="play">
+      <div class="pn">06</div>
+      <div class="pc">
+        <h3>Coloque a resposta onde a pergunta nasce.</h3>
+        <p class="sacada">QR genérico converte pouco; QR no <strong>momento da dúvida</strong> converte muito. Na saída do veterinário ("pets do JBT"), no elevador do condomínio ("serviço no bairro?"), no portão da escola ("onde comer perto").</p>
+        <p class="jogada"><b>→ A jogada:</b> case a mensagem ao micro-momento + lugar. É <strong>contexto</strong>, não faixa — converte 10×.</p>
+      </div>
+    </div>
+
+    <div class="play">
+      <div class="pn">07</div>
+      <div class="pc">
+        <h3>Não faça propaganda. Faça as pessoas virarem a propaganda.</h3>
+        <p class="sacada">Ninguém compartilha um anúncio; todo mundo compartilha a <strong>própria história</strong>. Conte a do "Seu Zé, que faz pão no JBT há 20 anos" — ele divulga com orgulho pra rede dele, e o vizinho ama uma história local.</p>
+        <p class="jogada"><b>→ A jogada:</b> faça o lojista (e o morador) o herói. Eles te distribuem de graça, com emoção junto.</p>
+      </div>
+    </div>
+
+    <div class="play">
+      <div class="pn">08</div>
+      <div class="pc">
+        <h3>Seus dados de busca são uma arma de PR e de FOMO.</h3>
+        <p class="sacada">Assim que houver tráfego, publique o agregado: <strong>"o Jardim Botânico procurou 'pizza' 400 vezes esse mês"</strong>. Vira PR grátis (grupos amam dado do bairro), dá FOMO no lojista ("400 pessoas e eu nem estou lá") e te coroa como <span class="em">a autoridade</span> do bairro.</p>
+        <p class="jogada"><b>→ A jogada:</b> transforme número de uso em manchete mensal. O dado trabalha como conteúdo, venda e imprensa de uma vez.</p>
+      </div>
+    </div>
+
+    <div class="play">
+      <div class="pn">09</div>
+      <div class="pc">
+        <h3>Crie a fila. Faça eles quererem ENTRAR.</h3>
+        <p class="sacada">"Estou escolhendo os 20 fundadores do guia do JBT" inverte o jogo: em vez de você implorar, eles te procuram. O selo de verificado na vitrine vira <strong>status</strong> — e FOMO em quem não tem.</p>
+        <p class="jogada"><b>→ A jogada:</b> exclusividade honesta e limitada de verdade. Faça quererem entrar; não corra atrás.</p>
+      </div>
+    </div>
+
+    <div class="play">
+      <div class="pn">10</div>
+      <div class="pc">
+        <h3>No começo, VOCÊ é o produto (a API humana do bairro).</h3>
+        <p class="sacada">A mais escondida de todas: antes do app virar hábito, a <strong>pessoa mais útil do bairro</strong> vira. Seja tão bom respondendo "quem você indica?" nos grupos que você se torna o cara de confiança — e o guia é só a sua ferramenta. Sua reputação carrega o produto até ele andar sozinho.</p>
+        <p class="jogada"><b>→ A jogada:</b> seja o vizinho mais prestativo do JBT por 30 dias. "Não escala"? No começo, escala é inimigo — faça o que não escala.</p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="hr"/>
+
+  <!-- ===== PLANO 30 DIAS ===== -->
+  <section class="section">
+    <div class="kicker">Parte 2 · O plano de 30 dias (≈ 1h por dia)</div>
+    <h2 style="margin-top:8px">Da estaca zero à máquina que se repete.</h2>
+
+    <div class="week">
+      <div class="wh"><span class="wn">Semana 1</span><span class="wt">Munição + foco</span></div>
+      <ul>
+        <li>Escolha <strong>1 rua ou condomínio-alvo</strong> e cole nele. <span class="ref">[02]</span></li>
+        <li>Reivindique 2-3 negócios "amigos" você mesmo — sementes pra nada parecer vazio. <span class="ref">[01]</span></li>
+        <li>Prepare a munição: displays impressos, adesivos de vitrine, o pitch, a oferta de fundador.</li>
+        <li>Entre nos grupos de WhatsApp do alvo. Só observe e <strong>ajude</strong> — ainda não venda. <span class="ref">[10]</span></li>
+        <li>Publique a 1ª utilidade recorrente (ex.: "plantão/farmácias do JBT"). <span class="ref">[03]</span></li>
+      </ul>
+      <div class="meta">Meta da semana: front escolhido, munição pronta, presença discreta nos grupos.</div>
+    </div>
+
+    <div class="week">
+      <div class="wh"><span class="wn">Semana 2</span><span class="wt">Plantar densidade</span></div>
+      <ul>
+        <li>Bata perna na rua-alvo: reivindicação grátis na hora. Meta: a rua a <strong>50%+</strong>. <span class="ref">[02]</span></li>
+        <li>Em cada loja, deixe display + adesivo de vitrine — cada uma vira sua mídia. <span class="ref">[01]</span></li>
+        <li>Comece a responder "quem indica?" nos grupos com o link certo. <span class="ref">[10]</span></li>
+        <li>Conte 1 história de lojista no Instagram/grupo. <span class="ref">[07]</span></li>
+      </ul>
+      <div class="meta">Meta da semana: uma rua densa, virando assunto. Os primeiros perfis reivindicados.</div>
+    </div>
+
+    <div class="week">
+      <div class="wh"><span class="wn">Semana 3</span><span class="wt">Momento + reciprocidade</span></div>
+      <ul>
+        <li><strong>Lance como evento</strong>: data marcada + lojistas-âncora + página local + disparo nos grupos no mesmo dia. <span class="ref">[05]</span></li>
+        <li>Volte nos fundadores com a métrica/lead na mão ("já te trouxe X"). <span class="ref">[04]</span></li>
+        <li>Espalhe QR contextual nos pontos do front: elevador, vet, escola, padaria. <span class="ref">[06]</span></li>
+        <li>Feche 1 parceria-âncora (igreja, escola ou associação de moradores).</li>
+      </ul>
+      <div class="meta">Meta da semana: sensação de "chegou", e os primeiros fundadores comprometidos.</div>
+    </div>
+
+    <div class="week">
+      <div class="wh"><span class="wn">Semana 4</span><span class="wt">Provar + espalhar</span></div>
+      <ul>
+        <li>Publique o 1º "dado do bairro": "o JBT procurou X N vezes" → PR + FOMO. <span class="ref">[08]</span></li>
+        <li>Peça indicação aos primeiros felizes ("indica pra 3 vizinhos"). <span class="ref">[07]</span></li>
+        <li>Converta os fundadores: a cortesia vira <strong>R$ 29,90 travado</strong>, com número na mão. <span class="ref">[09]</span></li>
+        <li>Revise os números, escolha a <strong>próxima rua</strong> e repita a máquina.</li>
+      </ul>
+      <div class="meta">Meta do mês: uma rua dominada, os primeiros pagantes, residentes voltando — e a máquina validada pra copiar.</div>
+    </div>
+  </section>
+
+  <footer class="philo">
+    <p class="q">Você não compete com o Google em tecnologia. Compete em <span class="em">pertencimento</span>.</p>
+    <p class="sub">Sem equipe, sem grana, sem lojista — mas com foco total e a vontade de quem não tem plano B. Pega o que está bom e melhora. Toda porta é um ensaio. Vai, bairro.</p>
+    <p class="sig">Dossiê confidencial · Achei no Jardim Botânico · v1.23.1</p>
+  </footer>
+
+</main>
+</body>
+</html>

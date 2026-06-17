@@ -7,6 +7,12 @@ Todas as mudanças relevantes do projeto. Formato baseado em [Keep a Changelog](
 
 ---
 
+## [1.23.2] - 2026-06-16 — Busca livre (/busca) no padrão UAU
+- Página de **busca** (`/busca?q=`) no novo layout: banner verde (igual à listagem por categoria) com a barra de busca embutida + título "Resultados para …"
+- Os cards agora calculam os **extras de plano** (selo, destaque, botão **"Ver loja"**) também na busca — antes não apareciam ali
+- **Preservados**: número de avaliações e todos os botões do card (WhatsApp, Ver loja)
+- Docs: `docs/vendas/dossie-crescimento-jbt.html` — dossiê de crescimento hiperlocal
+
 ## [1.23.1] - 2026-06-16 — Herói da /anuncie no padrão UAU
 - Página **/anuncie**: herói cinematográfico igual à home — verde cobrindo a tela (100svh) + parallax (`HeroParallax`) + textura pontilhada (grain) + conteúdo centrado + scroll cue
 - Resto da página inalterado (já no padrão Flora; planos puxam os preços reais do banco)
