@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react"
 import { Search, Clock } from "lucide-react"
 import { BusinessCard } from "./business-card"
+import { getOpenStatus } from "@/lib/opening-hours"
 
 interface BusinessItem {
   id: string
@@ -23,22 +24,6 @@ interface BusinessItem {
   storeHref?: string | null
 }
 
-function isOpenNow(openingHours: unknown): boolean | null {
-  if (!openingHours) return null
-  try {
-    const h = openingHours as { periods?: Array<{ open: { day: number; hour: number; minute: number }; close: { day: number; hour: number; minute: number } }> }
-    if (!h.periods) return null
-    const now = new Date()
-    const day = now.getDay()
-    const totalMins = now.getHours() * 60 + now.getMinutes()
-    const period = h.periods.find(p => p.open.day === day)
-    if (!period) return false
-    const openMins = period.open.hour * 60 + period.open.minute
-    const closeMins = period.close.hour * 60 + period.close.minute
-    return totalMins >= openMins && totalMins < closeMins
-  } catch { return null }
-}
-
 export function CategoryList({
   businesses,
   bairro,
@@ -55,7 +40,7 @@ export function CategoryList({
     const q = query.trim().toLowerCase()
     return businesses.filter(b => {
       if (q && !b.name.toLowerCase().includes(q) && !b.address.toLowerCase().includes(q)) return false
-      if (openOnly && isOpenNow(b.openingHours) !== true) return false
+      if (openOnly && getOpenStatus(b.openingHours).state !== "aberto") return false
       return true
     })
   }, [businesses, query, openOnly])

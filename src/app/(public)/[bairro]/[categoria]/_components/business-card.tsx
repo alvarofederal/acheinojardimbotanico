@@ -1,9 +1,11 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import { Star, ShoppingBag } from "lucide-react"
 import { WhatsappIcon } from "@/components/whatsapp-icon"
 import { FavoriteHeart } from "@/components/favorite-heart"
+import { getOpenStatus, type OpenStatus, type OpenState } from "@/lib/opening-hours"
 
 interface BusinessCardProps {
   business: {
@@ -29,46 +31,45 @@ interface BusinessCardProps {
   categoria: string
 }
 
-function isOpenNow(openingHours: unknown): boolean | null {
-  if (!openingHours) return null
-  try {
-    const h = openingHours as { periods?: Array<{ open: { day: number; hour: number; minute: number }; close: { day: number; hour: number; minute: number } }> }
-    if (!h.periods) return null
-    const now = new Date()
-    const day = now.getDay()
-    const totalMins = now.getHours() * 60 + now.getMinutes()
-    const period = h.periods.find(p => p.open.day === day)
-    if (!period) return false
-    const openMins = period.open.hour * 60 + period.open.minute
-    const closeMins = period.close.hour * 60 + period.close.minute
-    return totalMins >= openMins && totalMins < closeMins
-  } catch { return null }
+const DOT: Record<OpenState, string> = {
+  aberto: "bg-emerald-400",
+  fechado: "bg-red-400",
+  feriado: "bg-amber-400",
+  desconhecido: "bg-gray-300",
 }
 
 /**
  * Card de negócio — MESMO padrão das "joias" da home: vertical 4:5, imagem
- * sangrada, nome sobreposto, anel dourado no hover. Preserva nota + número de
- * avaliações, status aberto/fechado, selos e os botões (WhatsApp / Ver loja).
+ * sangrada, nome sobreposto, anel dourado no hover. Fundo verde sempre presente
+ * (nunca fica "quebrado" enquanto a imagem carrega / se falhar). Status de
+ * funcionamento pela lib única (aberto/fechado/feriado/não informado), calculado
+ * no cliente (hora local) pra não destoar do servidor.
  */
 export function BusinessCard({ business, bairro, categoria }: BusinessCardProps) {
   const photo = business.photos[0]?.url
-  const open = isOpenNow(business.openingHours)
   const seloLabel = business.seloLabel ?? null
   const featured = business.featured ?? false
   const storeHref = business.storeHref ?? null
   const profileHref = `/${bairro}/${categoria}/${business.slug}`
   const wa = business.whatsapp ? `https://wa.me/${business.whatsapp.replace(/\D/g, "")}` : null
 
+  // Status só no cliente (evita mismatch SSR em UTC × hora de Brasília)
+  const [status, setStatus] = useState<OpenStatus | null>(null)
+  useEffect(() => { setStatus(getOpenStatus(business.openingHours)) }, [business.openingHours])
+
   return (
     <article className="group relative rounded-3xl overflow-hidden aspect-[4/5] shadow-lg shadow-flora-deep/15 flora-rise transition-all duration-500 hover:-translate-y-1.5 hover:shadow-2xl hover:shadow-flora-deep/30">
-      {/* Foto de fundo */}
-      {photo ? (
+      {/* Fundo sempre presente — placeholder verde + inicial (some atrás da foto) */}
+      <div className="absolute inset-0 bg-gradient-to-br from-flora-green to-flora-deep flex items-center justify-center">
+        <span className="font-serif text-6xl text-white/15 select-none">{business.name[0]}</span>
+      </div>
+
+      {/* Foto (por cima do placeholder); se falhar, some e revela o fundo */}
+      {photo && (
+        // eslint-disable-next-line @next/next/no-img-element
         <img src={photo} alt={business.name} loading="lazy"
+          onError={(e) => { e.currentTarget.style.opacity = "0" }}
           className="absolute inset-0 w-full h-full object-cover transition-transform duration-[900ms] ease-out group-hover:scale-110" />
-      ) : (
-        <div className="absolute inset-0 bg-gradient-to-br from-flora-green to-flora-deep flex items-center justify-center">
-          <span className="font-serif text-6xl text-white/70">{business.name[0]}</span>
-        </div>
       )}
 
       {/* Scrim */}
@@ -76,10 +77,10 @@ export function BusinessCard({ business, bairro, categoria }: BusinessCardProps)
       {/* Anel dourado no hover */}
       <div className="absolute inset-0 rounded-3xl border-[1.5px] border-transparent group-hover:border-flora-gold/80 transition-colors duration-500 pointer-events-none z-30" />
 
-      {/* Link cobrindo o card (clique → perfil) */}
+      {/* Link cobrindo o card */}
       <Link href={profileHref} className="absolute inset-0 z-10" aria-label={`Ver ${business.name}`} />
 
-      {/* Coração (clique isolado, já se posiciona no topo-esquerdo) */}
+      {/* Coração (se posiciona sozinho no topo-esquerdo) */}
       <FavoriteHeart item={{ id: business.id, name: business.name, href: profileHref, photo: photo ?? null }} />
 
       {/* Selos — ao lado do coração */}
@@ -97,7 +98,7 @@ export function BusinessCard({ business, bairro, categoria }: BusinessCardProps)
         )}
       </div>
 
-      {/* Nota — canto superior direito (como na home) */}
+      {/* Nota — canto superior direito */}
       {business.googleRating != null && (
         <span className="absolute top-3 right-3 z-20 flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full bg-white/92 text-flora-ink shadow-sm">
           <Star className="w-3 h-3 fill-flora-gold text-flora-gold" />
@@ -107,25 +108,21 @@ export function BusinessCard({ business, bairro, categoria }: BusinessCardProps)
 
       {/* Conteúdo embaixo */}
       <div className="absolute inset-x-0 bottom-0 z-20 p-4 pointer-events-none">
+        {/* Status (sempre informa algo) */}
+        {status && (
+          <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-black/35 backdrop-blur-sm text-white mb-2">
+            <span className={`w-1.5 h-1.5 rounded-full ${DOT[status.state]}`} />
+            {status.label}
+          </span>
+        )}
+
         <h3 className="font-serif text-lg sm:text-xl font-semibold text-white leading-tight line-clamp-2" style={{ textShadow: "0 2px 14px rgba(0,0,0,.45)" }}>
           {business.name}
         </h3>
 
-        {/* Status + número de avaliações (sempre visível) */}
-        <p className="mt-1.5 flex items-center gap-1.5 text-[12px] text-white/85">
-          {open !== null && (
-            <span className="inline-flex items-center gap-1 font-semibold">
-              <span className={`w-1.5 h-1.5 rounded-full ${open ? "bg-emerald-400" : "bg-red-400"}`} />
-              {open ? "Aberto" : "Fechado"}
-            </span>
-          )}
-          {business.googleRatingCount != null && (
-            <>
-              {open !== null && <span className="opacity-50">·</span>}
-              <span>{business.googleRatingCount} avaliações</span>
-            </>
-          )}
-        </p>
+        {business.googleRatingCount != null && (
+          <p className="mt-1 text-[12px] text-white/80">{business.googleRatingCount} avaliações</p>
+        )}
 
         {/* Botões — clicáveis acima do link do card */}
         {(wa || storeHref) && (

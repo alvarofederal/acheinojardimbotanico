@@ -6,6 +6,11 @@ import { validateHandle, normalizeHandle } from "@/lib/handle"
 import { z } from "zod"
 
 const urlOrEmpty = z.string().url().or(z.literal("")).optional()
+const timePoint = z.object({
+  day: z.number().int().min(0).max(6),
+  hour: z.number().int().min(0).max(23),
+  minute: z.number().int().min(0).max(59),
+})
 
 const schema = z.object({
   description: z.string().max(500).optional(),
@@ -20,6 +25,10 @@ const schema = z.object({
   storeCoverUrl: urlOrEmpty,
   storeTagline: z.string().max(140).optional(),
   handle: z.string().max(40).optional(),
+  openingHours: z.object({
+    periods: z.array(z.object({ open: timePoint, close: timePoint })).max(50),
+    feriadoFechado: z.boolean().optional(),
+  }).optional(),
 })
 
 export async function PATCH(req: NextRequest) {
@@ -67,6 +76,7 @@ export async function PATCH(req: NextRequest) {
       storeCoverUrl: data.storeCoverUrl !== undefined ? (data.storeCoverUrl || null) : business.storeCoverUrl,
       storeTagline: data.storeTagline !== undefined ? (data.storeTagline || null) : business.storeTagline,
       ...(handleUpdate !== undefined ? { handle: handleUpdate } : {}),
+      ...(data.openingHours !== undefined ? { openingHours: data.openingHours } : {}),
     },
   })
 

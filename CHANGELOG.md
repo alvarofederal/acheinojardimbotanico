@@ -7,6 +7,13 @@ Todas as mudanças relevantes do projeto. Formato baseado em [Keep a Changelog](
 
 ---
 
+## [1.24.0] - 2026-06-19 — Horário de funcionamento (o lojista controla) + cards mobile + status na tag
+- **Editor de horário no painel** (`/dashboard/negocio`): 7 dias no padrão Google, com **turnos divididos** (ex.: 09:00–13:00 e 14:00–18:00) e "copiar p/ seg–sex". O lojista controla — vale mais que o importado do Google.
+- **Inteligência de feriado**: calendário **BR + DF calculado sozinho** (Carnaval, Sexta-Santa e Corpus Christi derivados da Páscoa; nacionais + regionais do DF). Em feriado o status mostra **"Feriado"** (informativo); se o lojista marcar "fecho em feriados", mostra **"Fechado"** — nunca "Fechado (feriado)".
+- **Tag de status revisada**: Aberto / Fechado / Feriado / **"Horário não informado"** (antes a tag sumia pra quem não tinha horário cadastrado). Lógica única em `src/lib/opening-hours.ts` (fim da duplicação em 3 lugares).
+- **Cards no mobile**: fundo verde + inicial **sempre** atrás da foto + `onError` → o card nunca mais aparece "quebrado" enquanto a imagem carrega (ou se falhar).
+- **Perfil**: quadro da semana agora vem do horário **cadastrado pelo lojista** (fallback pro texto do Google) e destaca o dia de hoje.
+
 ## [1.23.2] - 2026-06-16 — Busca livre (/busca) no padrão UAU
 - Página de **busca** (`/busca?q=`) no novo layout: banner verde (igual à listagem por categoria) com a barra de busca embutida + título "Resultados para …"
 - Os cards agora calculam os **extras de plano** (selo, destaque, botão **"Ver loja"**) também na busca — antes não apareciam ali

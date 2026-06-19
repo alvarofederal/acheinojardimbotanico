@@ -4,6 +4,7 @@ import { db } from "@/lib/prisma"
 import { slugify, SITE_URL } from "@/lib/utils"
 import { getPlanConfig } from "@/lib/plan-config"
 import { getMenuVisibility } from "@/lib/site-visibility"
+import { getOpenStatus, weekRows } from "@/lib/opening-hours"
 import { type PlanId } from "@/lib/plans"
 import Link from "next/link"
 import { MapPin, Phone, Globe, Instagram, Facebook, Linkedin, Youtube, Star, Clock, Navigation, Store, Briefcase, ArrowLeft, BadgeCheck, Sparkles, Images, ShoppingBag, MapPinned } from "lucide-react"
@@ -58,21 +59,6 @@ function getWeekdayDescriptions(openingHours: unknown): string[] {
   } catch { return [] }
 }
 
-/** Aberto agora? — formato `periods` do Google (mesma lógica do card de listagem). */
-function isOpenNow(openingHours: unknown): boolean | null {
-  if (!openingHours) return null
-  try {
-    const h = openingHours as { periods?: Array<{ open: { day: number; hour: number; minute: number }; close: { day: number; hour: number; minute: number } }> }
-    if (!h.periods) return null
-    const now = new Date()
-    const day = now.getDay()
-    const mins = now.getHours() * 60 + now.getMinutes()
-    const p = h.periods.find(x => x.open.day === day)
-    if (!p) return false
-    return mins >= p.open.hour * 60 + p.open.minute && mins < p.close.hour * 60 + p.close.minute
-  } catch { return null }
-}
-
 export default async function BusinessPage({ params }: PageProps) {
   const { bairro, categoria, slug } = await params
 
@@ -89,9 +75,23 @@ export default async function BusinessPage({ params }: PageProps) {
   if (!business) notFound()
   if (business.status === "SUSPENDED") notFound()
 
-  const weekdays = getWeekdayDescriptions(business.openingHours)
   const reviews = getReviews(business.reviews)
-  const open = isOpenNow(business.openingHours)
+  const status = getOpenStatus(business.openingHours)
+  const open = status.state === "aberto"
+  // Quadro da semana: prioriza os horários cadastrados pelo lojista (periods);
+  // se não houver, cai no texto importado do Google (weekdayDescriptions).
+  const ownWeek = weekRows(business.openingHours)
+  const hasOwnHours = ownWeek.some(r => r.text !== "Fechado")
+  const googleWeekdays = getWeekdayDescriptions(business.openingHours)
+  const weekTable = hasOwnHours
+    ? ownWeek.map(r => ({ label: r.day, text: r.text }))
+    : googleWeekdays.map(s => { const ci = s.indexOf(":"); return { label: ci > 0 ? s.slice(0, ci) : s, text: ci > 0 ? s.slice(ci + 1).trim() : "" } })
+  const hasHours = weekTable.length > 0
+  const todayIdx = (new Date().getDay() + 6) % 7 // 0 = segunda … 6 = domingo (ordem do quadro)
+  const statusTone = status.state === "aberto" ? "bg-flora-fresh/90 text-white"
+    : status.state === "feriado" ? "bg-amber-400/90 text-flora-ink"
+    : "bg-black/40 text-white/80 backdrop-blur-sm"
+  const statusLabel = status.state === "aberto" ? "Aberto agora" : status.state === "fechado" ? "Fechado agora" : status.label
 
   // Recursos liberados pelo plano do negócio
   const planCfg = await getPlanConfig(business.plan as PlanId)
@@ -164,11 +164,9 @@ export default async function BusinessPage({ params }: PageProps) {
             )}
             <div className="flex items-center gap-2 flex-wrap">
               <span className="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full bg-flora-gold text-flora-ink">{business.category.name}</span>
-              {open !== null && (
-                <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full ${open ? "bg-flora-fresh/90 text-white" : "bg-black/40 text-white/80 backdrop-blur-sm"}`}>
-                  <Clock className="w-3.5 h-3.5" /> {open ? "Aberto agora" : "Fechado agora"}
-                </span>
-              )}
+              <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full ${statusTone}`}>
+                <Clock className="w-3.5 h-3.5" /> {statusLabel}
+              </span>
               {feat.selo && (
                 <span className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full bg-white/15 text-white backdrop-blur-sm border border-white/25">
                   <BadgeCheck className="w-3.5 h-3.5" /> {planCfg.label}
@@ -243,10 +241,10 @@ export default async function BusinessPage({ params }: PageProps) {
             <span className="w-11 h-11 rounded-xl bg-flora-green/10 text-flora-green flex items-center justify-center flex-shrink-0"><MapPin className="w-5 h-5" /></span>
             <div><b className="block text-sm flora-ink">{business.address.split(",").slice(0, 2).join(",")}</b><span className="text-xs flora-muted">{business.neighborhood}, {business.city}–{business.state}</span></div>
           </div>
-          {weekdays.length > 0 && (
+          {hasHours && (
             <div className="flex gap-3.5 items-start flora-card rounded-2xl p-4">
               <span className="w-11 h-11 rounded-xl bg-flora-green/10 text-flora-green flex items-center justify-center flex-shrink-0"><Clock className="w-5 h-5" /></span>
-              <div><b className={`block text-sm ${open ? "text-flora-green dark:text-flora-fresh" : "flora-ink"}`}>{open === null ? "Horários" : open ? "Aberto agora" : "Fechado agora"}</b><span className="text-xs flora-muted">{weekdays[new Date().getDay() === 0 ? 6 : new Date().getDay() - 1] ?? weekdays[0]}</span></div>
+              <div><b className={`block text-sm ${open ? "text-flora-green dark:text-flora-fresh" : "flora-ink"}`}>{statusLabel}</b><span className="text-xs flora-muted">{weekTable[todayIdx]?.text ?? ""}</span></div>
             </div>
           )}
           {business.phone && (
@@ -337,14 +335,14 @@ export default async function BusinessPage({ params }: PageProps) {
             <div>
               <BusinessMap lat={business.latitude} lng={business.longitude} name={business.name} address={business.address} mapsUrl={mapsUrl} />
             </div>
-            {weekdays.length > 0 && (
+            {hasHours && (
               <div className="flora-card rounded-3xl p-6">
                 <h3 className="font-serif text-lg font-semibold flora-ink mb-4 flex items-center gap-2"><Clock className="w-5 h-5 text-flora-green" /> Horários</h3>
                 <ul className="space-y-2.5">
-                  {weekdays.map((day, i) => (
-                    <li key={i} className="flex justify-between gap-4 text-sm">
-                      <span className="flora-muted">{day.split(":")[0]}</span>
-                      <span className="flora-ink text-right">{day.split(":").slice(1).join(":").trim()}</span>
+                  {weekTable.map((row, i) => (
+                    <li key={i} className={`flex justify-between gap-4 text-sm ${i === todayIdx ? "font-semibold" : ""}`}>
+                      <span className={i === todayIdx ? "flora-ink" : "flora-muted"}>{row.label}</span>
+                      <span className="flora-ink text-right">{row.text}</span>
                     </li>
                   ))}
                 </ul>
