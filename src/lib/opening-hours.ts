@@ -80,9 +80,31 @@ export function holidaysBR(year: number): Map<string, string> {
   return map
 }
 
-/** Nome do feriado de hoje (ou null). */
+/**
+ * Componentes de data/hora SEMPRE no fuso de Brasília (America/Sao_Paulo),
+ * independente de onde o código roda — servidor em UTC (VPS) ou browser de um
+ * visitante em qualquer fuso. É isto que mantém "aberto agora" idêntico entre
+ * o card (client) e o perfil (server). Sem isto, o VPS calcula em UTC (3h a mais).
+ */
+function brasiliaParts(now: Date): { day: number; minutes: number; mmdd: string; year: number } {
+  const p = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Sao_Paulo",
+    year: "numeric", month: "2-digit", day: "2-digit",
+    hour: "2-digit", minute: "2-digit", hour12: false, weekday: "short",
+  }).formatToParts(now).reduce<Record<string, string>>((a, x) => { a[x.type] = x.value; return a }, {})
+  const wd: Record<string, number> = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 }
+  return {
+    day: wd[p.weekday] ?? now.getDay(),
+    minutes: (Number(p.hour) % 24) * 60 + Number(p.minute),
+    mmdd: `${p.month}-${p.day}`,
+    year: Number(p.year),
+  }
+}
+
+/** Nome do feriado de hoje (ou null) — no fuso de Brasília. */
 export function holidayToday(now: Date = new Date()): string | null {
-  return holidaysBR(now.getFullYear()).get(mmdd(now)) ?? null
+  const { mmdd: md, year } = brasiliaParts(now)
+  return holidaysBR(year).get(md) ?? null
 }
 
 // ─────────────────────────────  STATUS  ─────────────────────────────
@@ -101,7 +123,8 @@ export function parseOpeningHours(raw: unknown): OpeningHours | null {
 export function getOpenStatus(raw: unknown, now: Date = new Date()): OpenStatus {
   const h = parseOpeningHours(raw)
   const hasData = !!h?.periods && h.periods.length > 0
-  const holiday = holidayToday(now)
+  const { day, minutes: mins, mmdd: md, year } = brasiliaParts(now)
+  const holiday = holidaysBR(year).get(md) ?? null
 
   if (holiday) {
     if (h?.feriadoFechado) return { state: "fechado", label: "Fechado", detail: holiday }
@@ -110,14 +133,19 @@ export function getOpenStatus(raw: unknown, now: Date = new Date()): OpenStatus 
 
   if (!hasData) return { state: "desconhecido", label: "Horário não informado" }
 
-  const day = now.getDay()
-  const mins = now.getHours() * 60 + now.getMinutes()
   for (const p of h!.periods!) {
-    if (p.open.day !== day) continue
-    const o = p.open.hour * 60 + p.open.minute
-    let c = p.close.hour * 60 + p.close.minute
-    if (p.close.day !== p.open.day) c += 24 * 60 // vira a madrugada
-    if (mins >= o && mins < c) return { state: "aberto", label: "Aberto", detail: `Fecha às ${fmt(p.close.hour, p.close.minute)}` }
+    // período que abre hoje (fecha hoje ou vira a madrugada)
+    if (p.open.day === day) {
+      const o = p.open.hour * 60 + p.open.minute
+      let c = p.close.hour * 60 + p.close.minute
+      if (p.close.day !== p.open.day) c += 24 * 60 // vira a madrugada
+      if (mins >= o && mins < c) return { state: "aberto", label: "Aberto", detail: `Fecha às ${fmt(p.close.hour, p.close.minute)}` }
+    }
+    // período da véspera que entra na madrugada de hoje (ex.: sex 22:00 → sáb 02:00)
+    if (p.close.day === day && p.close.day !== p.open.day) {
+      const c = p.close.hour * 60 + p.close.minute
+      if (mins < c) return { state: "aberto", label: "Aberto", detail: `Fecha às ${fmt(p.close.hour, p.close.minute)}` }
+    }
   }
   return { state: "fechado", label: "Fechado" }
 }
@@ -162,7 +190,7 @@ export function fromEditorModel(days: DayHours[], feriadoFechado: boolean): Open
 /** Linhas pro quadro da semana no perfil (padrão Google). */
 export function weekRows(raw: unknown, now: Date = new Date()): { day: string; text: string; today: boolean }[] {
   const model = toEditorModel(raw)
-  const todayIdx = now.getDay()
+  const todayIdx = brasiliaParts(now).day
   // exibe começando na segunda (1) até domingo (0), como o Google
   const order = [1, 2, 3, 4, 5, 6, 0]
   return order.map(i => {

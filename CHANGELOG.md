@@ -7,6 +7,10 @@ Todas as mudanças relevantes do projeto. Formato baseado em [Keep a Changelog](
 
 ---
 
+## [1.24.3] - 2026-06-19 — "Aberto/Fechado agora" consistente (fuso de Brasília + ao vivo)
+- **Bug:** o mesmo negócio mostrava status diferente no **perfil** vs no **card** da busca, na mesma hora. Causa dupla: (1) o perfil calculava no **servidor** (VPS em UTC, 3h a mais) e o card no **client** (hora local) — relógios diferentes; (2) o perfil tinha `revalidate=3600` (ISR), **congelando** o status por até 1h.
+- **Conserto de raiz:** `lib/opening-hours` agora calcula **SEMPRE no fuso America/Sao_Paulo** (via `Intl`), rode onde rodar (VPS em UTC ou browser de qualquer fuso). O status do perfil virou **client-side ao vivo** (`OpenStatusPill`/`OpenStatusFact`), idêntico ao card. De quebra, corrigida a **virada de madrugada** (período que cruza a meia-noite, ex.: sex 22:00→sáb 02:00).
+
 ## [1.24.2] - 2026-06-19 — Trava anti-overflow horizontal (conserta "site ocupa metade" + imagem deslocada no mobile)
 - **Causa raiz**: o projeto nunca teve trava de overflow horizontal. Bastava UM elemento vazar a largura pra, no mobile, o navegador "afastar o zoom" (o site ocupava metade da tela) **e** o `fixed inset-0` do modal medir a largura errada → imagem da galeria/vitrine ia pro canto. Os dois sintomas eram o mesmo bug.
 - **Conserto estrutural**: `html, body { overflow-x: clip; max-width: 100% }` no globals. `clip` mata o scroll horizontal **sem** criar scroll-container, então o header `sticky` continua funcionando. Agora nenhum elemento solto consegue derrubar o layout mobile.

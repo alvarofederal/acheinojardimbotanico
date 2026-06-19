@@ -4,7 +4,8 @@ import { db } from "@/lib/prisma"
 import { slugify, SITE_URL } from "@/lib/utils"
 import { getPlanConfig } from "@/lib/plan-config"
 import { getMenuVisibility } from "@/lib/site-visibility"
-import { getOpenStatus, weekRows } from "@/lib/opening-hours"
+import { weekRows } from "@/lib/opening-hours"
+import { OpenStatusPill, OpenStatusFact } from "./_components/open-status"
 import { type PlanId } from "@/lib/plans"
 import Link from "next/link"
 import { MapPin, Phone, Globe, Instagram, Facebook, Linkedin, Youtube, Star, Clock, Navigation, Store, Briefcase, ArrowLeft, BadgeCheck, Sparkles, Images, ShoppingBag, MapPinned } from "lucide-react"
@@ -76,10 +77,10 @@ export default async function BusinessPage({ params }: PageProps) {
   if (business.status === "SUSPENDED") notFound()
 
   const reviews = getReviews(business.reviews)
-  const status = getOpenStatus(business.openingHours)
-  const open = status.state === "aberto"
-  // Quadro da semana: prioriza os horários cadastrados pelo lojista (periods);
-  // se não houver, cai no texto importado do Google (weekdayDescriptions).
+  // O status "aberto agora" é calculado AO VIVO no client (OpenStatusPill/Fact),
+  // pra bater 100% com o card e nunca congelar com o ISR. Aqui no servidor montamos
+  // só o quadro estático da semana: prioriza os horários do lojista (periods); se
+  // não houver, cai no texto importado do Google (weekdayDescriptions).
   const ownWeek = weekRows(business.openingHours)
   const hasOwnHours = ownWeek.some(r => r.text !== "Fechado")
   const googleWeekdays = getWeekdayDescriptions(business.openingHours)
@@ -87,11 +88,7 @@ export default async function BusinessPage({ params }: PageProps) {
     ? ownWeek.map(r => ({ label: r.day, text: r.text }))
     : googleWeekdays.map(s => { const ci = s.indexOf(":"); return { label: ci > 0 ? s.slice(0, ci) : s, text: ci > 0 ? s.slice(ci + 1).trim() : "" } })
   const hasHours = weekTable.length > 0
-  const todayIdx = (new Date().getDay() + 6) % 7 // 0 = segunda … 6 = domingo (ordem do quadro)
-  const statusTone = status.state === "aberto" ? "bg-flora-fresh/90 text-white"
-    : status.state === "feriado" ? "bg-amber-400/90 text-flora-ink"
-    : "bg-black/40 text-white/80 backdrop-blur-sm"
-  const statusLabel = status.state === "aberto" ? "Aberto agora" : status.state === "fechado" ? "Fechado agora" : status.label
+  const todayIdx = Math.max(0, ownWeek.findIndex(r => r.today)) // 0 = seg … 6 = dom (fuso de Brasília, via weekRows)
 
   // Recursos liberados pelo plano do negócio
   const planCfg = await getPlanConfig(business.plan as PlanId)
@@ -164,9 +161,7 @@ export default async function BusinessPage({ params }: PageProps) {
             )}
             <div className="flex items-center gap-2 flex-wrap">
               <span className="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-full bg-flora-gold text-flora-ink">{business.category.name}</span>
-              <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full ${statusTone}`}>
-                <Clock className="w-3.5 h-3.5" /> {statusLabel}
-              </span>
+              <OpenStatusPill openingHours={business.openingHours} />
               {feat.selo && (
                 <span className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full bg-white/15 text-white backdrop-blur-sm border border-white/25">
                   <BadgeCheck className="w-3.5 h-3.5" /> {planCfg.label}
@@ -241,12 +236,7 @@ export default async function BusinessPage({ params }: PageProps) {
             <span className="w-11 h-11 rounded-xl bg-flora-green/10 text-flora-green flex items-center justify-center flex-shrink-0"><MapPin className="w-5 h-5" /></span>
             <div><b className="block text-sm flora-ink">{business.address.split(",").slice(0, 2).join(",")}</b><span className="text-xs flora-muted">{business.neighborhood}, {business.city}–{business.state}</span></div>
           </div>
-          {hasHours && (
-            <div className="flex gap-3.5 items-start flora-card rounded-2xl p-4">
-              <span className="w-11 h-11 rounded-xl bg-flora-green/10 text-flora-green flex items-center justify-center flex-shrink-0"><Clock className="w-5 h-5" /></span>
-              <div><b className={`block text-sm ${open ? "text-flora-green dark:text-flora-fresh" : "flora-ink"}`}>{statusLabel}</b><span className="text-xs flora-muted">{weekTable[todayIdx]?.text ?? ""}</span></div>
-            </div>
-          )}
+          {hasHours && <OpenStatusFact openingHours={business.openingHours} />}
           {business.phone && (
             <div className="flex gap-3.5 items-start flora-card rounded-2xl p-4">
               <span className="w-11 h-11 rounded-xl bg-flora-green/10 text-flora-green flex items-center justify-center flex-shrink-0"><Phone className="w-5 h-5" /></span>
