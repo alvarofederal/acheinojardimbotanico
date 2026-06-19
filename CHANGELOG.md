@@ -7,6 +7,10 @@ Todas as mudanças relevantes do projeto. Formato baseado em [Keep a Changelog](
 
 ---
 
+## [1.24.1] - 2026-06-19 — Correções mobile: galeria do perfil + popups de imagem
+- **Galeria do perfil (mobile)**: a 1ª foto ocupava as 2 linhas do grid e empurrava as outras pra uma linha sem altura (`h:0`) → sumiam. Agora: 1 foto grande em cima + as demais embaixo, todas visíveis.
+- **Popups de imagem (produto e galeria) via portal** (`document.body`): blindam contra ancestral com `transform`/`backdrop-filter` (o que jogava o `fixed` pro canto da tela). Agora sempre centralizam no mobile.
+
 ## [1.24.0] - 2026-06-19 — Horário de funcionamento (o lojista controla) + cards mobile + status na tag
 - **Editor de horário no painel** (`/dashboard/negocio`): 7 dias no padrão Google, com **turnos divididos** (ex.: 09:00–13:00 e 14:00–18:00) e "copiar p/ seg–sex". O lojista controla — vale mais que o importado do Google.
 - **Inteligência de feriado**: calendário **BR + DF calculado sozinho** (Carnaval, Sexta-Santa e Corpus Christi derivados da Páscoa; nacionais + regionais do DF). Em feriado o status mostra **"Feriado"** (informativo); se o lojista marcar "fecho em feriados", mostra **"Fechado"** — nunca "Fechado (feriado)".

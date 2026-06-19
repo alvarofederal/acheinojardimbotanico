@@ -1,6 +1,7 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { createPortal } from "react-dom"
 import { ShoppingBag, X } from "lucide-react"
 import { WhatsappIcon } from "@/components/whatsapp-icon"
 
@@ -37,6 +38,8 @@ export function ProductShowcase({
   const [sort, setSort] = useState("recent")
   const [selected, setSelected] = useState<Product | null>(null)
   const [activeImg, setActiveImg] = useState(0)
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => setMounted(true), [])
 
   function openProduct(p: Product) { setActiveImg(0); setSelected(p) }
 
@@ -93,8 +96,8 @@ export function ProductShowcase({
         ))}
       </div>
 
-      {/* Modal do produto */}
-      {selected && (
+      {/* Modal do produto — portal pro body (evita o modal/imagem ir pro canto por causa de ancestral transformado) */}
+      {selected && mounted && createPortal(
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto" style={{ background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)" }} onClick={() => setSelected(null)}>
           <div className="w-full max-w-md my-8 bg-white dark:bg-[#0f1c18] rounded-3xl overflow-hidden" onClick={e => e.stopPropagation()}>
             <div className="relative aspect-square bg-flora-sand dark:bg-white/5">
@@ -134,7 +137,8 @@ export function ProductShowcase({
               {selected.soldOut && <p className="text-center text-sm text-red-500 font-medium">Produto esgotado</p>}
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   )

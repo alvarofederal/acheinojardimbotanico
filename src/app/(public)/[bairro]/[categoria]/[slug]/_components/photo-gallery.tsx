@@ -1,11 +1,14 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
+import { createPortal } from "react-dom"
 import { X, ChevronLeft, ChevronRight } from "lucide-react"
 
 export function PhotoGallery({ photos, name }: { photos: string[]; name: string }) {
   const [open, setOpen] = useState(false)
   const [idx, setIdx] = useState(0)
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => setMounted(true), [])
 
   const show = (i: number) => { setIdx(i); setOpen(true) }
   const close = useCallback(() => setOpen(false), [])
@@ -34,7 +37,7 @@ export function PhotoGallery({ photos, name }: { photos: string[]; name: string 
           <button
             key={i}
             onClick={() => show(i)}
-            className={`relative overflow-hidden bg-flora-sand dark:bg-white/5 group ${i === 0 ? "col-span-4 sm:col-span-2 row-span-2" : "col-span-2 sm:col-span-2"}`}
+            className={`relative overflow-hidden bg-flora-sand dark:bg-white/5 group ${i === 0 ? "col-span-4 row-span-1 sm:col-span-2 sm:row-span-2" : "col-span-2"}`}
           >
             <img src={url} alt={`${name} — foto ${i + 1}`} loading={i === 0 ? "eager" : "lazy"}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
@@ -47,7 +50,7 @@ export function PhotoGallery({ photos, name }: { photos: string[]; name: string 
         ))}
       </div>
 
-      {open && (
+      {open && mounted && createPortal(
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/90 backdrop-blur-sm" onClick={close}>
           <button onClick={close} aria-label="Fechar" className="absolute top-4 right-4 p-2.5 rounded-full bg-white/10 text-white hover:bg-white/20 transition-colors">
             <X className="w-5 h-5" />
@@ -69,7 +72,8 @@ export function PhotoGallery({ photos, name }: { photos: string[]; name: string 
           <span className="absolute bottom-5 left-1/2 -translate-x-1/2 text-white/80 text-sm bg-black/40 px-3 py-1 rounded-full">
             {idx + 1} / {photos.length}
           </span>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   )
