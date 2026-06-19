@@ -137,6 +137,13 @@
   * {
     @apply border-border outline-ring/50;
   }
+  /* Trava anti-overflow: nada pode estourar a largura no mobile.
+     `clip` não cria scroll-container, então o header sticky continua funcionando.
+     Isso conserta o "site ocupa metade" e o modal/imagem indo pro canto. */
+  html, body {
+    overflow-x: clip;
+    max-width: 100%;
+  }
   body {
     @apply bg-background text-foreground;
   }

@@ -7,6 +7,10 @@ Todas as mudanças relevantes do projeto. Formato baseado em [Keep a Changelog](
 
 ---
 
+## [1.24.2] - 2026-06-19 — Trava anti-overflow horizontal (conserta "site ocupa metade" + imagem deslocada no mobile)
+- **Causa raiz**: o projeto nunca teve trava de overflow horizontal. Bastava UM elemento vazar a largura pra, no mobile, o navegador "afastar o zoom" (o site ocupava metade da tela) **e** o `fixed inset-0` do modal medir a largura errada → imagem da galeria/vitrine ia pro canto. Os dois sintomas eram o mesmo bug.
+- **Conserto estrutural**: `html, body { overflow-x: clip; max-width: 100% }` no globals. `clip` mata o scroll horizontal **sem** criar scroll-container, então o header `sticky` continua funcionando. Agora nenhum elemento solto consegue derrubar o layout mobile.
+
 ## [1.24.1] - 2026-06-19 — Correções mobile: galeria do perfil + popups de imagem
 - **Galeria do perfil (mobile)**: a 1ª foto ocupava as 2 linhas do grid e empurrava as outras pra uma linha sem altura (`h:0`) → sumiam. Agora: 1 foto grande em cima + as demais embaixo, todas visíveis.
 - **Popups de imagem (produto e galeria) via portal** (`document.body`): blindam contra ancestral com `transform`/`backdrop-filter` (o que jogava o `fixed` pro canto da tela). Agora sempre centralizam no mobile.
