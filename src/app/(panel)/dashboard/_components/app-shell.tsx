@@ -26,6 +26,7 @@ import {
   QrCode,
   Contact,
   Briefcase,
+  Ghost,
 } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
 import { TopNavbar } from "./top-navbar"
@@ -52,6 +53,7 @@ const adminNav: { href: string; label: string; icon: LucideIcon }[] = [
   { href: "/dashboard/admin/pagamentos", label: "Pagamentos", icon: CreditCard    },
   { href: "/dashboard/admin/claims",   label: "Reivind.",   icon: ShieldCheck     },
   { href: "/dashboard/admin/prospeccao", label: "Prospecção", icon: Target         },
+  { href: "/dashboard/admin/radar",      label: "Radar Fantasma", icon: Ghost      },
   { href: "/dashboard/admin/noticias", label: "Notícias",   icon: Newspaper       },
   { href: "/dashboard/admin/eventos",  label: "Eventos",    icon: CalendarDays    },
   { href: "/dashboard/admin/audit",    label: "Auditoria",  icon: ScrollText      },

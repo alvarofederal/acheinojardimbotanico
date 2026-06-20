@@ -76,6 +76,27 @@ Semana que vem vou liberar o *destaque de ${i.categoryName}* da região pra outr
 Se não fizer sentido agora, tranquilo — o perfil de vocês continua no guia normalmente. 🌿`
 }
 
+/**
+ * Abordagem pro perfil ABANDONADO/incompleto (Radar Fantasma).
+ * Tom de ajuda, nunca alarme. Não promete "ranquear no Google" — promete
+ * deixar o perfil completo e achável, e já emendar no guia do bairro.
+ */
+export function buildGhostMessage(i: { name: string; link: string; missing?: string[] }): string {
+  const faltas = (i.missing ?? [])
+    .map((m) => m.toLowerCase().replace(/^sem\s+/, "").replace(/^poucas?\s+/, "poucas "))
+    .slice(0, 3)
+    .join(", ")
+  const trecho = faltas ? ` (tá faltando ${faltas})` : ""
+
+  return `Olá, pessoal da ${i.name}! Tudo bem? Aqui é o Álvaro, morador do Jardim Botânico 🌿
+
+Montei o *Achei no Jardim Botânico*, um guia só dos negócios daqui, e já coloquei vocês lá: ${i.link}
+
+Reparei que o perfil de vocês no Google tá meio incompleto${trecho} — e isso faz o cliente desistir antes de chamar. Eu deixo ele redondo pra vocês (foto, horário, contato, descrição) e já garanto vocês no guia do bairro.
+
+Posso passar aí essa semana pra mostrar, sem compromisso? 🌿`
+}
+
 /** Mensagem completa, focada em entregar o display (presente) em mãos. */
 export function buildProspectMessage(i: ProspectMessageInput): string {
   const hook = categoryHook(i.categorySlug, i.categoryName)

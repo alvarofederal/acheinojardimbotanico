@@ -7,6 +7,11 @@ Todas as mudanças relevantes do projeto. Formato baseado em [Keep a Changelog](
 
 ---
 
+## [1.24.5] - 2026-06-20 — Radar Fantasma: prospecção de perfis abandonados [protótipo, admin]
+- Nova tela admin `/dashboard/admin/radar` + item de menu "👻 Radar Fantasma".
+- **Score de saúde 0–100** por negócio (`lib/health-score.ts`), calculado do que **já importamos** do Google (telefone, horário, fotos, descrição, site, Instagram, avaliações) — **custo zero**. Lista os mais abandonados = fila de prospecção.
+- **Contadores 🔴/🟡/🟢 + Livres** (o "pé no chão": quantos estão de fato vivos), flag **🔥 "popular e largado"** (tem movimento mas o dono sumiu = melhor lead) e botão **WhatsApp com a abordagem pronta** (`buildGhostMessage` — tom de ajuda, sem alarme, sem prometer "ranquear no Google").
+
 ## [1.24.4] - 2026-06-19 — Hotfix: crash em negócio 24h (período sem `close`)
 - **Bug (introduzido no 1.24.3):** a checagem da virada de madrugada acessava `p.close.day` em **todo** período, mas o Google **omite `close`** em negócios abertos 24h → `undefined` → `TypeError` que derrubava a **página de categoria inteira**.
 - **Conserto:** `close` agora é opcional no tipo `OpeningPeriod`; período sem `close` = **"Aberto 24 horas"**; `getOpenStatus` e `toEditorModel` ignoram períodos malformados (sem `open`) em vez de quebrar.
