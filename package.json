@@ -1,6 +1,6 @@
 {
   "name": "acheinojardimbotanico",
-  "version": "1.24.4",
+  "version": "1.24.5",
   "private": true,
   "scripts": {
     "clean": "rimraf .next",
