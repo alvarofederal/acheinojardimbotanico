@@ -7,6 +7,10 @@ Todas as mudanças relevantes do projeto. Formato baseado em [Keep a Changelog](
 
 ---
 
+## [1.24.4] - 2026-06-19 — Hotfix: crash em negócio 24h (período sem `close`)
+- **Bug (introduzido no 1.24.3):** a checagem da virada de madrugada acessava `p.close.day` em **todo** período, mas o Google **omite `close`** em negócios abertos 24h → `undefined` → `TypeError` que derrubava a **página de categoria inteira**.
+- **Conserto:** `close` agora é opcional no tipo `OpeningPeriod`; período sem `close` = **"Aberto 24 horas"**; `getOpenStatus` e `toEditorModel` ignoram períodos malformados (sem `open`) em vez de quebrar.
+
 ## [1.24.3] - 2026-06-19 — "Aberto/Fechado agora" consistente (fuso de Brasília + ao vivo)
 - **Bug:** o mesmo negócio mostrava status diferente no **perfil** vs no **card** da busca, na mesma hora. Causa dupla: (1) o perfil calculava no **servidor** (VPS em UTC, 3h a mais) e o card no **client** (hora local) — relógios diferentes; (2) o perfil tinha `revalidate=3600` (ISR), **congelando** o status por até 1h.
 - **Conserto de raiz:** `lib/opening-hours` agora calcula **SEMPRE no fuso America/Sao_Paulo** (via `Intl`), rode onde rodar (VPS em UTC ou browser de qualquer fuso). O status do perfil virou **client-side ao vivo** (`OpenStatusPill`/`OpenStatusFact`), idêntico ao card. De quebra, corrigida a **virada de madrugada** (período que cruza a meia-noite, ex.: sex 22:00→sáb 02:00).

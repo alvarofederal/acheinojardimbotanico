@@ -8,7 +8,8 @@
 
 export interface OpeningPeriod {
   open: { day: number; hour: number; minute: number }
-  close: { day: number; hour: number; minute: number }
+  /** Pode faltar: o Google omite `close` em negócios abertos 24h. */
+  close?: { day: number; hour: number; minute: number }
 }
 
 export interface OpeningHours {
@@ -134,6 +135,9 @@ export function getOpenStatus(raw: unknown, now: Date = new Date()): OpenStatus 
   if (!hasData) return { state: "desconhecido", label: "Horário não informado" }
 
   for (const p of h!.periods!) {
+    if (!p?.open) continue // período malformado, ignora
+    // sem horário de fechamento = aberto 24h (padrão do Google pra 24/7)
+    if (!p.close) return { state: "aberto", label: "Aberto", detail: "Aberto 24 horas" }
     // período que abre hoje (fecha hoje ou vira a madrugada)
     if (p.open.day === day) {
       const o = p.open.hour * 60 + p.open.minute
@@ -162,9 +166,12 @@ export function toEditorModel(raw: unknown): DayHours[] {
   const h = parseOpeningHours(raw)
   const days: DayHours[] = Array.from({ length: 7 }, () => ({ closed: true, ranges: [] }))
   for (const p of h?.periods ?? []) {
+    if (!p?.open) continue
     const d = days[p.open.day]
     if (!d) continue
     d.closed = false
+    // sem "close" = aberto 24h: mostra o dia aberto o dia todo
+    if (!p.close) { d.ranges.push({ open: "00:00", close: "23:59" }); continue }
     d.ranges.push({ open: fmt(p.open.hour, p.open.minute), close: fmt(p.close.hour, p.close.minute) })
   }
   return days
