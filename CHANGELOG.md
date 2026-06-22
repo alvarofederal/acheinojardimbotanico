@@ -7,6 +7,10 @@ Todas as mudanças relevantes do projeto. Formato baseado em [Keep a Changelog](
 
 ---
 
+## [1.24.6] - 2026-06-22 — CSP libera Google Analytics + fontes data:
+- O CSP bloqueava o **gtag (Google Analytics)** e **fontes `data:`** em produção. Liberados: `script-src`/`connect-src`/`img-src` para `googletagmanager.com` + `google-analytics.com`; `font-src` ganhou `data:`.
+- **Importante:** o crash de render (página "não segura") em `/[bairro]/[categoria]` e em perfis de negócio 24h **já estava corrigido nas 1.24.3–1.24.5** (a produção estava na 1.24.2). Este deploy sobe tudo junto e resolve o crash + o GA.
+
 ## [1.24.5] - 2026-06-20 — Radar Fantasma: prospecção de perfis abandonados [protótipo, admin]
 - Nova tela admin `/dashboard/admin/radar` + item de menu "👻 Radar Fantasma".
 - **Score de saúde 0–100** por negócio (`lib/health-score.ts`), calculado do que **já importamos** do Google (telefone, horário, fotos, descrição, site, Instagram, avaliações) — **custo zero**. Lista os mais abandonados = fila de prospecção.

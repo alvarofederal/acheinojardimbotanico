@@ -41,16 +41,16 @@ const nextConfig: NextConfig = {
             key: "Content-Security-Policy",
             value: [
               "default-src 'self'",
-              // Scripts: próprios + Google (OAuth popup)
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://accounts.google.com",
+              // Scripts: próprios + Google (OAuth popup) + Google Analytics (gtag)
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://accounts.google.com https://www.googletagmanager.com",
               // Estilos: próprios + inline (Tailwind/shadcn gerado)
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-              // Fontes
-              "font-src 'self' https://fonts.gstatic.com",
+              // Fontes (inclui data: — fontes embutidas por libs)
+              "font-src 'self' data: https://fonts.gstatic.com",
               // Imagens: próprios + Cloudinary + Google (Places photos, avatars) + GitHub
-              "img-src 'self' data: blob: https://res.cloudinary.com https://*.googleusercontent.com https://places.googleapis.com https://maps.googleapis.com https://*.ggpht.com https://avatars.githubusercontent.com",
-              // Conexões de API: próprios + Cloudinary + Resend
-              "connect-src 'self' https://api.cloudinary.com https://api.resend.com",
+              "img-src 'self' data: blob: https://res.cloudinary.com https://*.googleusercontent.com https://places.googleapis.com https://maps.googleapis.com https://*.ggpht.com https://avatars.githubusercontent.com https://www.googletagmanager.com https://www.google-analytics.com",
+              // Conexões de API: próprios + Cloudinary + Resend + Google Analytics (coleta)
+              "connect-src 'self' https://api.cloudinary.com https://api.resend.com https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com",
               // Mapa interativo do perfil (OpenStreetMap embed)
               "frame-src 'self' https://www.openstreetmap.org",
               // Bloqueia tudo que não se enquadrar acima
