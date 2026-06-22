@@ -28,3 +28,27 @@ export function validateHandle(raw: string): string | null {
 export function normalizeHandle(raw: string): string {
   return raw.trim().toLowerCase()
 }
+
+/**
+ * Gera um handle ÚNICO e limpo a partir do nome do negócio.
+ * Tenta o slug limpo (sem acento, sem sufixo aleatório); se já estiver em uso
+ * ou for reservado, acrescenta -2, -3… `isTaken` deve cobrir handles E slugs
+ * já existentes (pra não colidir com rota canônica de quem não tem handle).
+ */
+export function generateHandle(name: string, isTaken: (candidate: string) => boolean): string {
+  const base =
+    (name || "")
+      .normalize("NFD").replace(/[̀-ͯ]/g, "") // remove acentos (marcas combinantes)
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 40) || "negocio"
+
+  const free = (c: string) => !RESERVED_HANDLES.has(c) && !isTaken(c)
+  if (free(base)) return base
+  for (let i = 2; i < 1000; i++) {
+    const c = `${base.slice(0, 36)}-${i}`
+    if (free(c)) return c
+  }
+  return `${base.slice(0, 30)}-${Date.now().toString(36)}`
+}
