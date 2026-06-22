@@ -1,6 +1,7 @@
-import { notFound } from "next/navigation"
+import { notFound, redirect } from "next/navigation"
 import type { Metadata } from "next"
 import { db } from "@/lib/prisma"
+import { slugify } from "@/lib/utils"
 import { getPlanConfigs } from "@/lib/plan-config"
 import { type PlanId } from "@/lib/plans"
 import { CategoryList } from "./_components/category-list"
@@ -32,6 +33,19 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function CategoryPage({ params }: PageProps) {
   const { bairro, categoria } = await params
+
+  // Vanity da loja: /{handle}/loja → redireciona pra loja canônica.
+  // (/{handle} já é resolvido em [bairro]/page.tsx; aqui cobrimos o /loja.)
+  if (categoria === "loja") {
+    const vanity = await db.business.findUnique({
+      where: { handle: bairro.toLowerCase() },
+      select: { slug: true, neighborhood: true, status: true, category: { select: { slug: true } } },
+    })
+    if (vanity && vanity.status !== "SUSPENDED") {
+      redirect(`/${slugify(vanity.neighborhood)}/${vanity.category.slug}/${vanity.slug}/loja`)
+    }
+    notFound()
+  }
 
   const category = await db.category.findUnique({ where: { slug: categoria } })
   if (!category) notFound()

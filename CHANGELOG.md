@@ -7,6 +7,10 @@ Todas as mudanças relevantes do projeto. Formato baseado em [Keep a Changelog](
 
 ---
 
+## [1.24.7] - 2026-06-22 — Link curto da loja: `/{handle}/loja`
+- O handle (link curto/vanity) resolvia só o perfil (`/{handle}` → redireciona pro canônico), mas **`/{handle}/loja` dava 404**. Agora `/{handle}/loja` redireciona pra loja canônica — o link curto da loja funciona pra compartilhar (ex.: `/arte-e-tradicao/loja`).
+- Nota de design: o handle é um **link curto que redireciona** pro canônico (a URL "real", boa pra SEO). O botão "Ver loja" interno usa o canônico de propósito.
+
 ## [1.24.6] - 2026-06-22 — CSP libera Google Analytics + fontes data:
 - O CSP bloqueava o **gtag (Google Analytics)** e **fontes `data:`** em produção. Liberados: `script-src`/`connect-src`/`img-src` para `googletagmanager.com` + `google-analytics.com`; `font-src` ganhou `data:`.
 - **Importante:** o crash de render (página "não segura") em `/[bairro]/[categoria]` e em perfis de negócio 24h **já estava corrigido nas 1.24.3–1.24.5** (a produção estava na 1.24.2). Este deploy sobe tudo junto e resolve o crash + o GA.
