@@ -7,6 +7,11 @@ Todas as mudanças relevantes do projeto. Formato baseado em [Keep a Changelog](
 
 ---
 
+## [1.26.0] - 2026-06-23 — Link do iFood no perfil (delivery) (inclui migration)
+- Negócios de alimentação agora têm um campo **iFood** em "Meu Negócio". Preenchido, vira um botão vermelho **"Pedir no iFood"** na barra de ações do perfil público — sempre visível (sem trava de plano), porque é canal de pedido (resolve a dor do Roberto).
+- **Schema (aditivo):** coluna `Business.ifood` (TEXT, nullable). Aplicada por `ALTER TABLE Business ADD COLUMN ifood TEXT NULL` (não destrutivo). Atenção: **dev e prod são bancos shared SEPARADOS** (mesmos 878 negócios, estados diferentes) — a coluna é aplicada nos dois.
+- API (`/api/dashboard/negocio`) valida o link (URL) e permite limpar. Campo só iFood por ora (Rappi/Aiqfome dá pra adicionar depois).
+
 ## [1.25.0] - 2026-06-23 — URL curta vira o endereço REAL do perfil (Fase B)
 - **Virada de arquitetura de URL.** O `handle` (`/arte-e-tradicao`) deixa de ser um redirect e passa a ser o **endereço real do perfil**, renderizado no lugar — curto, bonito, fácil de compartilhar e bom pra SEO. A loja agregada fica em `/arte-e-tradicao/loja`.
 - **URL longa antiga → `308` permanente pra curta** quando o negócio tem handle (consolida o SEO já conquistado, não quebra link antigo). Sem handle (transição) o perfil ainda renderiza na URL longa.

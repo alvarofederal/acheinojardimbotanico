@@ -21,6 +21,7 @@ const schema = z.object({
   facebook: urlOrEmpty,
   linkedin: urlOrEmpty,
   youtube: urlOrEmpty,
+  ifood: urlOrEmpty,
   storeWhatsappMessage: z.string().max(400).optional(),
   storeCoverUrl: urlOrEmpty,
   storeTagline: z.string().max(140).optional(),
@@ -72,6 +73,8 @@ export async function PATCH(req: NextRequest) {
       facebook: data.facebook || business.facebook,
       linkedin: data.linkedin || business.linkedin,
       youtube: data.youtube || business.youtube,
+      ifood: data.ifood !== undefined ? (data.ifood || null) : business.ifood, // permite limpar
+
       storeWhatsappMessage: data.storeWhatsappMessage ?? business.storeWhatsappMessage,
       storeCoverUrl: data.storeCoverUrl !== undefined ? (data.storeCoverUrl || null) : business.storeCoverUrl,
       storeTagline: data.storeTagline !== undefined ? (data.storeTagline || null) : business.storeTagline,

@@ -18,6 +18,7 @@ interface Business {
   facebook: string | null
   linkedin: string | null
   youtube: string | null
+  ifood: string | null
   neighborhood: string
   address: string
   category: { slug: string; name: string }
@@ -37,6 +38,7 @@ export function BusinessEditor({ business }: { business: Business }) {
     facebook: business.facebook ?? "",
     linkedin: business.linkedin ?? "",
     youtube: business.youtube ?? "",
+    ifood: business.ifood ?? "",
   })
 
   function set(field: keyof typeof form) {
@@ -138,6 +140,16 @@ export function BusinessEditor({ business }: { business: Business }) {
           <input type="url" value={form.youtube} onChange={set("youtube")}
             placeholder="https://youtube.com/@seucanal" className={inputCls} />
         </div>
+      </div>
+
+      {/* iFood (delivery) — vira o botão "Pedir no iFood" no perfil */}
+      <div className="space-y-1.5 rounded-xl border border-[#EA1D2C]/20 bg-[#EA1D2C]/[0.04] p-3.5">
+        <label className={labelCls + " flex items-center gap-1.5"}>
+          <span className="inline-block w-2 h-2 rounded-full bg-[#EA1D2C]" /> iFood (delivery)
+        </label>
+        <input type="url" value={form.ifood} onChange={set("ifood")}
+          placeholder="https://www.ifood.com.br/delivery/..." className={inputCls} />
+        <p className="text-xs text-gray-400 dark:text-white/30">Cole o link da sua loja no iFood — vira um botão <b>“Pedir no iFood”</b> no seu perfil. Deixe em branco se não usa.</p>
       </div>
 
       {/* Endereço (somente leitura — vem do Google) */}

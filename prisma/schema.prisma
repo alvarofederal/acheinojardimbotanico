@@ -130,6 +130,7 @@ model Business {
   facebook          String? @db.Text
   linkedin          String? @db.Text
   youtube           String? @db.Text
+  ifood             String? @db.Text  // link de delivery no iFood (negócios de alimentação)
   googleRating      Float?
   googleRatingCount Int?
   openingHours      Json?

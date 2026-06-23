@@ -199,6 +199,12 @@ export async function ProfileView({ business }: { business: ProfileBusiness }) {
                 <WhatsAppButton businessId={business.id} whatsapp={business.whatsapp} name={business.name} />
               </div>
             )}
+            {business.ifood && (
+              <a href={business.ifood} target="_blank" rel="noopener noreferrer"
+                className="flex items-center gap-2 px-4 py-3 rounded-2xl bg-[#EA1D2C] hover:brightness-110 text-white text-sm font-semibold transition-all hover:-translate-y-0.5">
+                <ShoppingBag className="w-4 h-4" /> Pedir no iFood
+              </a>
+            )}
             {feat.loja && (
               <Link href={storeHref}
                 className="flex items-center gap-2 px-4 py-3 rounded-2xl bg-flora-gold hover:brightness-105 text-flora-ink text-sm font-semibold transition-all hover:-translate-y-0.5">
