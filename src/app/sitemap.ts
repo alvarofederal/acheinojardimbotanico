@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next"
 import { db } from "@/lib/prisma"
 import { slugify, SITE_URL } from "@/lib/utils"
+import { profileUrl } from "@/lib/links"
 import { getMenuVisibility } from "@/lib/site-visibility"
 
 export const revalidate = 3600
@@ -24,7 +25,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Negócios visíveis
   const businesses = await db.business.findMany({
     where: { status: { in: ["IMPORTED", "CLAIMED"] } },
-    select: { slug: true, neighborhood: true, updatedAt: true, category: { select: { slug: true } } },
+    select: { slug: true, handle: true, neighborhood: true, updatedAt: true, category: { select: { slug: true } } },
     take: 5000,
   })
 
@@ -34,8 +35,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   for (const b of businesses) {
     const bairro = slugify(b.neighborhood)
     categoryPages.add(`${bairro}/${b.category.slug}`)
+    // URL curta (handle) quando existe — é o endereço canônico do perfil
     entries.push({
-      url: `${SITE_URL}/${bairro}/${b.category.slug}/${b.slug}`,
+      url: profileUrl(b),
       lastModified: b.updatedAt,
       changeFrequency: "weekly",
       priority: 0.7,

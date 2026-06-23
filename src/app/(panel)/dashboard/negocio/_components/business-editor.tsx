@@ -8,6 +8,7 @@ import Link from "next/link"
 interface Business {
   id: string
   slug: string
+  handle: string | null
   name: string
   description: string | null
   phone: string | null
@@ -73,7 +74,7 @@ export function BusinessEditor({ business }: { business: Business }) {
           <p className="text-xs text-emerald-600 dark:text-emerald-500">{business.category.name} · {business.neighborhood}</p>
         </div>
         <Link
-          href={`/${bairroSlug}/${business.category.slug}/${business.slug}`}
+          href={business.handle ? `/${business.handle}` : `/${bairroSlug}/${business.category.slug}/${business.slug}`}
           target="_blank"
           className="flex items-center gap-1.5 text-xs text-emerald-700 dark:text-emerald-400 hover:underline"
         >

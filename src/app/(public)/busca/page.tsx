@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { db } from "@/lib/prisma"
 import { slugify } from "@/lib/utils"
+import { lojaPath } from "@/lib/links"
 import { getPlanConfigs } from "@/lib/plan-config"
 import { type PlanId } from "@/lib/plans"
 import { BusinessCard } from "../[bairro]/[categoria]/_components/business-card"
@@ -55,7 +56,7 @@ export default async function SearchPage({ searchParams }: PageProps) {
         bairro,
         featured: cfg?.features.destaque ?? false,
         seloLabel: cfg?.features.selo ? cfg.label : null,
-        storeHref: hasStore ? `/${bairro}/${b.category.slug}/${b.slug}/loja` : null,
+        storeHref: hasStore ? lojaPath(b) : null,
       }
     })
     .sort((a, b) => {

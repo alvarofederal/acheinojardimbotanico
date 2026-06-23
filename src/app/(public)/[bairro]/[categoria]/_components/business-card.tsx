@@ -11,6 +11,7 @@ interface BusinessCardProps {
   business: {
     id: string
     slug: string
+    handle?: string | null
     name: string
     address: string
     neighborhood: string
@@ -50,7 +51,8 @@ export function BusinessCard({ business, bairro, categoria }: BusinessCardProps)
   const seloLabel = business.seloLabel ?? null
   const featured = business.featured ?? false
   const storeHref = business.storeHref ?? null
-  const profileHref = `/${bairro}/${categoria}/${business.slug}`
+  // URL curta (handle) é o endereço real; sem handle, cai na longa
+  const profileHref = business.handle ? `/${business.handle}` : `/${bairro}/${categoria}/${business.slug}`
   const wa = business.whatsapp ? `https://wa.me/${business.whatsapp.replace(/\D/g, "")}` : null
 
   // Status só no cliente (evita mismatch SSR em UTC × hora de Brasília)

@@ -7,6 +7,13 @@ Todas as mudanças relevantes do projeto. Formato baseado em [Keep a Changelog](
 
 ---
 
+## [1.25.0] - 2026-06-23 — URL curta vira o endereço REAL do perfil (Fase B)
+- **Virada de arquitetura de URL.** O `handle` (`/arte-e-tradicao`) deixa de ser um redirect e passa a ser o **endereço real do perfil**, renderizado no lugar — curto, bonito, fácil de compartilhar e bom pra SEO. A loja agregada fica em `/arte-e-tradicao/loja`.
+- **URL longa antiga → `308` permanente pra curta** quando o negócio tem handle (consolida o SEO já conquistado, não quebra link antigo). Sem handle (transição) o perfil ainda renderiza na URL longa.
+- **`canonical`, `sitemap`, JSON-LD, OpenGraph e todos os links internos** (cards da home/busca, "Ver loja", promoções, "Ver perfil" do painel, mensagens de WhatsApp) passam a usar a URL curta quando existe — via novo `lib/links.ts` (`profilePath`/`lojaPath`). OG da URL curta incluído (`lib/og-business.tsx`).
+- **Todo negócio novo já nasce com handle** (import do Places + cadastro do lojista), via `lib/handle-db.ts` (`generateUniqueHandle`). Os já existentes recebem handle pelo backfill admin (Fase A) — rodar **com backup do banco** após o deploy.
+- **Nota técnica (SEO):** removidos os `loading.tsx` de `[categoria]` e `[slug]` — um `loading.tsx` acima da rota faz o `redirect()` virar um *soft redirect* (`<meta refresh>`, status 200), inútil pro SEO. Com eles fora, a URL longa devolve **308 de verdade**. O skeleton do perfil foi mantido via `<Suspense>` dentro da própria página (não afeta o redirect). *(O skeleton da listagem de categoria saiu — fica de follow-up reintroduzir via Suspense in-page; ISR já cobre a maioria dos acessos.)*
+
 ## [1.24.7] - 2026-06-22 — Link curto da loja: `/{handle}/loja`
 - O handle (link curto/vanity) resolvia só o perfil (`/{handle}` → redireciona pro canônico), mas **`/{handle}/loja` dava 404**. Agora `/{handle}/loja` redireciona pra loja canônica — o link curto da loja funciona pra compartilhar (ex.: `/arte-e-tradicao/loja`).
 - Nota de design: o handle é um **link curto que redireciona** pro canônico (a URL "real", boa pra SEO). O botão "Ver loja" interno usa o canônico de propósito.

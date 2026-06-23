@@ -2,7 +2,8 @@ import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { db } from "@/lib/prisma"
 import { getMenuVisibility } from "@/lib/site-visibility"
-import { slugify, SITE_URL } from "@/lib/utils"
+import { SITE_URL } from "@/lib/utils"
+import { lojaPath } from "@/lib/links"
 import { getPlanConfigs } from "@/lib/plan-config"
 import { type PlanId } from "@/lib/plans"
 import { PromoGrid, type PromoItem } from "./_components/promo-grid"
@@ -25,7 +26,7 @@ export default async function PromocoesPage() {
       business: { status: { in: ["IMPORTED", "CLAIMED"] } },
     },
     include: {
-      business: { select: { id: true, name: true, slug: true, plan: true, neighborhood: true, whatsapp: true, storeWhatsappMessage: true, category: { select: { slug: true } } } },
+      business: { select: { id: true, name: true, slug: true, handle: true, plan: true, neighborhood: true, whatsapp: true, storeWhatsappMessage: true, category: { select: { slug: true } } } },
     },
     orderBy: { updatedAt: "desc" },
     take: 100,
@@ -36,8 +37,7 @@ export default async function PromocoesPage() {
   const promoProducts = products.filter(p => cfgs[p.business.plan as PlanId]?.features.promocoes)
 
   const items: PromoItem[] = promoProducts.map(p => {
-    const bairro = slugify(p.business.neighborhood)
-    const storeHref = `/${bairro}/${p.business.category.slug}/${p.business.slug}/loja`
+    const storeHref = lojaPath(p.business)
     return {
       id: p.id,
       name: p.name,

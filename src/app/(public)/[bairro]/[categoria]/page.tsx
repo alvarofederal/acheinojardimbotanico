@@ -1,10 +1,11 @@
-import { notFound, redirect } from "next/navigation"
+import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 import { db } from "@/lib/prisma"
-import { slugify } from "@/lib/utils"
-import { getPlanConfigs } from "@/lib/plan-config"
+import { lojaPath, profileUrl } from "@/lib/links"
+import { getPlanConfig, getPlanConfigs } from "@/lib/plan-config"
 import { type PlanId } from "@/lib/plans"
 import { CategoryList } from "./_components/category-list"
+import { loadStore, buildStoreMetadata, StoreView } from "./[slug]/loja/_components/store-view"
 import { getCategoryIcon } from "@/lib/category-icons"
 import { MonsteraLeaf, LeafSprig } from "../../_components/botanicals"
 import { MapPin, Star } from "lucide-react"
@@ -18,6 +19,13 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { bairro, categoria } = await params
+
+  // /{handle}/loja → metadados da loja (canonical na URL curta)
+  if (categoria === "loja") {
+    const business = await loadStore({ handle: bairro.toLowerCase() })
+    return business ? buildStoreMetadata(business) : {}
+  }
+
   const category = await db.category.findUnique({ where: { slug: categoria } })
   if (!category) return {}
 
@@ -34,17 +42,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function CategoryPage({ params }: PageProps) {
   const { bairro, categoria } = await params
 
-  // Vanity da loja: /{handle}/loja → redireciona pra loja canônica.
-  // (/{handle} já é resolvido em [bairro]/page.tsx; aqui cobrimos o /loja.)
+  // /{handle}/loja → renderiza a loja IN-PLACE (a URL curta é o endereço real).
+  // (/{handle} é resolvido em [bairro]/page.tsx; aqui cobrimos o /loja.)
   if (categoria === "loja") {
-    const vanity = await db.business.findUnique({
-      where: { handle: bairro.toLowerCase() },
-      select: { slug: true, neighborhood: true, status: true, category: { select: { slug: true } } },
-    })
-    if (vanity && vanity.status !== "SUSPENDED") {
-      redirect(`/${slugify(vanity.neighborhood)}/${vanity.category.slug}/${vanity.slug}/loja`)
-    }
-    notFound()
+    const business = await loadStore({ handle: bairro.toLowerCase() })
+    if (!business || business.status === "SUSPENDED") notFound()
+    const planCfg = await getPlanConfig(business.plan as PlanId)
+    if (!planCfg.features.loja) notFound()
+    return <StoreView business={business} />
   }
 
   const category = await db.category.findUnique({ where: { slug: categoria } })
@@ -68,11 +73,13 @@ export default async function CategoryPage({ params }: PageProps) {
     .map(b => {
       const cfg = cfgs[b.plan as PlanId]
       const hasStore = !!cfg?.features.loja && (b.products?.length ?? 0) > 0
+      // category.slug === categoria (estamos dentro da categoria); o helper usa o handle quando existe
+      const linkBiz = { handle: b.handle, slug: b.slug, neighborhood: b.neighborhood, category: { slug: categoria } }
       return {
         ...b,
         featured: cfg?.features.destaque ?? false,
         seloLabel: cfg?.features.selo ? cfg.label : null,
-        storeHref: hasStore ? `/${bairro}/${categoria}/${b.slug}/loja` : null,
+        storeHref: hasStore ? lojaPath(linkBiz) : null,
       }
     })
     .sort((a, b) => {
@@ -100,7 +107,7 @@ export default async function CategoryPage({ params }: PageProps) {
         "@type": "LocalBusiness",
         name: b.name,
         address: b.address,
-        url: `https://acheinojardimbotanico.com.br/${bairro}/${categoria}/${b.slug}`,
+        url: profileUrl({ handle: b.handle, slug: b.slug, neighborhood: b.neighborhood, category: { slug: categoria } }),
       },
     })),
   }

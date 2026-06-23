@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/prisma"
 import { slugify } from "@/lib/utils"
+import { generateUniqueHandle } from "@/lib/handle-db"
 import { logAudit } from "@/lib/audit"
 import { sendBusinessSubmittedEmail } from "@/lib/email"
 import { z } from "zod"
@@ -38,10 +39,12 @@ export async function POST(req: NextRequest) {
   if (!category) return NextResponse.json({ error: "Categoria inválida" }, { status: 400 })
 
   const slug = `${slugify(d.name).slice(0, 60)}-${Math.random().toString(36).slice(2, 7)}`
+  const handle = await generateUniqueHandle(d.name) // já nasce com URL curta
 
   const business = await db.business.create({
     data: {
       slug,
+      handle,
       name: d.name,
       categoryId: d.categoryId,
       description: d.description || null,

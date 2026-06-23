@@ -19,6 +19,7 @@ import {
   type PlaceResult,
 } from "@/lib/places"
 import { costUsd } from "@/lib/api-costs"
+import { generateUniqueHandle } from "@/lib/handle-db"
 import { z } from "zod"
 
 const importSchema = z.object({
@@ -102,6 +103,7 @@ export async function POST(request: NextRequest) {
         data: {
           placeId: place.id,
           slug: generateSlug(name, place.id),
+          handle: await generateUniqueHandle(name), // já nasce com URL curta
           name,
           categoryId: category.id,
           description: place.editorialSummary?.text ?? null,

@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { db } from "@/lib/prisma"
+import { profilePath } from "@/lib/links"
 import { getCategoryIcon } from "@/lib/category-icons"
 import { HeroSearch } from "./_components/hero-search"
 import { MonsteraLeaf, LeafSprig, FernFrond, SimpleLeaf } from "./_components/botanicals"
@@ -25,7 +26,7 @@ export default async function HomePage() {
     db.business.findMany({
       where: { status: { in: ["IMPORTED", "CLAIMED"] }, googleRating: { gte: 4.5 } },
       select: {
-        id: true, slug: true, name: true, neighborhood: true, googleRating: true, googleRatingCount: true, whatsapp: true,
+        id: true, slug: true, handle: true, name: true, neighborhood: true, googleRating: true, googleRatingCount: true, whatsapp: true,
         category: { select: { slug: true, name: true } },
         photos: { take: 1, orderBy: { order: "asc" }, select: { url: true } },
       },
@@ -167,7 +168,7 @@ export default async function HomePage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {topRated.map((b, i) => {
-              const href = `/${DEFAULT_BAIRRO}/${b.category.slug}/${b.slug}`
+              const href = profilePath(b)
               return (
                 <article key={b.id}
                   className="group relative rounded-3xl overflow-hidden aspect-[4/5] shadow-lg shadow-flora-deep/15 flora-rise transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-flora-deep/30"

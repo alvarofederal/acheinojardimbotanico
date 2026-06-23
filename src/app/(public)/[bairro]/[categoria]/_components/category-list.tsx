@@ -8,6 +8,7 @@ import { getOpenStatus } from "@/lib/opening-hours"
 interface BusinessItem {
   id: string
   slug: string
+  handle?: string | null
   name: string
   address: string
   neighborhood: string
