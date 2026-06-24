@@ -71,6 +71,7 @@ export async function StoreView({ business }: { business: StoreBusiness }) {
   const businessUrl = lojaUrl(business)
   const showSelo = planCfg.features.selo
   const cover = business.storeCoverUrl || business.photos[0]?.url
+  const coverPos = business.storeCoverPos || "50% 50%"
   const tagline = business.storeTagline || business.description
   const mapsUrl = business.placeId
     ? `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(`${business.name}, ${business.address}`)}&destination_place_id=${business.placeId}`
@@ -82,7 +83,7 @@ export async function StoreView({ business }: { business: StoreBusiness }) {
       <section className="relative">
         <div className="relative h-[44vh] min-h-[320px] max-h-[480px] w-full overflow-hidden bg-flora-deep">
           {cover
-            ? <img src={cover} alt={business.name} className="absolute inset-0 w-full h-full object-cover" />
+            ? <img src={cover} alt={business.name} style={{ objectPosition: coverPos }} className="absolute inset-0 w-full h-full object-cover" />
             : <div className="absolute inset-0 flora-hero" />}
           {/* Gradiente para legibilidade */}
           <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(15,28,24,0.92) 0%, rgba(15,28,24,0.45) 45%, rgba(15,28,24,0.15) 100%)" }} />

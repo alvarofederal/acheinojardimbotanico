@@ -143,6 +143,7 @@ export async function ProfileView({ business }: { business: ProfileBusiness }) {
     : `https://www.google.com/maps/dir/?api=1&destination=${business.latitude},${business.longitude}`
 
   const cover = business.storeCoverUrl ?? business.photos[0]?.url ?? null
+  const coverPos = business.storeCoverPos || "50% 50%"
   const logo = business.logoUrl ?? business.photos[0]?.url ?? null
   const rating = business.googleRating ?? 0
   const ghostBtn = "flex items-center gap-2 px-4 py-3 rounded-2xl bg-flora-green/[0.07] hover:bg-flora-green/[0.13] text-flora-ink dark:text-white text-sm font-semibold transition-all hover:-translate-y-0.5"
@@ -156,7 +157,7 @@ export async function ProfileView({ business }: { business: ProfileBusiness }) {
       {/* ── HERO cinematográfico ──────────────────────────────────── */}
       <header className="relative min-h-[72vh] flex flex-col justify-end overflow-hidden isolate">
         {cover ? (
-          <div className="absolute inset-0 -z-30 bg-cover bg-center" style={{ backgroundImage: `url('${cover}')`, animation: "kbns 22s ease-out forwards" }} />
+          <div className="absolute inset-0 -z-30 bg-cover" style={{ backgroundImage: `url('${cover}')`, backgroundPosition: coverPos, animation: "kbns 22s ease-out forwards" }} />
         ) : (
           <div className="absolute inset-0 -z-30" style={{ background: "radial-gradient(125% 95% at 50% -10%,#1e5c45,#123f2f 46%,#0a2b20)" }} />
         )}

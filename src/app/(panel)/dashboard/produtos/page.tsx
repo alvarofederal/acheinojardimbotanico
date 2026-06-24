@@ -55,7 +55,7 @@ export default async function ProdutosPage() {
       </div>
 
       {hasLoja && (
-        <StoreCustomizer initialCover={business.storeCoverUrl} initialTagline={business.storeTagline} />
+        <StoreCustomizer initialCover={business.storeCoverUrl} initialTagline={business.storeTagline} initialPos={business.storeCoverPos} />
       )}
       <StoreMessage initial={business.storeWhatsappMessage ?? ""} />
       <ProductManager products={products} limit={limit} plan={business.plan} hasLoja={hasLoja} />

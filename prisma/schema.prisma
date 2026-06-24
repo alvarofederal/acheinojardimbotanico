@@ -146,6 +146,7 @@ model Business {
   ownerId           String?
   storeWhatsappMessage String?     @db.Text  // mensagem padrão da vitrine (WhatsApp)
   storeCoverUrl     String?        @db.Text   // foto de capa da loja (hero) — escolhida pelo lojista
+  storeCoverPos     String?                   // enquadramento da capa (object-position, ex.: "50% 30%")
   storeTagline      String?                   // slogan/frase de destaque da loja
   logoUrl           String?        @db.Text   // logo da empresa (curada pelo admin) — usada no cartão/display
 

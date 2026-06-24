@@ -36,6 +36,7 @@ const schema = z.object({
   offerDeadline: z.string().optional(), // "YYYY-MM-DD" ou "" pra limpar
   storeWhatsappMessage: z.string().max(400).optional(),
   storeCoverUrl: urlOrEmpty,
+  storeCoverPos: z.string().max(20).optional(),
   storeTagline: z.string().max(140).optional(),
   handle: z.string().max(40).optional(),
   openingHours: z.object({
@@ -93,6 +94,7 @@ export async function PATCH(req: NextRequest) {
 
       storeWhatsappMessage: data.storeWhatsappMessage ?? business.storeWhatsappMessage,
       storeCoverUrl: data.storeCoverUrl !== undefined ? (data.storeCoverUrl || null) : business.storeCoverUrl,
+      storeCoverPos: data.storeCoverPos !== undefined ? (data.storeCoverPos || null) : business.storeCoverPos,
       storeTagline: data.storeTagline !== undefined ? (data.storeTagline || null) : business.storeTagline,
       ...(handleUpdate !== undefined ? { handle: handleUpdate } : {}),
       ...(data.openingHours !== undefined ? { openingHours: data.openingHours } : {}),

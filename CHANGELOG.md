@@ -7,6 +7,11 @@ Todas as mudanças relevantes do projeto. Formato baseado em [Keep a Changelog](
 
 ---
 
+## [1.28.0] - 2026-06-24 — Enquadrar a capa da loja (posicionador) (inclui migration)
+- No painel (Vitrine de Produtos → Personalização da loja), o lojista agora **arrasta a foto de capa para enquadrar** (estilo Facebook), com **preview ao vivo** + botão "Centralizar". Antes a capa era cortada automático no centro, sem controle.
+- O enquadramento escolhido é aplicado na **loja** (`object-position`) e no **perfil** (`background-position`) — mesma capa, mesmo recorte.
+- Schema aditivo: `Business.storeCoverPos` (ex.: "50% 30%"); vazio = centralizado.
+
 ## [1.27.3] - 2026-06-24 — Selo do plano (Premium) vermelho no perfil
 - O selo do plano (ex.: "Premium") no topo do perfil agora é **vermelho com letra branca** (antes vidro translúcido) — combina com o selo "Oferta" e dá mais destaque.
 
