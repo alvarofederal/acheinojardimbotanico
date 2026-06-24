@@ -7,6 +7,11 @@ Todas as mudanças relevantes do projeto. Formato baseado em [Keep a Changelog](
 
 ---
 
+## [1.30.0] - 2026-06-24 — Tracking de canais (iFood + Oferta) no "Seu Resultado" (inclui migration)
+- Cliques no botão **iFood** e no **CTA da Oferta** do perfil agora são contados (antes só o WhatsApp). Nova tabela `LinkClick` (kind = ifood/oferta, contagem diária por negócio) + endpoint `/api/track/click` + componente `TrackLink` (conta o clique e abre o link, fire-and-forget com keepalive, sem travar a navegação).
+- O **"Seu Resultado"** ganhou a quebra **"Por canal (7 dias)"** (WhatsApp / iFood / Oferta), que aparece quando há atividade nesses canais — fecha o funil de ROI por canal.
+- Schema: tabela nova criada por `CREATE TABLE` (aditivo, `relationMode=prisma` → sem FK, espelha a `WhatsappClick`).
+
 ## [1.29.0] - 2026-06-24 — Painel "Seu Resultado" (semanal + linguagem humana)
 - A página de métricas virou **"Seu Resultado"** (menu também): **hero semanal** ("Nos últimos 7 dias, X pessoas encontraram sua loja e Y falaram com você no WhatsApp"), cards **esta semana vs a passada** (Te acharam / Falaram com você / conversão) e o mês como resumo secundário. Mantém o gráfico de 14 dias.
 - Frase de comparação focada em **contatos** (a métrica que vira dinheiro) + **gancho pra publicar uma oferta** (renovação). Sem dado novo — usa `BusinessView`/`WhatsappClick` que já temos.

@@ -12,6 +12,7 @@ import Link from "next/link"
 import { MapPin, Phone, Globe, Instagram, Facebook, Linkedin, Youtube, Star, Clock, Navigation, Store, Briefcase, ArrowLeft, BadgeCheck, Sparkles, Images, ShoppingBag, MapPinned, Megaphone } from "lucide-react"
 import { WhatsappIcon } from "@/components/whatsapp-icon"
 import { TrackView } from "./track-view"
+import { TrackLink } from "./track-link"
 import { WhatsAppButton } from "./whatsapp-button"
 import { ClaimBanner } from "./claim-banner"
 import { ProductShowcase } from "./product-showcase"
@@ -220,10 +221,10 @@ export async function ProfileView({ business }: { business: ProfileBusiness }) {
               </div>
             )}
             {business.ifood && (
-              <a href={business.ifood} target="_blank" rel="noopener noreferrer"
+              <TrackLink businessId={business.id} kind="ifood" href={business.ifood}
                 className="flex items-center gap-2 px-4 py-3 rounded-2xl bg-[#EA1D2C] hover:brightness-110 text-white text-sm font-semibold transition-all hover:-translate-y-0.5">
                 <ShoppingBag className="w-4 h-4" /> Pedir no iFood
-              </a>
+              </TrackLink>
             )}
             {feat.loja && (
               <Link href={storeHref}
@@ -265,10 +266,10 @@ export async function ProfileView({ business }: { business: ProfileBusiness }) {
               <h2 className="font-serif text-2xl sm:text-3xl font-semibold flora-ink leading-tight">{business.offerTitle}</h2>
               {business.offerText && <p className="text-sm sm:text-base flora-muted mt-2 leading-relaxed">{business.offerText}</p>}
               {offerWa && (
-                <a href={offerWa} target="_blank" rel="noopener noreferrer"
+                <TrackLink businessId={business.id} kind="oferta" href={offerWa}
                   className="mt-4 inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-flora-green hover:bg-flora-fresh text-white text-sm font-semibold shadow-lg shadow-flora-green/25 transition-all hover:-translate-y-0.5">
                   <WhatsappIcon className="w-4 h-4" /> Quero esta oferta
-                </a>
+                </TrackLink>
               )}
             </div>
           </section>

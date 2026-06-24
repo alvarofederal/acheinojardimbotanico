@@ -157,6 +157,7 @@ model Business {
   vagas          Vaga[]
   views          BusinessView[]
   whatsappClicks WhatsappClick[]
+  linkClicks     LinkClick[]
   claimRequests  ClaimRequest[]
 
   importedAt   DateTime @default(now())
@@ -276,6 +277,20 @@ model WhatsappClick {
   business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
 
   @@unique([businessId, date])
+  @@index([businessId])
+}
+
+// Clique em canais externos do perfil (iFood, CTA da Oferta) — contagem diária por tipo.
+model LinkClick {
+  id         String   @id @default(cuid())
+  businessId String
+  kind       String   // "ifood" | "oferta"
+  date       DateTime @default(now()) @db.Date
+  count      Int      @default(1)
+
+  business Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+
+  @@unique([businessId, kind, date])
   @@index([businessId])
 }
 

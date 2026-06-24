@@ -6,7 +6,7 @@ import { RoiChart } from "./_components/roi-chart"
 import { FeatureLocked } from "../_components/feature-locked"
 import { planHasFeature } from "@/lib/plan-config"
 import { type PlanId } from "@/lib/plans"
-import { Eye, MessageCircle, TrendingUp, Store, Zap, ArrowUpRight, ArrowDownRight, Sparkles, Megaphone } from "lucide-react"
+import { Eye, MessageCircle, TrendingUp, Store, Zap, ArrowUpRight, ArrowDownRight, Sparkles, Megaphone, ShoppingBag } from "lucide-react"
 
 function dayKey(d: Date) { return d.toISOString().slice(0, 10) }
 
@@ -39,13 +39,17 @@ export default async function MetricasPage() {
   const startN = (n: number) => { const d = new Date(now); d.setDate(now.getDate() - n); d.setHours(0, 0, 0, 0); return d }
   const start7 = startN(7), start14 = startN(14), start30 = startN(30), start60 = startN(60)
 
-  const [views, clicks] = await Promise.all([
+  const [views, clicks, links] = await Promise.all([
     db.businessView.findMany({ where: { businessId: business.id, date: { gte: start60 } }, select: { date: true, count: true } }),
     db.whatsappClick.findMany({ where: { businessId: business.id, date: { gte: start60 } }, select: { date: true, count: true } }),
+    db.linkClick.findMany({ where: { businessId: business.id, date: { gte: start60 } }, select: { date: true, kind: true, count: true } }),
   ])
 
   const vMap = new Map(views.map(v => [dayKey(new Date(v.date)), v.count]))
   const cMap = new Map(clicks.map(c => [dayKey(new Date(c.date)), c.count]))
+  const kindMap = (k: string) => new Map(links.filter(l => l.kind === k).map(l => [dayKey(new Date(l.date)), l.count]))
+  const ifoodMap = kindMap("ifood")
+  const ofertaMap = kindMap("oferta")
 
   const sumRange = (map: Map<string, number>, from: Date, to: Date) => {
     let s = 0
@@ -66,6 +70,13 @@ export default async function MetricasPage() {
 
   const conv7 = views7 > 0 ? (clicks7 / views7) * 100 : 0
   const delta = (cur: number, prev: number) => prev === 0 ? (cur > 0 ? 100 : 0) : Math.round(((cur - prev) / prev) * 100)
+
+  // Canais externos (iFood, Oferta) — só mostra a quebra se houver atividade
+  const ifood7 = sumRange(ifoodMap, start7, now)
+  const oferta7 = sumRange(ofertaMap, start7, now)
+  const ifood30 = sumRange(ifoodMap, start30, now)
+  const oferta30 = sumRange(ofertaMap, start30, now)
+  const hasChannels = ifood30 > 0 || oferta30 > 0
 
   // Frase de comparação semanal — prioriza contatos (a métrica que vira dinheiro)
   let weekMsg: string
@@ -153,6 +164,26 @@ export default async function MetricasPage() {
           </div>
         </div>
       </div>
+
+      {/* Por canal (só se houver iFood / Oferta) */}
+      {hasChannels && (
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-wide dash-muted mb-2.5">Por canal (7 dias)</p>
+          <div className="grid grid-cols-3 gap-3">
+            {[
+              { label: "WhatsApp", value: clicks7, Icon: MessageCircle, color: "text-emerald-500" },
+              { label: "iFood", value: ifood7, Icon: ShoppingBag, color: "text-[#EA1D2C]" },
+              { label: "Oferta", value: oferta7, Icon: Megaphone, color: "text-flora-gold" },
+            ].map(c => (
+              <div key={c.label} className="rounded-2xl border border-gray-100 dark:border-white/[0.07] bg-white dark:bg-white/[0.02] p-4 text-center">
+                <c.Icon className={`w-4 h-4 ${c.color} mx-auto mb-1.5`} />
+                <p className="text-2xl font-bold dash-title leading-none">{c.value.toLocaleString("pt-BR")}</p>
+                <p className="text-[11px] dash-muted mt-1">{c.label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* No mês (secundário) */}
       <div>
