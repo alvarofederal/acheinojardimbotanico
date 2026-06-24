@@ -7,6 +7,10 @@ Todas as mudanças relevantes do projeto. Formato baseado em [Keep a Changelog](
 
 ---
 
+## [1.29.0] - 2026-06-24 — Painel "Seu Resultado" (semanal + linguagem humana)
+- A página de métricas virou **"Seu Resultado"** (menu também): **hero semanal** ("Nos últimos 7 dias, X pessoas encontraram sua loja e Y falaram com você no WhatsApp"), cards **esta semana vs a passada** (Te acharam / Falaram com você / conversão) e o mês como resumo secundário. Mantém o gráfico de 14 dias.
+- Frase de comparação focada em **contatos** (a métrica que vira dinheiro) + **gancho pra publicar uma oferta** (renovação). Sem dado novo — usa `BusinessView`/`WhatsappClick` que já temos.
+
 ## [1.28.1] - 2026-06-24 — Selo do plano (Premium) vermelho também na loja
 - O selo do plano no topo da **loja** (`/loja`) agora é **vermelho com letra branca** (antes dourado), igual ao do perfil.
 

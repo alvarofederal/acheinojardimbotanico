@@ -33,7 +33,7 @@ import { TopNavbar } from "./top-navbar"
 
 const anuncianteNav: { href: string; label: string; icon: LucideIcon }[] = [
   { href: "/dashboard",           label: "Visão Geral",  icon: LayoutDashboard },
-  { href: "/dashboard/metricas",  label: "Métricas",     icon: BarChart3       },
+  { href: "/dashboard/metricas",  label: "Seu Resultado", icon: BarChart3       },
   { href: "/dashboard/negocio",   label: "Meu Negócio",  icon: Store           },
   { href: "/dashboard/produtos",  label: "Produtos",     icon: Tag             },
   { href: "/dashboard/eventos",   label: "Eventos",      icon: CalendarDays    },
