@@ -7,6 +7,9 @@ Todas as mudanças relevantes do projeto. Formato baseado em [Keep a Changelog](
 
 ---
 
+## [1.27.3] - 2026-06-24 — Selo do plano (Premium) vermelho no perfil
+- O selo do plano (ex.: "Premium") no topo do perfil agora é **vermelho com letra branca** (antes vidro translúcido) — combina com o selo "Oferta" e dá mais destaque.
+
 ## [1.27.2] - 2026-06-24 — Perfil: selo OFERTA vermelho + Instagram vira botão
 - Selo **"Oferta"** agora **vermelho com letra branca** (antes dourado) — mais destaque no topo do perfil.
 - **Instagram** virou **botão na barra de ações** (ao lado de Site/WhatsApp), com o ícone na cor da marca. Antes ficava escondido como um "fato rápido" e passava batido. Removida a duplicata.
