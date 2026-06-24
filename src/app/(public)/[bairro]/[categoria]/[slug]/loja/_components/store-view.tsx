@@ -7,7 +7,7 @@ import { getPlanConfig } from "@/lib/plan-config"
 import { type PlanId } from "@/lib/plans"
 import { StoreFront, type StoreProduct } from "./storefront"
 import { FloatingWhatsApp } from "./floating-whatsapp"
-import { ArrowLeft, Star, MapPin, Crown, ShoppingBag } from "lucide-react"
+import { ArrowLeft, Star, MapPin, BadgeCheck, ShoppingBag } from "lucide-react"
 import { WhatsappIcon } from "@/components/whatsapp-icon"
 
 /** Carrega a loja (por slug OU handle), em React cache. */
@@ -101,7 +101,7 @@ export async function StoreView({ business }: { business: StoreBusiness }) {
               </span>
               {showSelo && (
                 <span className="flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-full bg-red-600 text-white uppercase tracking-wide shadow-sm">
-                  <Crown className="w-3 h-3" /> {planCfg.label}
+                  <BadgeCheck className="w-3 h-3" /> Verificado
                 </span>
               )}
             </div>

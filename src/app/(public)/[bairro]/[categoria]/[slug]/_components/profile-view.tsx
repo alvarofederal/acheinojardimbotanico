@@ -185,7 +185,7 @@ export async function ProfileView({ business }: { business: ProfileBusiness }) {
               <OpenStatusPill openingHours={business.openingHours} />
               {feat.selo && (
                 <span className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full bg-red-600 text-white shadow-sm">
-                  <BadgeCheck className="w-3.5 h-3.5" /> {planCfg.label}
+                  <BadgeCheck className="w-3.5 h-3.5" /> Verificado
                 </span>
               )}
             </div>

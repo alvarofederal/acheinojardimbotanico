@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
-import { Star, ShoppingBag } from "lucide-react"
+import { Star, ShoppingBag, BadgeCheck } from "lucide-react"
 import { WhatsappIcon } from "@/components/whatsapp-icon"
 import { FavoriteHeart } from "@/components/favorite-heart"
 import { getOpenStatus, type OpenStatus, type OpenState } from "@/lib/opening-hours"
@@ -88,7 +88,7 @@ export function BusinessCard({ business, bairro, categoria }: BusinessCardProps)
       {/* Selos — ao lado do coração */}
       <div className="absolute top-3 left-[3.4rem] z-20 flex flex-wrap gap-1.5 max-w-[55%]">
         {seloLabel && (
-          <span className="text-[10px] font-bold px-2 py-1 rounded-full bg-flora-gold text-flora-ink uppercase tracking-wide shadow-sm">{seloLabel}</span>
+          <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-full bg-red-600 text-white uppercase tracking-wide shadow-sm"><BadgeCheck className="w-2.5 h-2.5" /> Verificado</span>
         )}
         {featured && !seloLabel && (
           <span className="text-[10px] font-bold px-2 py-1 rounded-full bg-flora-green text-white uppercase tracking-wide shadow-sm">Destaque</span>
