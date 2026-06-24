@@ -3,6 +3,8 @@ import { NextRequest, NextResponse } from "next/server"
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/prisma"
 import { validateHandle, normalizeHandle } from "@/lib/handle"
+import { slugify } from "@/lib/utils"
+import { revalidatePath } from "next/cache"
 import { z } from "zod"
 
 const urlOrEmpty = z.string().url().or(z.literal("")).optional()
@@ -50,7 +52,7 @@ export async function PATCH(req: NextRequest) {
   const v = schema.safeParse(body)
   if (!v.success) return NextResponse.json({ error: v.error.errors[0].message }, { status: 400 })
 
-  const business = await db.business.findFirst({ where: { ownerId: session.user.id } })
+  const business = await db.business.findFirst({ where: { ownerId: session.user.id }, include: { category: true } })
   if (!business) return NextResponse.json({ error: "Nenhum negócio vinculado" }, { status: 404 })
 
   const data = v.data
@@ -96,6 +98,15 @@ export async function PATCH(req: NextRequest) {
       ...(data.openingHours !== undefined ? { openingHours: data.openingHours } : {}),
     },
   })
+
+  // Revalida o perfil público (ISR) pra a edição aparecer NA HORA, não em ~1h.
+  const longBase = `/${slugify(business.neighborhood)}/${business.category.slug}/${business.slug}`
+  revalidatePath(longBase)
+  revalidatePath(`${longBase}/loja`)
+  for (const h of [business.handle, handleUpdate].filter(Boolean) as string[]) {
+    revalidatePath(`/${h}`)
+    revalidatePath(`/${h}/loja`)
+  }
 
   return NextResponse.json({ ok: true })
 }

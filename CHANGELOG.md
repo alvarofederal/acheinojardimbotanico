@@ -7,6 +7,9 @@ Todas as mudanças relevantes do projeto. Formato baseado em [Keep a Changelog](
 
 ---
 
+## [1.27.1] - 2026-06-24 — Edição do lojista aparece na hora (revalidação ISR)
+- Ao salvar em "Meu Negócio" (oferta, iFood, descrição, redes, etc.), o **perfil público é revalidado na hora** (`revalidatePath` da URL curta + longa + /loja). Antes, a edição só aparecia depois de ~1h por causa do ISR (`revalidate=3600`) — confundia o lojista (e o teste da oferta).
+
 ## [1.27.0] - 2026-06-23 — Oferta em destaque no perfil (Premium) (inclui migration)
 - Lojista **Premium** cria uma **oferta em destaque** em "Meu Negócio" (título + detalhe + prazo, com liga/desliga). Aparece como **banner dourado no topo do perfil**, com selo de urgência ("Termina sábado" / "Termina hoje") e botão **"Quero esta oferta"** que abre o WhatsApp com mensagem pronta. Some sozinha quando o prazo vence. É o motivo concreto pro Roberto pagar (traz cliente hoje).
 - **Plano:** nova feature flag `oferta` (Premium = ON; Visibilidade/Free = OFF). Aparece automaticamente no **controle do admin** e na vitrine de planos do **/anuncie** (framework `PLAN_FEATURES`). 1 oferta ativa por negócio (MVP).
