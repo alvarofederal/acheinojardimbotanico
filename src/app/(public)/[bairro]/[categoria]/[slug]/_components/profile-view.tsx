@@ -9,7 +9,8 @@ import { weekRows } from "@/lib/opening-hours"
 import { OpenStatusPill, OpenStatusFact } from "./open-status"
 import { type PlanId } from "@/lib/plans"
 import Link from "next/link"
-import { MapPin, Phone, Globe, Instagram, Facebook, Linkedin, Youtube, Star, Clock, Navigation, Store, Briefcase, ArrowLeft, BadgeCheck, Sparkles, Images, ShoppingBag, MapPinned } from "lucide-react"
+import { MapPin, Phone, Globe, Instagram, Facebook, Linkedin, Youtube, Star, Clock, Navigation, Store, Briefcase, ArrowLeft, BadgeCheck, Sparkles, Images, ShoppingBag, MapPinned, Megaphone } from "lucide-react"
+import { WhatsappIcon } from "@/components/whatsapp-icon"
 import { TrackView } from "./track-view"
 import { WhatsAppButton } from "./whatsapp-button"
 import { ClaimBanner } from "./claim-banner"
@@ -66,6 +67,16 @@ function getWeekdayDescriptions(openingHours: unknown): string[] {
   } catch { return [] }
 }
 
+/** Texto de urgência do prazo da oferta, no fuso de Brasília. */
+function offerUrgency(deadline: Date): string {
+  const ymd = (d: Date) => new Intl.DateTimeFormat("en-CA", { timeZone: "America/Sao_Paulo", year: "numeric", month: "2-digit", day: "2-digit" }).format(d)
+  const days = Math.round((Date.parse(ymd(deadline)) - Date.parse(ymd(new Date()))) / 86400000)
+  if (days <= 0) return "Termina hoje!"
+  if (days === 1) return "Termina amanhã"
+  if (days <= 6) return "Termina " + new Intl.DateTimeFormat("pt-BR", { timeZone: "America/Sao_Paulo", weekday: "long" }).format(deadline)
+  return "Válida até " + new Intl.DateTimeFormat("pt-BR", { timeZone: "America/Sao_Paulo", day: "2-digit", month: "2-digit" }).format(deadline)
+}
+
 /**
  * Perfil público do negócio — renderizado IN-PLACE tanto na URL curta /{handle}
  * quanto (como fallback, sem handle) na longa. Todos os links agregados (loja,
@@ -106,6 +117,14 @@ export async function ProfileView({ business }: { business: ProfileBusiness }) {
   const listingHref = `/${slugify(business.neighborhood)}/${business.category.slug}`
   const storeHref = lojaPath(business)
   const businessUrl = profileUrl(business)
+
+  // Oferta em destaque (perk Premium): ativa, com título e dentro do prazo
+  const offerLive = feat.oferta && business.offerActive && !!business.offerTitle &&
+    (!business.offerDeadline || business.offerDeadline.getTime() >= Date.now())
+  const offerUrg = offerLive && business.offerDeadline ? offerUrgency(business.offerDeadline) : null
+  const offerWa = business.whatsapp
+    ? `https://wa.me/${business.whatsapp.replace(/\D/g, "")}?text=${encodeURIComponent(`Olá! Tenho interesse na oferta: ${business.offerTitle}`)}`
+    : null
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -222,6 +241,32 @@ export async function ProfileView({ business }: { business: ProfileBusiness }) {
       </div>
 
       <main className="max-w-3xl mx-auto px-4 sm:px-6 pb-16">
+
+        {/* ── Oferta em destaque (Premium) ───────────────────────── */}
+        {offerLive && (
+          <section className="pt-10">
+            <div className="relative overflow-hidden rounded-3xl border border-flora-gold/40 bg-gradient-to-br from-flora-gold/25 via-flora-gold/10 to-transparent p-5 sm:p-6 shadow-lg shadow-flora-gold/10">
+              <div className="flex items-center gap-2.5 mb-2.5 flex-wrap">
+                <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-flora-gold text-flora-ink">
+                  <Megaphone className="w-3.5 h-3.5" /> Oferta
+                </span>
+                {offerUrg && (
+                  <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-flora-green dark:text-flora-fresh">
+                    <Clock className="w-3.5 h-3.5" /> {offerUrg}
+                  </span>
+                )}
+              </div>
+              <h2 className="font-serif text-2xl sm:text-3xl font-semibold flora-ink leading-tight">{business.offerTitle}</h2>
+              {business.offerText && <p className="text-sm sm:text-base flora-muted mt-2 leading-relaxed">{business.offerText}</p>}
+              {offerWa && (
+                <a href={offerWa} target="_blank" rel="noopener noreferrer"
+                  className="mt-4 inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-flora-green hover:bg-flora-fresh text-white text-sm font-semibold shadow-lg shadow-flora-green/25 transition-all hover:-translate-y-0.5">
+                  <WhatsappIcon className="w-4 h-4" /> Quero esta oferta
+                </a>
+              )}
+            </div>
+          </section>
+        )}
 
         {/* ── Sobre + fatos ──────────────────────────────────────── */}
         {(business.description || business.storeTagline) && (

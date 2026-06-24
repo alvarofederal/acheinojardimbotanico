@@ -6,6 +6,12 @@ import { validateHandle, normalizeHandle } from "@/lib/handle"
 import { z } from "zod"
 
 const urlOrEmpty = z.string().url().or(z.literal("")).optional()
+
+/** "YYYY-MM-DD" → fim do dia em São Paulo (instante absoluto); vazio/ inválido → null. */
+function endOfDaySP(ymd?: string): Date | null {
+  if (!ymd || !/^\d{4}-\d{2}-\d{2}$/.test(ymd)) return null
+  return new Date(`${ymd}T23:59:59-03:00`)
+}
 const timePoint = z.object({
   day: z.number().int().min(0).max(6),
   hour: z.number().int().min(0).max(23),
@@ -22,6 +28,10 @@ const schema = z.object({
   linkedin: urlOrEmpty,
   youtube: urlOrEmpty,
   ifood: urlOrEmpty,
+  offerActive: z.boolean().optional(),
+  offerTitle: z.string().max(80).optional(),
+  offerText: z.string().max(280).optional(),
+  offerDeadline: z.string().optional(), // "YYYY-MM-DD" ou "" pra limpar
   storeWhatsappMessage: z.string().max(400).optional(),
   storeCoverUrl: urlOrEmpty,
   storeTagline: z.string().max(140).optional(),
@@ -74,6 +84,10 @@ export async function PATCH(req: NextRequest) {
       linkedin: data.linkedin || business.linkedin,
       youtube: data.youtube || business.youtube,
       ifood: data.ifood !== undefined ? (data.ifood || null) : business.ifood, // permite limpar
+      offerActive: data.offerActive !== undefined ? data.offerActive : business.offerActive,
+      offerTitle: data.offerTitle !== undefined ? (data.offerTitle.trim() || null) : business.offerTitle,
+      offerText: data.offerText !== undefined ? (data.offerText.trim() || null) : business.offerText,
+      offerDeadline: data.offerDeadline !== undefined ? endOfDaySP(data.offerDeadline) : business.offerDeadline,
 
       storeWhatsappMessage: data.storeWhatsappMessage ?? business.storeWhatsappMessage,
       storeCoverUrl: data.storeCoverUrl !== undefined ? (data.storeCoverUrl || null) : business.storeCoverUrl,

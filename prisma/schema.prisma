@@ -131,6 +131,10 @@ model Business {
   linkedin          String? @db.Text
   youtube           String? @db.Text
   ifood             String? @db.Text  // link de delivery no iFood (negócios de alimentação)
+  offerActive       Boolean        @default(false) // oferta em destaque ligada (perk Premium)
+  offerTitle        String?                         // ex.: "10% de desconto até sábado"
+  offerText         String?        @db.Text         // detalhe curto da oferta
+  offerDeadline     DateTime?                       // prazo da oferta (urgência); some quando passa
   googleRating      Float?
   googleRatingCount Int?
   openingHours      Json?

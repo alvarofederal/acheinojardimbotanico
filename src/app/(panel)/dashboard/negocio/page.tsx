@@ -5,8 +5,9 @@ import { BusinessEditor } from "./_components/business-editor"
 import { HoursEditor } from "./_components/hours-editor"
 import { PhotoManager } from "./_components/photo-manager"
 import { HandleEditor } from "./_components/handle-editor"
+import { OfferEditor } from "./_components/offer-editor"
 import { parseOpeningHours } from "@/lib/opening-hours"
-import { photoLimit } from "@/lib/plan-config"
+import { photoLimit, getPlanConfig } from "@/lib/plan-config"
 import { type PlanId } from "@/lib/plans"
 import { slugify, SITE_URL } from "@/lib/utils"
 import Link from "next/link"
@@ -49,6 +50,10 @@ export default async function NegocioPage() {
   )
 
   const fotoLimit = await photoLimit(business.plan as PlanId)
+  const planCfg = await getPlanConfig(business.plan as PlanId)
+  const deadlineYmd = business.offerDeadline
+    ? new Intl.DateTimeFormat("en-CA", { timeZone: "America/Sao_Paulo", year: "numeric", month: "2-digit", day: "2-digit" }).format(business.offerDeadline)
+    : ""
 
   return (
     <div className="space-y-6">
@@ -63,6 +68,13 @@ export default async function NegocioPage() {
           feriadoFechadoInicial={parseOpeningHours(business.openingHours)?.feriadoFechado ?? false}
         />
       </div>
+      <OfferEditor
+        enabled={planCfg.features.oferta}
+        initialActive={business.offerActive}
+        initialTitle={business.offerTitle ?? ""}
+        initialText={business.offerText ?? ""}
+        initialDeadline={deadlineYmd}
+      />
       <HandleEditor
         initialHandle={business.handle}
         suggested={slugify(business.name).slice(0, 40)}

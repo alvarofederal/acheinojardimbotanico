@@ -10,6 +10,7 @@ export type PlanId = "FREE" | "VISIBILITY" | "PREMIUM"
 /** Recursos liga/desliga por plano (feature flags). */
 export type PlanFeature =
   | "promocoes"
+  | "oferta"
   | "loja"
   | "eventos"
   | "metricas"
@@ -22,6 +23,7 @@ export type PlanFeature =
 /** Metadados dos recursos — usado para renderizar os checkboxes no admin. */
 export const PLAN_FEATURES: { key: PlanFeature; label: string; description: string }[] = [
   { key: "promocoes", label: "Promoções (ofertas)", description: "Marcar preço promocional e aparecer em /promocoes" },
+  { key: "oferta", label: "Oferta em destaque no perfil", description: "Banner de oferta com prazo/urgência no topo do perfil, com CTA no WhatsApp" },
   { key: "loja", label: "Loja completa", description: "Página de vitrine dedicada (/loja) com galeria ampliada" },
   { key: "eventos", label: "Eventos", description: "Submeter eventos para moderação do admin" },
   { key: "metricas", label: "Métricas / ROI", description: "Dashboard de visitas e cliques no WhatsApp" },
@@ -50,7 +52,7 @@ export interface PlanConfigData {
 }
 
 const allFeatures = (v: boolean): PlanFeatures => ({
-  promocoes: v, loja: v, eventos: v, metricas: v, destaque: v, redesSociais: v, selo: v, cartao: v, vagas: v,
+  promocoes: v, oferta: v, loja: v, eventos: v, metricas: v, destaque: v, redesSociais: v, selo: v, cartao: v, vagas: v,
 })
 
 /** Configuração-padrão (fallback quando o banco ainda não tem PlanConfig + seed inicial). */
@@ -64,7 +66,7 @@ export const DEFAULT_PLAN_CONFIGS: Record<PlanId, PlanConfigData> = {
   VISIBILITY: {
     plan: "VISIBILITY", label: "Visibilidade", active: true, order: 1,
     priceCents: 7900, productLimit: 10, photoLimit: 6, vagaLimit: 5,
-    features: { ...allFeatures(true), destaque: false },
+    features: { ...allFeatures(true), destaque: false, oferta: false }, // oferta = só Premium
     mercadoPagoLink: null,
   },
   PREMIUM: {

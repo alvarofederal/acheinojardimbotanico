@@ -7,6 +7,12 @@ Todas as mudanças relevantes do projeto. Formato baseado em [Keep a Changelog](
 
 ---
 
+## [1.27.0] - 2026-06-23 — Oferta em destaque no perfil (Premium) (inclui migration)
+- Lojista **Premium** cria uma **oferta em destaque** em "Meu Negócio" (título + detalhe + prazo, com liga/desliga). Aparece como **banner dourado no topo do perfil**, com selo de urgência ("Termina sábado" / "Termina hoje") e botão **"Quero esta oferta"** que abre o WhatsApp com mensagem pronta. Some sozinha quando o prazo vence. É o motivo concreto pro Roberto pagar (traz cliente hoje).
+- **Plano:** nova feature flag `oferta` (Premium = ON; Visibilidade/Free = OFF). Aparece automaticamente no **controle do admin** e na vitrine de planos do **/anuncie** (framework `PLAN_FEATURES`). 1 oferta ativa por negócio (MVP).
+- **Schema (aditivo):** colunas `Business.offerActive/offerTitle/offerText/offerDeadline` via `ALTER TABLE` (não destrutivo). Prazo guardado como fim do dia em São Paulo; urgência e expiração calculadas no fuso de Brasília. Aplicado em dev e prod (bancos shared separados) + flag `oferta=true` no PlanConfig Premium.
+- Follow-up: oferta em /promocoes + tracking de clique no botão da oferta.
+
 ## [1.26.0] - 2026-06-23 — Link do iFood no perfil (delivery) (inclui migration)
 - Negócios de alimentação agora têm um campo **iFood** em "Meu Negócio". Preenchido, vira um botão vermelho **"Pedir no iFood"** na barra de ações do perfil público — sempre visível (sem trava de plano), porque é canal de pedido (resolve a dor do Roberto).
 - **Schema (aditivo):** coluna `Business.ifood` (TEXT, nullable). Aplicada por `ALTER TABLE Business ADD COLUMN ifood TEXT NULL` (não destrutivo). Atenção: **dev e prod são bancos shared SEPARADOS** (mesmos 878 negócios, estados diferentes) — a coluna é aplicada nos dois.
