@@ -7,6 +7,10 @@ Todas as mudanças relevantes do projeto. Formato baseado em [Keep a Changelog](
 
 ---
 
+## [1.27.2] - 2026-06-24 — Perfil: selo OFERTA vermelho + Instagram vira botão
+- Selo **"Oferta"** agora **vermelho com letra branca** (antes dourado) — mais destaque no topo do perfil.
+- **Instagram** virou **botão na barra de ações** (ao lado de Site/WhatsApp), com o ícone na cor da marca. Antes ficava escondido como um "fato rápido" e passava batido. Removida a duplicata.
+
 ## [1.27.1] - 2026-06-24 — Edição do lojista aparece na hora (revalidação ISR)
 - Ao salvar em "Meu Negócio" (oferta, iFood, descrição, redes, etc.), o **perfil público é revalidado na hora** (`revalidatePath` da URL curta + longa + /loja). Antes, a edição só aparecia depois de ~1h por causa do ISR (`revalidate=3600`) — confundia o lojista (e o teste da oferta).
 

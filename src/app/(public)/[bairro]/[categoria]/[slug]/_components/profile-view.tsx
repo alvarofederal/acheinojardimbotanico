@@ -236,6 +236,11 @@ export async function ProfileView({ business }: { business: ProfileBusiness }) {
             <a href={mapsUrl} target="_blank" rel="noopener noreferrer" className={ghostBtn}><Navigation className="w-4 h-4 text-flora-green" /> Como chegar</a>
             {business.phone && <a href={`tel:${business.phone}`} className={ghostBtn}><Phone className="w-4 h-4 text-flora-green" /> Ligar</a>}
             {business.website && <a href={business.website} target="_blank" rel="noopener noreferrer" className={ghostBtn}><Globe className="w-4 h-4 text-flora-green" /> Site</a>}
+            {feat.redesSociais && business.instagram && (
+              <a href={`https://instagram.com/${business.instagram.replace("@", "")}`} target="_blank" rel="noopener noreferrer" className={ghostBtn}>
+                <Instagram className="w-4 h-4 text-[#E1306C]" /> Instagram
+              </a>
+            )}
           </div>
         </div>
       </div>
@@ -247,7 +252,7 @@ export async function ProfileView({ business }: { business: ProfileBusiness }) {
           <section className="pt-10">
             <div className="relative overflow-hidden rounded-3xl border border-flora-gold/40 bg-gradient-to-br from-flora-gold/25 via-flora-gold/10 to-transparent p-5 sm:p-6 shadow-lg shadow-flora-gold/10">
               <div className="flex items-center gap-2.5 mb-2.5 flex-wrap">
-                <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-flora-gold text-flora-ink">
+                <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-red-600 text-white shadow-sm">
                   <Megaphone className="w-3.5 h-3.5" /> Oferta
                 </span>
                 {offerUrg && (
@@ -293,12 +298,6 @@ export async function ProfileView({ business }: { business: ProfileBusiness }) {
               <span className="w-11 h-11 rounded-xl bg-flora-green/10 text-flora-green flex items-center justify-center flex-shrink-0"><Phone className="w-5 h-5" /></span>
               <div><b className="block text-sm flora-ink">{business.phone}</b><span className="text-xs flora-muted">Telefone & WhatsApp</span></div>
             </div>
-          )}
-          {feat.redesSociais && business.instagram && (
-            <a href={`https://instagram.com/${business.instagram.replace("@", "")}`} target="_blank" rel="noopener noreferrer" className="flex gap-3.5 items-start flora-card rounded-2xl p-4 hover:-translate-y-0.5 transition-transform">
-              <span className="w-11 h-11 rounded-xl bg-flora-green/10 text-flora-green flex items-center justify-center flex-shrink-0"><Instagram className="w-5 h-5" /></span>
-              <div><b className="block text-sm flora-ink">{business.instagram.startsWith("@") ? business.instagram : "@" + business.instagram}</b><span className="text-xs flora-muted">Instagram</span></div>
-            </a>
           )}
         </section>
 
