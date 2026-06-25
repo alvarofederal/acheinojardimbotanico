@@ -7,6 +7,10 @@ Todas as mudanças relevantes do projeto. Formato baseado em [Keep a Changelog](
 
 ---
 
+## [1.32.0] - 2026-06-24 — CRUD de Categorias (admin)
+- Nova tela admin **Categorias** (`/dashboard/admin/categorias`): criar, editar (nome, ícone, ordem, descrição) e apagar. Apagar é **bloqueado se a categoria tiver negócios** (ou subcategorias) — evita órfão. O **slug é gerado do nome e travado** depois (protege URL/SEO da listagem).
+- A **ordem** definida no admin passa a valer na home (com "Outros" por último como padrão); cada categoria pode ter um **ícone** escolhido (`iconName`) — home e listagem respeitam.
+
 ## [1.31.2] - 2026-06-24 — "Outros" por último na home
 - A categoria **"Outros"** (mais generalista) agora aparece **por último** na grade de categorias da home, em vez de competir com as categorias específicas.
 

@@ -18,8 +18,8 @@ export default async function HomePage() {
   const [categories, totalBusinesses, topRated] = await Promise.all([
     db.category.findMany({
       where: { businesses: { some: { status: { in: ["IMPORTED", "CLAIMED"] } } } },
-      select: { slug: true, name: true, _count: { select: { businesses: true } } },
-      orderBy: { businesses: { _count: "desc" } },
+      select: { slug: true, name: true, iconName: true, _count: { select: { businesses: true } } },
+      orderBy: [{ order: "asc" }, { businesses: { _count: "desc" } }],
       take: 18,
     }),
     db.business.count({ where: { status: { in: ["IMPORTED", "CLAIMED"] } } }),
@@ -85,7 +85,7 @@ export default async function HomePage() {
             <div className="mt-6 flex flex-wrap items-center justify-center gap-2 flora-rise" style={{ animationDelay: ".2s" }}>
               <span className="text-xs text-white/45">Explore:</span>
               {quickChips.map(c => {
-                const Icon = getCategoryIcon(c.slug)
+                const Icon = getCategoryIcon(c.slug, c.iconName)
                 return (
                   <Link key={c.slug} href={`/${DEFAULT_BAIRRO}/${c.slug}`}
                     className="inline-flex items-center gap-1.5 text-xs font-medium px-3.5 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-white/90 border border-white/15 backdrop-blur-sm transition-all hover:-translate-y-0.5">
@@ -135,7 +135,7 @@ export default async function HomePage() {
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5">
             {orderedCategories.map((cat, i) => {
-              const Icon = getCategoryIcon(cat.slug)
+              const Icon = getCategoryIcon(cat.slug, cat.iconName)
               return (
                 <Link key={cat.slug} href={`/${DEFAULT_BAIRRO}/${cat.slug}`}
                   className="flora-card group rounded-2xl p-5 flex flex-col items-center text-center gap-2.5 flora-rise hover:!border-flora-gold/60"

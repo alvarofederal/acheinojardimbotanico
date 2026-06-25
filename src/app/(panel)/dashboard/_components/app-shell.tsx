@@ -27,6 +27,7 @@ import {
   Contact,
   Briefcase,
   Ghost,
+  Shapes,
 } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
 import { TopNavbar } from "./top-navbar"
@@ -46,6 +47,7 @@ const adminNav: { href: string; label: string; icon: LucideIcon }[] = [
   { href: "/dashboard",              label: "Visão Geral",  icon: LayoutDashboard },
   { href: "/dashboard/admin/usuarios", label: "Usuários",   icon: Users           },
   { href: "/dashboard/admin/negocios", label: "Negócios",   icon: Building2       },
+  { href: "/dashboard/admin/categorias", label: "Categorias", icon: Shapes        },
   { href: "/dashboard/admin/cartao",   label: "Cartões",    icon: Contact         },
   { href: "/dashboard/admin/display",  label: "Displays",   icon: QrCode          },
   { href: "/dashboard/admin/import",   label: "Importar",   icon: Download        },

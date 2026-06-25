@@ -102,6 +102,13 @@ const ICON_BY_SLUG: Record<string, LucideIcon> = {
   eventos: PartyPopper,
 }
 
-export function getCategoryIcon(slug: string): LucideIcon {
-  return ICON_BY_SLUG[slug] ?? Tag
+/**
+ * Ícone da categoria: prioriza o `iconName` escolhido no admin (uma das chaves de
+ * ICON_BY_SLUG), depois o mapa por slug, e por fim o genérico (Tag).
+ */
+export function getCategoryIcon(slug: string, iconName?: string | null): LucideIcon {
+  return (iconName ? ICON_BY_SLUG[iconName] : undefined) ?? ICON_BY_SLUG[slug] ?? Tag
 }
+
+/** Chaves de ícone disponíveis pro seletor do CRUD de categorias (ordenadas). */
+export const ICON_KEYS: string[] = Object.keys(ICON_BY_SLUG).sort()

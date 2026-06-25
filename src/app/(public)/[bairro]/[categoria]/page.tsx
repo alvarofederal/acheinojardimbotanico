@@ -88,7 +88,7 @@ export default async function CategoryPage({ params }: PageProps) {
     })
 
   const bairroLabel = bairro.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase())
-  const Icon = getCategoryIcon(categoria)
+  const Icon = getCategoryIcon(categoria, category.iconName)
   const rated = businesses.filter(b => b.googleRating != null)
   const avgRating = rated.length
     ? (rated.reduce((s, b) => s + (b.googleRating ?? 0), 0) / rated.length).toFixed(1)
