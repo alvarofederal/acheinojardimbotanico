@@ -7,6 +7,9 @@ Todas as mudanças relevantes do projeto. Formato baseado em [Keep a Changelog](
 
 ---
 
+## [1.31.1] - 2026-06-24 — Selo "Verificado" azul (padrão redes sociais)
+- O selo "Verificado" mudou de vermelho para **azul** (`#1d9bf0`, o azul de verificado das redes sociais) — convenção universal de confiança e diferencia da urgência vermelha da Oferta. Perfil, loja e cards.
+
 ## [1.31.0] - 2026-06-24 — Selo "Verificado"
 - O selo dos planos pagos virou um **selo "Verificado"** (com check) no lugar de mostrar o nome do plano ("Premium"/"Visibilidade") — mais credibilidade pra quem busca e mais classe pro lojista. Vermelho com letra branca, consistente no **perfil, na loja e nos cards** da listagem/home/busca.
 - Continua sendo perk dos **planos pagos** (feature `selo`, Visibilidade + Premium) — "incluso no plano pago". Sem mudança de schema.

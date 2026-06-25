@@ -100,7 +100,7 @@ export async function StoreView({ business }: { business: StoreBusiness }) {
                 <ShoppingBag className="w-3 h-3 text-flora-gold" /> Loja
               </span>
               {showSelo && (
-                <span className="flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-full bg-red-600 text-white uppercase tracking-wide shadow-sm">
+                <span className="flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-full bg-[#1d9bf0] text-white uppercase tracking-wide shadow-sm">
                   <BadgeCheck className="w-3 h-3" /> Verificado
                 </span>
               )}
