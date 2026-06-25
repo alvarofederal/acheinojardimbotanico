@@ -2,9 +2,8 @@ import { redirect } from "next/navigation"
 import { auth } from "@/lib/auth"
 import { db } from "@/lib/prisma"
 import Link from "next/link"
-import { ExternalLink, ShieldCheck, Building2 } from "lucide-react"
+import { ExternalLink, ShieldCheck, Building2, Pencil, Plus } from "lucide-react"
 import { PendingActions } from "./_components/pending-actions"
-import { BusinessEditButton } from "./_components/business-edit-button"
 import { businessImage } from "@/lib/display"
 
 interface SearchProps {
@@ -54,9 +53,15 @@ export default async function AdminNegociosPage({ searchParams }: SearchProps) {
 
   return (
     <div className="space-y-5">
-      <div>
-        <h1 className="text-xl sm:text-2xl font-bold dash-title">Negócios</h1>
-        <p className="dash-subtitle mt-0.5 text-sm">{total.toLocaleString("pt-BR")} no total</p>
+      <div className="flex items-start justify-between gap-3 flex-wrap">
+        <div>
+          <h1 className="text-xl sm:text-2xl font-bold dash-title">Negócios</h1>
+          <p className="dash-subtitle mt-0.5 text-sm">{total.toLocaleString("pt-BR")} no total</p>
+        </div>
+        <Link href="/dashboard/admin/negocios/novo"
+          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold transition-colors flex-shrink-0">
+          <Plus className="w-4 h-4" /> Novo negócio
+        </Link>
       </div>
 
       {/* Filtros */}
@@ -148,7 +153,10 @@ export default async function AdminNegociosPage({ searchParams }: SearchProps) {
                     <div className="flex items-center gap-2 justify-end">
                       {b.status === "PENDING_REVIEW" && <PendingActions businessId={b.id} />}
                       {b.status !== "PENDING_REVIEW" && (
-                        <BusinessEditButton businessId={b.id} businessName={b.name} currentHandle={b.handle} active={b.status !== "SUSPENDED"} hasOwner={!!b.ownerId} currentLogo={b.logoUrl} />
+                        <Link href={`/dashboard/admin/negocios/${b.id}`} title="Editar negócio"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 dark:border-white/10 dash-subtitle text-xs font-semibold hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
+                          <Pencil className="w-3.5 h-3.5" /> Editar
+                        </Link>
                       )}
                       <Link href={`/jardim-botanico/${b.category.slug}/${b.slug}`} target="_blank"
                         className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 transition-colors inline-flex">

@@ -7,6 +7,11 @@ Todas as mudanças relevantes do projeto. Formato baseado em [Keep a Changelog](
 
 ---
 
+## [1.33.0] - 2026-06-24 — Admin: edição de negócio em tela cheia + cadastro manual
+- A edição de negócio no admin saiu da **modal** e virou **página completa** (`/dashboard/admin/negocios/[id]`): nome, **categoria (combo)**, contato (telefone/WhatsApp/site/Instagram), endereço com autocomplete/geocode, descrição, **plano**, status, slug e logo — tudo numa tela.
+- Botão **"Novo negócio"** na lista → **cadastro manual** (`/dashboard/admin/negocios/novo`), sem passar pelo Google Places. O endereço captura lat/lng pelo geocode; já nasce com slug + handle.
+- APIs: `POST /api/admin/negocios` (criar) e `PATCH /api/admin/negocios/[id]` estendido pra editar todos os campos (mantém aprovar/ativar/desativar).
+
 ## [1.32.0] - 2026-06-24 — CRUD de Categorias (admin)
 - Nova tela admin **Categorias** (`/dashboard/admin/categorias`): criar, editar (nome, ícone, ordem, descrição) e apagar. Apagar é **bloqueado se a categoria tiver negócios** (ou subcategorias) — evita órfão. O **slug é gerado do nome e travado** depois (protege URL/SEO da listagem).
 - A **ordem** definida no admin passa a valer na home (com "Outros" por último como padrão); cada categoria pode ter um **ícone** escolhido (`iconName`) — home e listagem respeitam.
