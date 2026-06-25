@@ -7,6 +7,9 @@ Todas as mudanças relevantes do projeto. Formato baseado em [Keep a Changelog](
 
 ---
 
+## [1.34.0] - 2026-06-25 — Compartilhar / "Indique este negócio"
+- Botão **"Compartilhar"** na barra de ações do perfil: usa o **Web Share** nativo (no celular abre WhatsApp/Instagram/etc.) e, no desktop, **copia o link curto** com aviso. Alcance orgânico de graça — combustível da prova social.
+
 ## [1.33.0] - 2026-06-24 — Admin: edição de negócio em tela cheia + cadastro manual
 - A edição de negócio no admin saiu da **modal** e virou **página completa** (`/dashboard/admin/negocios/[id]`): nome, **categoria (combo)**, contato (telefone/WhatsApp/site/Instagram), endereço com autocomplete/geocode, descrição, **plano**, status, slug e logo — tudo numa tela.
 - Botão **"Novo negócio"** na lista → **cadastro manual** (`/dashboard/admin/negocios/novo`), sem passar pelo Google Places. O endereço captura lat/lng pelo geocode; já nasce com slug + handle.

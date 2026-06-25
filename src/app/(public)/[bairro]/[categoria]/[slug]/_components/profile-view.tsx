@@ -13,6 +13,7 @@ import { MapPin, Phone, Globe, Instagram, Facebook, Linkedin, Youtube, Star, Clo
 import { WhatsappIcon } from "@/components/whatsapp-icon"
 import { TrackView } from "./track-view"
 import { TrackLink } from "./track-link"
+import { ShareButton } from "./share-button"
 import { WhatsAppButton } from "./whatsapp-button"
 import { ClaimBanner } from "./claim-banner"
 import { ProductShowcase } from "./product-showcase"
@@ -243,6 +244,7 @@ export async function ProfileView({ business }: { business: ProfileBusiness }) {
                 <Instagram className="w-4 h-4 text-[#E1306C]" /> Instagram
               </a>
             )}
+            <ShareButton name={business.name} url={businessUrl} className={ghostBtn} />
           </div>
         </div>
       </div>
