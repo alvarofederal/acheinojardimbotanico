@@ -7,6 +7,9 @@ Todas as mudanças relevantes do projeto. Formato baseado em [Keep a Changelog](
 
 ---
 
+## [1.31.2] - 2026-06-24 — "Outros" por último na home
+- A categoria **"Outros"** (mais generalista) agora aparece **por último** na grade de categorias da home, em vez de competir com as categorias específicas.
+
 ## [1.31.1] - 2026-06-24 — Selo "Verificado" azul (padrão redes sociais)
 - O selo "Verificado" mudou de vermelho para **azul** (`#1d9bf0`, o azul de verificado das redes sociais) — convenção universal de confiança e diferencia da urgência vermelha da Oferta. Perfil, loja e cards.
 

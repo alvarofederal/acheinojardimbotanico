@@ -35,7 +35,9 @@ export default async function HomePage() {
     }),
   ])
 
-  const quickChips = categories.slice(0, 6)
+  // "Outros" é generalista — sempre por último na home
+  const orderedCategories = [...categories].sort((a, b) => Number(a.slug === "outros") - Number(b.slug === "outros"))
+  const quickChips = orderedCategories.slice(0, 6)
 
   return (
     <main>
@@ -124,7 +126,7 @@ export default async function HomePage() {
           <p className="flora-muted text-sm mt-2 max-w-md mx-auto">Do café da manhã ao cuidado com a casa — tudo a poucos minutos de você.</p>
         </div>
 
-        {categories.length === 0 ? (
+        {orderedCategories.length === 0 ? (
           <div className="text-center py-16">
             <FernFrond className="w-16 h-28 text-flora-soft mx-auto mb-4" />
             <p className="font-serif text-xl flora-ink mb-1">Cultivando o guia</p>
@@ -132,7 +134,7 @@ export default async function HomePage() {
           </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5">
-            {categories.map((cat, i) => {
+            {orderedCategories.map((cat, i) => {
               const Icon = getCategoryIcon(cat.slug)
               return (
                 <Link key={cat.slug} href={`/${DEFAULT_BAIRRO}/${cat.slug}`}
